@@ -25,7 +25,13 @@ class MyApp extends StatelessWidget {
         // Tambahkan provider lainnya jika diperlukan
       ],
       child: MaterialApp(
+        theme: ThemeData(
+          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            unselectedItemColor: Colors.black,
+          ),
+        ),
         home: SplashScreen(),
+        debugShowCheckedModeBanner: true,
       ),
     );
   }

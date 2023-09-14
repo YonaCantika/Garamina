@@ -54,12 +54,13 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SizedBox(height: 150),
             Image.asset(
               'assets/img/logo.png',
               width: 200,
               height: 200,
             ),
-            SizedBox(height: 80), // Spasi vertikal
+            SizedBox(height: 100), // Spasi vertikal
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -80,10 +81,15 @@ class _SplashScreenState extends State<SplashScreen> {
             // ),
             SizedBox(height: 20), // Spasi vertikal
             // Tambahkan gambar di paling bawah
-            Image.asset(
-              'img/bumn.png',
-              width: 100,
-              height: 100,
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Image.asset(
+                  'img/bumn.png',
+                  width: 100,
+                  height: 100,
+                ),
+              ),
             ),
           ],
         ),

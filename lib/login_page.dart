@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'auth_state.dart';
 
-import 'menu_page.dart';
+import 'dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
           // Arahkan ke halaman menu
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => MenuPage(),
+              builder: (context) => DashboardPage(),
             ),
           );
         } else {
