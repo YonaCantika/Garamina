@@ -6,16 +6,16 @@ import 'package:intl/intl.dart';
 import 'auth_state.dart';
 import 'package:provider/provider.dart';
 
-import 'dashboard_page.dart';
-import 'akun_page.dart';
+import 'histori_page.dart';
 import 'dataAbsen_page.dart';
+import 'akun_page.dart';
 
-class HistoriPage extends StatefulWidget {
+class DinasPage extends StatefulWidget {
   @override
-  _HistoriPageState createState() => _HistoriPageState();
+  _DinasPageState createState() => _DinasPageState();
 }
 
-class _HistoriPageState extends State<HistoriPage> {
+class _DinasPageState extends State<DinasPage> {
   List<Map<String, dynamic>> cutiData = [];
 
   @override
@@ -25,13 +25,15 @@ class _HistoriPageState extends State<HistoriPage> {
   }
 
   Future<void> fetchDataFromApi() async {
-    final apiUrl = Uri.parse('http://localhost:8000/api/histori');
+    final apiUrl = Uri.parse('http://localhost:8000/api/dinas');
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
     final response = await http.post(
       apiUrl,
-      body: {"periodeTanggal": "2023-01", "idPegawai": "797"},
+      body: {
+        'mulaiDinas': formattedDate,
+      },
     );
 
     if (response.statusCode == 200) {
@@ -49,7 +51,7 @@ class _HistoriPageState extends State<HistoriPage> {
     final authState = Provider.of<AuthState>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Histori'),
+        title: Text('Dashboard'),
       ),
       backgroundColor: Colors.blue,
       body: Column(
@@ -114,7 +116,7 @@ class _HistoriPageState extends State<HistoriPage> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
-                      'Histori Absen',
+                      'Karyawan Dinas',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -127,16 +129,18 @@ class _HistoriPageState extends State<HistoriPage> {
                       shrinkWrap: true,
                       itemCount: cutiData.length,
                       itemBuilder: (context, index) {
-                        final tanggalCuti = cutiData[index]['TANGGAL'];
-                        final keteranganCuti = cutiData[index]['KETERANGAN'];
+                        final namaPegawai = cutiData[index]['NAMA_PEGAWAI'];
+                        final periode = cutiData[index]['PERIODE'];
+                        final tujuan = cutiData[index]['TUJUAN'];
                         return Column(
                           children: [
                             ListTile(
-                              title: Text('Tanggal: $tanggalCuti'),
+                              title: Text('Nama: $namaPegawai'),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Keterangan: $keteranganCuti'),
+                                  Text('Tujuan: $tujuan'),
+                                  Text('Periode: $periode'),
                                 ],
                               ),
                             ),
@@ -183,16 +187,16 @@ class _HistoriPageState extends State<HistoriPage> {
           ),
         ],
         onTap: (int index) {
-          if (index == 0) {
-            // Navigasi ke halaman "DashboardPage"
+          if (index == 1) {
+            // Navigasi ke halaman "DinasPage"
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => DashboardPage(),
+                builder: (context) => HistoriPage(),
               ),
             );
           }
           if (index == 2) {
-            // Navigasi ke halaman "DashboardPage"
+            // Navigasi ke halaman "DinasPage"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DataAbsenPage(),

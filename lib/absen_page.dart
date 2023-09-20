@@ -38,8 +38,8 @@ class _AbsenPageState extends State<AbsenPage> {
               height: 200, // Sesuaikan dengan kebutuhan
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
-                  target:
-                      LatLng(0, 0), // Ganti dengan koordinat yang Anda miliki
+                  target: LatLng(
+                      -6.2088, 106.8456), // Ganti dengan koordinat yang sesuai
                   zoom: 15, // Tingkat zoom awal
                 ),
                 markers: {
@@ -47,12 +47,10 @@ class _AbsenPageState extends State<AbsenPage> {
                     markerId: MarkerId('absen_location'),
                     position: LatLng(
                       double.tryParse(
-                            absenState.koordinat?.split(',')[1] ?? '0',
-                          ) ??
+                              absenState.koordinat?.split(',')[1] ?? '0') ??
                           0,
                       double.tryParse(
-                            absenState.koordinat?.split(',')[0] ?? '0',
-                          ) ??
+                              absenState.koordinat?.split(',')[0] ?? '0') ??
                           0,
                     ),
                     infoWindow: InfoWindow(title: 'Lokasi Absen'),
