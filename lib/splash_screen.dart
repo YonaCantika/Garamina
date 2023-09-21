@@ -85,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: Image.asset(
-                  'img/bumn.png',
+                  'assets/img/bumn.png',
                   width: 100,
                   height: 100,
                 ),

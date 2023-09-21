@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://127.0.0.1:8000/api/login'),
+        Uri.parse('https://garamina.com/fintech2/integrasi/android/login/login'),
         body: {
           'username': username,
           'password': password,
@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('img/bg.png'), // Background image
+            image: AssetImage('assets/img/bg.png'), // Background image
             fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
           ),
         ),

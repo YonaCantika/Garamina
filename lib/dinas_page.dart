@@ -25,7 +25,7 @@ class _DinasPageState extends State<DinasPage> {
   }
 
   Future<void> fetchDataFromApi() async {
-    final apiUrl = Uri.parse('http://localhost:8000/api/dinas');
+    final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/dinas');
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
@@ -88,13 +88,13 @@ class _DinasPageState extends State<DinasPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                      'img/slider/1.JPG'), // Ganti dengan path gambar Anda
+                      'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
                 ),
                 // Item Carousel 2 dengan gambar
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                      'img/slider/2.JPG'), // Ganti dengan path gambar Anda
+                      'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
                 ),
                 // Tambahkan item Carousel selanjutnya sesuai kebutuhan
               ],
@@ -171,7 +171,7 @@ class _DinasPageState extends State<DinasPage> {
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
-              'img/logo.png',
+              'assets/img/logo.png',
               width: 30, // Sesuaikan lebar gambar
               height: 30, // Sesuaikan tinggi gambar
             ),

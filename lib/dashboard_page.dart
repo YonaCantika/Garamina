@@ -70,13 +70,13 @@ class _DashboardPageState extends State<DashboardPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                      'img/slider/1.JPG'), // Ganti dengan path gambar Anda
+                      'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
                 ),
                 // Item Carousel 2 dengan gambar
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                      'img/slider/2.JPG'), // Ganti dengan path gambar Anda
+                      'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
                 ),
                 // Tambahkan item Carousel selanjutnya sesuai kebutuhan
               ],
@@ -239,7 +239,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
-              'img/logo.png',
+              'assets/img/logo.png',
               width: 30, // Sesuaikan lebar gambar
               height: 30, // Sesuaikan tinggi gambar
             ),

@@ -80,11 +80,11 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
               items: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.asset('img/slider/1.JPG'),
+                  child: Image.asset('assets/img/slider/1.JPG'),
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.asset('img/slider/2.JPG'),
+                  child: Image.asset('assets/img/slider/2.JPG'),
                 ),
                 // Tambahkan item Carousel selanjutnya sesuai kebutuhan
               ],
@@ -299,7 +299,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
-              'img/logo.png',
+              'assets/img/logo.png',
               width: 30,
               height: 30,
             ),
@@ -346,7 +346,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
 
   Future<Map<String, dynamic>> sendAbsenRequest(String idPeg) async {
     final response = await http.post(
-      Uri.parse('http://127.0.0.1:8000/api/absen'),
+      Uri.parse('https://garamina.com/fintech2/integrasi/android/login/v_absen'),
       body: {'id_peg': idPeg},
     );
 

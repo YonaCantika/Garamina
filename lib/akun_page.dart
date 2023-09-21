@@ -63,7 +63,7 @@ class _AkunPageState extends State<AkunPage> {
                       Colors.blue, // Warna latar belakang lingkaran
                   child: ClipOval(
                     child: Image.asset(
-                      'img/slider/1.JPG', // Ganti dengan path gambar Anda
+                      'assets/img/slider/1.JPG', // Ganti dengan path gambar Anda
                       width:
                           150, // Sesuaikan lebar gambar sesuai kebutuhan Anda
                       height:
@@ -176,7 +176,7 @@ class _AkunPageState extends State<AkunPage> {
           ),
           BottomNavigationBarItem(
             icon: Image.asset(
-              'img/logo.png',
+              'assets/img/logo.png',
               width: 30, // Sesuaikan lebar gambar
               height: 30, // Sesuaikan tinggi gambar
             ),
