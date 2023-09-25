@@ -102,57 +102,54 @@ class _AkunPageState extends State<AkunPage> {
                     ),
                   ),
                   // Content
-                  Column(
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 20),
-                      Text(
-                        'Nama Karyawan:',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: EdgeInsets.only(left: 20.0), // Padding sebelah kiri
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(height: 20),
+                            Text(
+                              'Nama Karyawan:',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              authState.namaUser ?? '',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              'NIK:',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              authState.nik ?? '',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              'Cost Center:',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              authState.costCenter ?? '',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        authState.namaUser ?? '',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        'NIK:',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        authState.nik ?? '',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        'Cost Center:',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        authState.costCenter ?? '',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        'Lokasi:',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        authState.lokasi ?? '',
-                        style: TextStyle(fontSize: 16),
-                      ),
+                      SizedBox(width: 20),
                     ],
                   ),
                 ],

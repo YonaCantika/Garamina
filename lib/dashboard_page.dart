@@ -36,55 +36,55 @@ class _DashboardPageState extends State<DashboardPage> {
         title: Text('Dashboard'),
       ),
       backgroundColor: Colors.blue,
-      body: Column(
-        children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
-          Container(
-            color: Colors.blue,
-            height: 100,
-            padding: EdgeInsets.all(16),
-            child: Center(
-              child: Text(
-                authState.namaUser ?? '',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Bagian 1: Selamat Datang dengan Background Biru
+            Container(
+              color: Colors.blue,
+              height: 100,
+              padding: EdgeInsets.all(16),
+              child: Center(
+                child: Text(
+                  authState.namaUser ?? '',
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-          ),
-          // Bagian 2: Carousel Slider
-          Container(
-            height: 150, // Sesuaikan tinggi carousel sesuai kebutuhan Anda
-            child: CarouselSlider(
-              options: CarouselOptions(
-                aspectRatio:
-                    16 / 9, // Sesuaikan dengan rasio aspek yang diinginkan
-                enlargeCenterPage: true,
-                autoPlay: true,
-                autoPlayInterval: Duration(seconds: 3), // Interval otomatis
-                autoPlayCurve: Curves.fastOutSlowIn,
+            // Bagian 2: Carousel Slider
+            Container(
+              height: 150, // Sesuaikan tinggi carousel sesuai kebutuhan Anda
+              child: CarouselSlider(
+                options: CarouselOptions(
+                  aspectRatio:
+                  16 / 9, // Sesuaikan dengan rasio aspek yang diinginkan
+                  enlargeCenterPage: true,
+                  autoPlay: true,
+                  autoPlayInterval: Duration(seconds: 3), // Interval otomatis
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                ),
+                items: [
+                  // Item Carousel 1 dengan gambar
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                        'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
+                  ),
+                  // Item Carousel 2 dengan gambar
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                        'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
+                  ),
+                  // Tambahkan item Carousel selanjutnya sesuai kebutuhan
+                ],
               ),
-              items: [
-                // Item Carousel 1 dengan gambar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                      'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
-                ),
-                // Item Carousel 2 dengan gambar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                      'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
-                ),
-                // Tambahkan item Carousel selanjutnya sesuai kebutuhan
-              ],
             ),
-          ),
-          // Bagian 3: ListView dengan Border Radius di Atas
-          Expanded(
-            child: Container(
+            // Bagian 3: ListView dengan Border Radius di Atas
+            Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -124,7 +124,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
                       child: ListTile(
                         leading:
-                            Icon(Icons.hotel, size: 40, color: Colors.white),
+                        Icon(Icons.hotel, size: 40, color: Colors.white),
                         title: Text(
                           'Karyawan Cuti',
                           style: TextStyle(fontSize: 18, color: Colors.white),
@@ -150,7 +150,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
                       child: ListTile(
                         leading:
-                            Icon(Icons.mail, size: 40, color: Colors.white),
+                        Icon(Icons.mail, size: 40, color: Colors.white),
                         title: Text(
                           'Karyawan Izin',
                           style: TextStyle(fontSize: 18, color: Colors.white),
@@ -176,7 +176,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
                       child: ListTile(
                         leading:
-                            Icon(Icons.business, size: 40, color: Colors.white),
+                        Icon(Icons.business, size: 40, color: Colors.white),
                         title: Text(
                           'Karyawan Dinas',
                           style: TextStyle(fontSize: 18, color: Colors.white),
@@ -202,9 +202,35 @@ class _DashboardPageState extends State<DashboardPage> {
                       height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
                       child: ListTile(
                         leading:
-                            Icon(Icons.cake, size: 40, color: Colors.white),
+                        Icon(Icons.cake, size: 40, color: Colors.white),
                         title: Text(
                           'Karyawan Ulang Tahun',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                        onTap: () {
+                          // Navigasi ke halaman terkait (DinasPage)
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => UlangTahunPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    color: Colors.blue, // Warna latar belakang biru untuk Card
+                    child: Container(
+                      height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
+                      child: ListTile(
+                        leading:
+                        Icon(Icons.wallet, size: 40, color: Colors.white),
+                        title: Text(
+                          'Gaji',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
                         onTap: () {
@@ -221,8 +247,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       // Bagian 4: Menu dengan Icon dan Text di Bawah
       bottomNavigationBar: BottomNavigationBar(

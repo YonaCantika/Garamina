@@ -38,6 +38,8 @@ dependencies:
   intl: ^0.17.0
   geolocator: ^7.7.0
   location: ^5.0.3
+  safe_device: ^1.1.4
+  permission_handler: ^11.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -69,6 +71,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/img/logo.png
+    - assets/img/loader.gif
     - assets/img/bumn.png
     - assets/img/bg.png
     - assets/img/slider/1.JPG

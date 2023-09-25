@@ -115,52 +115,59 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                     ),
                   ),
                   // Content
-                  Column(
+                  Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 20),
-                      Text(
-                        'Nama Karyawan:',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: EdgeInsets.only(left: 20.0), // Padding sebelah kiri
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(height: 20),
+                            Text(
+                              'Nama Karyawan:',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              authState.namaUser ?? '',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              'NIK:',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              authState.nik ?? '',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              'Cost Center:',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              authState.costCenter ?? '',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        authState.namaUser ?? '',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        'NIK:',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        authState.nik ?? '',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        'Cost Center:',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        authState.costCenter ?? '',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 12),
+                      SizedBox(width: 20), // Jarak antara Column dan StreamBuilder
                       StreamBuilder<DateTime>(
                         stream: _timeStreamController.stream,
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            final time =
-                                DateFormat('HH:mm:ss').format(snapshot.data!);
+                            final time = DateFormat('HH:mm:ss').format(snapshot.data!);
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -185,6 +192,9 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                       ),
                     ],
                   ),
+
+
+
                   SizedBox(height: 20),
                   Positioned(
                     bottom: 50,
