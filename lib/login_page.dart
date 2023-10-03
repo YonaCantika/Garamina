@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'auth_state.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:safe_device/safe_device.dart';
 
 import 'dashboard_page.dart';
 
@@ -15,9 +17,15 @@ class _LoginPageState extends State<LoginPage> {
   bool _isObscured = true;
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   // Fungsi untuk melakukan login
   Future<void> _login() async {
+    // Set _isLoading menjadi true saat permintaan HTTP dimulai
+    setState(() {
+      _isLoading = true;
+    });
+
     final username = _usernameController.text;
     final password = _passwordController.text;
 
@@ -29,6 +37,11 @@ class _LoginPageState extends State<LoginPage> {
           'password': password,
         },
       );
+
+      // Setelah mendapatkan respons, set _isLoading kembali ke false
+      setState(() {
+        _isLoading = false;
+      });
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -61,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
               return AlertDialog(
                 title: Text('Login Gagal'),
                 content:
-                    Text('Username atau password salah. Silakan coba lagi.'),
+                Text('Username atau password salah. Silakan coba lagi.'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
@@ -76,11 +89,55 @@ class _LoginPageState extends State<LoginPage> {
         }
       } else {
         // Handle respons selain status code 200 sesuai kebutuhan
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Login Gagal'),
+              content:
+              Text('Server bermasalah, silahkan hubungi admin!'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
       }
+
     } catch (e) {
-      print('Error: $e');
+      // Tangani kesalahan dan set _isLoading kembali ke false jika diperlukan
+      setState(() {
+        _isLoading = false;
+      });
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Login Gagal'),
+            content:
+            Text('Periksa koneksi anda lalu coba kembali.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,89 +145,101 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         title: Text('Login Page'),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/img/bg.png'), // Background image
-            fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // Tambahkan logo di atas form
-              Image.asset(
-                'assets/img/logo.png',
-                width: 150,
-                height: 150,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/img/bg.png'), // Background image
+                fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
               ),
-              SizedBox(height: 40), // Spasi antara logo dan form
-              Card(
-                elevation: 5, // Efek shadow
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15), // Border radius
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      // Form login
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: TextField(
-                          controller: _usernameController,
-                          decoration: InputDecoration(
-                            labelText: 'Username',
-                            prefixIcon: Icon(Icons.person),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: TextField(
-                          controller: _passwordController,
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                            prefixIcon: Icon(Icons.lock),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isObscured = !_isObscured;
-                                });
-                              },
-                              icon: Icon(
-                                _isObscured
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  // Tambahkan logo di atas form
+                  Image.asset(
+                    'assets/img/logo.png',
+                    width: 150,
+                    height: 150,
+                  ),
+                  SizedBox(height: 40), // Spasi antara logo dan form
+                  Card(
+                    elevation: 5, // Efek shadow
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15), // Border radius
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          // Form login
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: TextField(
+                              controller: _usernameController,
+                              decoration: InputDecoration(
+                                labelText: 'Username',
+                                prefixIcon: Icon(Icons.person),
+                                border: OutlineInputBorder(),
                               ),
                             ),
-                            border: OutlineInputBorder(),
                           ),
-                          obscureText: _isObscured,
-                        ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: TextField(
+                              controller: _passwordController,
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                                prefixIcon: Icon(Icons.lock),
+                                suffixIcon: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isObscured = !_isObscured;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    _isObscured
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(),
+                              ),
+                              obscureText: _isObscured,
+                            ),
+                          ),
+                          SizedBox(
+                              height: 20), // Spasi antara password dan tombol login
+                          SizedBox(
+                            width: double
+                                .infinity, // Membuat tombol login memenuhi lebar
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed:
+                              _isLoading ? null : _login, // Disable tombol saat _isLoading adalah true
+                              child: _isLoading
+                                  ? Center(
+                                child: Image.asset(
+                                  'assets/img/loader.gif', // Path ke gambar GIF di aset
+                                  width: 25, // Sesuaikan dengan ukuran yang Anda inginkan
+                                  height: 25,
+                                ),
+                              ) // Tampilkan gambar GIF saat _isLoading adalah true
+                                  : Text('Login'),
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                          height: 20), // Spasi antara password dan tombol login
-                      SizedBox(
-                        width: double
-                            .infinity, // Membuat tombol login memenuhi lebar
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed:
-                              _login, // Panggil fungsi _login saat tombol ditekan
-                          child: Text('Login'),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

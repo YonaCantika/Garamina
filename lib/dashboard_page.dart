@@ -14,6 +14,9 @@ import 'cuti_page.dart';
 import 'dinas_page.dart';
 import 'akun_page.dart';
 import 'ulangTahun_page.dart';
+import 'components/menu.dart';
+import 'components/welcome.dart';
+import 'components/carousel.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -21,6 +24,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  int _selectedIndex = 0;
   List<Map<String, dynamic>> cutiData = [];
 
   @override
@@ -40,49 +44,9 @@ class _DashboardPageState extends State<DashboardPage> {
         child: Column(
           children: [
             // Bagian 1: Selamat Datang dengan Background Biru
-            Container(
-              color: Colors.blue,
-              height: 100,
-              padding: EdgeInsets.all(16),
-              child: Center(
-                child: Text(
-                  authState.namaUser ?? '',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+            WelcomeSection(),
             // Bagian 2: Carousel Slider
-            Container(
-              height: 150, // Sesuaikan tinggi carousel sesuai kebutuhan Anda
-              child: CarouselSlider(
-                options: CarouselOptions(
-                  aspectRatio:
-                  16 / 9, // Sesuaikan dengan rasio aspek yang diinginkan
-                  enlargeCenterPage: true,
-                  autoPlay: true,
-                  autoPlayInterval: Duration(seconds: 3), // Interval otomatis
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                ),
-                items: [
-                  // Item Carousel 1 dengan gambar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                        'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
-                  ),
-                  // Item Carousel 2 dengan gambar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Image.asset(
-                        'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
-                  ),
-                  // Tambahkan item Carousel selanjutnya sesuai kebutuhan
-                ],
-              ),
-            ),
+            CarouselSection(),
             // Bagian 3: ListView dengan Border Radius di Atas
             Container(
               decoration: BoxDecoration(
@@ -251,38 +215,13 @@ class _DashboardPageState extends State<DashboardPage> {
         ),
       ),
       // Bagian 4: Menu dengan Icon dan Text di Bawah
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Riwayat',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/img/logo.png',
-              width: 30, // Sesuaikan lebar gambar
-              height: 30, // Sesuaikan tinggi gambar
-            ),
-            label: 'Absen',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifikasi',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Akun',
-          ),
-        ],
-        onTap: (int index) {
+      bottomNavigationBar: BottomMenu(
+        selectedIndex: _selectedIndex,
+        onItemTapped: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
           if (index == 1) {
-            // Navigasi ke halaman "Histori Page"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => HistoriPage(),
@@ -290,7 +229,6 @@ class _DashboardPageState extends State<DashboardPage> {
             );
           }
           if (index == 2) {
-            // Navigasi ke halaman "Ada Absen"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DataAbsenPage(),
@@ -298,7 +236,6 @@ class _DashboardPageState extends State<DashboardPage> {
             );
           }
           if (index == 4) {
-            // Navigasi ke halaman "AkunPage"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => AkunPage(),
@@ -306,8 +243,6 @@ class _DashboardPageState extends State<DashboardPage> {
             );
           }
         },
-        selectedItemColor: Colors.black, // Warna item yang dipilih
-        unselectedItemColor: Colors.black, // Warna item yang tidak dipilih
       ),
     );
   }

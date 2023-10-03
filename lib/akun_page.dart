@@ -4,7 +4,9 @@ import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'auth_state.dart';
+import 'absen_state.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 import 'histori_page.dart';
 import 'absen_page.dart';
@@ -12,6 +14,8 @@ import 'dataAbsen_page.dart';
 import 'izin_page.dart';
 import 'cuti_page.dart';
 import 'dinas_page.dart';
+import 'login_page.dart';
+import 'components/menu.dart';
 
 class AkunPage extends StatefulWidget {
   @override
@@ -19,6 +23,7 @@ class AkunPage extends StatefulWidget {
 }
 
 class _AkunPageState extends State<AkunPage> {
+  int _selectedIndex = 0;
   List<Map<String, dynamic>> cutiData = [];
 
   @override
@@ -26,13 +31,16 @@ class _AkunPageState extends State<AkunPage> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
+    final absenState = Provider.of<AbsenState>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Akun'),
       ),
+
       backgroundColor: Colors.blue,
       body: Column(
         children: [
@@ -152,43 +160,65 @@ class _AkunPageState extends State<AkunPage> {
                       SizedBox(width: 20),
                     ],
                   ),
+
+                  SizedBox(height: 20),
+                  Positioned(
+                    bottom: 50,
+                    left: 20,
+                    right: 20,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: 60,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  SystemNavigator.pop();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.all(16),
+                                  primary: Colors.red,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Logout',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+
                 ],
               ),
             ),
           ),
+
+
+
+
         ],
       ),
       // Bagian 4: Menu dengan Icon dan Text di Bawah
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Riwayat',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/img/logo.png',
-              width: 30, // Sesuaikan lebar gambar
-              height: 30, // Sesuaikan tinggi gambar
-            ),
-            label: 'Absen',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifikasi',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Akun',
-          ),
-        ],
-        onTap: (int index) {
+      bottomNavigationBar: BottomMenu(
+        selectedIndex: _selectedIndex,
+        onItemTapped: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
           if (index == 1) {
             // Navigasi ke halaman "AkunPage"
             Navigator.of(context).push(
@@ -206,9 +236,8 @@ class _AkunPageState extends State<AkunPage> {
             );
           }
         },
-        selectedItemColor: Colors.black, // Warna item yang dipilih
-        unselectedItemColor: Colors.black, // Warna item yang tidak dipilih
       ),
+
     );
   }
 }

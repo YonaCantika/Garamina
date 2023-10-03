@@ -9,6 +9,9 @@ import 'package:provider/provider.dart';
 import 'histori_page.dart';
 import 'dataAbsen_page.dart';
 import 'akun_page.dart';
+import 'components/menu.dart';
+import 'components/welcome.dart';
+import 'components/carousel.dart';
 
 class CutiPage extends StatefulWidget {
   @override
@@ -16,6 +19,7 @@ class CutiPage extends StatefulWidget {
 }
 
 class _CutiPageState extends State<CutiPage> {
+  int _selectedIndex = 0;
   List<Map<String, dynamic>> cutiData = [];
 
   @override
@@ -57,49 +61,9 @@ class _CutiPageState extends State<CutiPage> {
       body: Column(
         children: [
           // Bagian 1: Selamat Datang dengan Background Biru
-          Container(
-            color: Colors.blue,
-            height: 100,
-            padding: EdgeInsets.all(16),
-            child: Center(
-              child: Text(
-                authState.namaUser ?? '',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
+          WelcomeSection(),
           // Bagian 2: Carousel Slider
-          Container(
-            height: 150, // Sesuaikan tinggi carousel sesuai kebutuhan Anda
-            child: CarouselSlider(
-              options: CarouselOptions(
-                aspectRatio:
-                    16 / 9, // Sesuaikan dengan rasio aspek yang diinginkan
-                enlargeCenterPage: true,
-                autoPlay: true,
-                autoPlayInterval: Duration(seconds: 3), // Interval otomatis
-                autoPlayCurve: Curves.fastOutSlowIn,
-              ),
-              items: [
-                // Item Carousel 1 dengan gambar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                      'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
-                ),
-                // Item Carousel 2 dengan gambar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                      'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
-                ),
-                // Tambahkan item Carousel selanjutnya sesuai kebutuhan
-              ],
-            ),
-          ),
+          CarouselSection(),
           // Bagian 3: ListView dengan Border Radius di Atas
           Expanded(
             child: Container(
@@ -125,7 +89,11 @@ class _CutiPageState extends State<CutiPage> {
                   ),
                   // Daftar data ListView
                   Expanded(
-                    child: ListView.builder(
+                    child: cutiData.isEmpty
+                        ? Center(
+                      child: Text('Loading...'), // Tampilkan teks "Loading..." ketika data masih kosong
+                    )
+                        : ListView.builder(
                       shrinkWrap: true,
                       itemCount: cutiData.length,
                       itemBuilder: (context, index) {
@@ -154,6 +122,7 @@ class _CutiPageState extends State<CutiPage> {
                       },
                     ),
                   ),
+
                 ],
               ),
             ),
@@ -161,38 +130,13 @@ class _CutiPageState extends State<CutiPage> {
         ],
       ),
       // Bagian 4: Menu dengan Icon dan Text di Bawah
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Riwayat',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/img/logo.png',
-              width: 30, // Sesuaikan lebar gambar
-              height: 30, // Sesuaikan tinggi gambar
-            ),
-            label: 'Absen',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifikasi',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Akun',
-          ),
-        ],
-        onTap: (int index) {
+      bottomNavigationBar: BottomMenu(
+        selectedIndex: _selectedIndex,
+        onItemTapped: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
           if (index == 1) {
-            // Navigasi ke halaman "CutiPage"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => HistoriPage(),
@@ -200,7 +144,6 @@ class _CutiPageState extends State<CutiPage> {
             );
           }
           if (index == 2) {
-            // Navigasi ke halaman "CutiPage"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DataAbsenPage(),
@@ -208,7 +151,6 @@ class _CutiPageState extends State<CutiPage> {
             );
           }
           if (index == 4) {
-            // Navigasi ke halaman "AkunPage"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => AkunPage(),
@@ -216,8 +158,6 @@ class _CutiPageState extends State<CutiPage> {
             );
           }
         },
-        selectedItemColor: Colors.black, // Warna item yang dipilih
-        unselectedItemColor: Colors.black, // Warna item yang tidak dipilih
       ),
     );
   }
