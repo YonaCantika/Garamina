@@ -32,16 +32,15 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await http.post(
         Uri.parse('https://garamina.com/fintech2/integrasi/android/login/login'),
+        headers: {
+          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        },
         body: {
           'username': username,
           'password': password,
         },
       );
 
-      // Setelah mendapatkan respons, set _isLoading kembali ke false
-      setState(() {
-        _isLoading = false;
-      });
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -60,12 +59,14 @@ class _LoginPageState extends State<LoginPage> {
             status: responseData['status'],
           );
 
+
           // Arahkan ke halaman menu
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => DashboardPage(),
             ),
           );
+
         } else {
           // Login gagal, tampilkan pesan kesalahan
           showDialog(
@@ -79,6 +80,9 @@ class _LoginPageState extends State<LoginPage> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
+                      setState(() {
+                        _isLoading = false;
+                      });
                     },
                     child: Text('OK'),
                   ),
@@ -100,6 +104,9 @@ class _LoginPageState extends State<LoginPage> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
+                    setState(() {
+                      _isLoading = false;
+                    });
                   },
                   child: Text('OK'),
                 ),
@@ -110,10 +117,6 @@ class _LoginPageState extends State<LoginPage> {
       }
 
     } catch (e) {
-      // Tangani kesalahan dan set _isLoading kembali ke false jika diperlukan
-      setState(() {
-        _isLoading = false;
-      });
       showDialog(
         context: context,
         builder: (context) {
@@ -125,6 +128,9 @@ class _LoginPageState extends State<LoginPage> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
+                  setState(() {
+                    _isLoading = false;
+                  });
                 },
                 child: Text('OK'),
               ),
@@ -147,13 +153,42 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: Stack(
         children: [
-          Container(
+          _isLoading == true ?
+            Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/img/bg.png'), // Background image
+                fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
+                colorFilter: ColorFilter.mode(
+                  Colors.white.withOpacity(0.7), // Warna efek putih dengan opasitas 0.7 (untuk penyesuaian)
+                  BlendMode.dstATop, // Mode efek putih
+                ),
+              ),
+
+            ),
+
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  // Tambahkan logo di atas form
+                  Image.asset(
+                    'assets/img/loader.gif',
+                    width: 150,
+                    height: 150,
+                  ),
+                ],
+              ),
+            ),
+          ) :
+            Container(
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/img/bg.png'), // Background image
                 fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
               ),
             ),
+
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

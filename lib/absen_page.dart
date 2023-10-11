@@ -27,12 +27,14 @@ class AbsenPage extends StatefulWidget {
 class _AbsenPageState extends State<AbsenPage> {
   LocationService? locationService;
   String? selectedCondition = 'Semangat';
-  TextEditingController descriptionController = TextEditingController();
+  final descriptionController = TextEditingController();
   File? imageFile;
   double? distanceToKantor;
   String? koordinatUser;
   String? alamatLengkap;
   DateTime? dateTime;
+  bool isLoading = false;
+  bool valid = false;
 
 
   //safe device
@@ -93,9 +95,38 @@ class _AbsenPageState extends State<AbsenPage> {
       appBar: AppBar(
         title: Text('Halaman Absen'),
       ),
-      body: SingleChildScrollView(
+      body:
+      isLoading == true ?
+      Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/img/bg.png'), // Background image
+            fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
+            colorFilter: ColorFilter.mode(
+              Colors.white.withOpacity(0.7), // Warna efek putih dengan opasitas 0.7 (untuk penyesuaian)
+              BlendMode.dstATop, // Mode efek putih
+            ),
+          ),
+
+        ),
+
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // Tambahkan logo di atas form
+              Image.asset(
+                'assets/img/loader.gif',
+                width: 150,
+                height: 150,
+              ),
+            ],
+          ),
+        ),
+      ) :
+      SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -138,6 +169,7 @@ class _AbsenPageState extends State<AbsenPage> {
                       double.parse(kantorLocation.split(',')[0]),
                       double.parse(kantorLocation.split(',')[1]),
                     );
+                    // rencana ubah ke manual distance
                     final distance = Geolocator.distanceBetween(
                       userLocation.latitude,
                       userLocation.longitude,
@@ -150,12 +182,12 @@ class _AbsenPageState extends State<AbsenPage> {
                       children: <Widget>[
                         if (canMockLocation)
                           Container(
-                            padding: const EdgeInsets.all(16),
+                            padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.red,
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Anda menggunakan fake GPS',
                               style: TextStyle(
                                 fontSize: 16,
@@ -164,20 +196,20 @@ class _AbsenPageState extends State<AbsenPage> {
                             ),
                           ),
                         Container(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: Colors.green[900],
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Text(
                             'Jarak ke Kantor: ${distanceToKantor! <= 0.09 ? "0.0km anda bisa absen!" : distanceToKantor!.toStringAsFixed(2) + "km, anda belum bisa absen!"}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         Container(
                           height: 150,
                           child: GoogleMap(
@@ -188,14 +220,14 @@ class _AbsenPageState extends State<AbsenPage> {
                             ),
                             markers: {
                               Marker(
-                                markerId: const MarkerId('absen_location'),
+                                markerId: MarkerId('absen_location'),
                                 position: LatLng(kantorCoordinates.latitude, kantorCoordinates.longitude),
-                                infoWindow: const InfoWindow(title: 'Lokasi Absen'),
+                                infoWindow: InfoWindow(title: 'Lokasi Absen'),
                               ),
                               Marker(
-                                markerId: const MarkerId('user_location'),
+                                markerId: MarkerId('user_location'),
                                 position: LatLng(userLocation.latitude, userLocation.longitude),
-                                infoWindow: const InfoWindow(title: 'Lokasi Anda'),
+                                infoWindow: InfoWindow(title: 'Lokasi Anda'),
                               ),
                             },
                             onMapCreated: (GoogleMapController controller) {
@@ -248,7 +280,7 @@ class _AbsenPageState extends State<AbsenPage> {
               TextField(
                 controller: descriptionController,
                 decoration: InputDecoration(
-                  hintText: 'Masukkan deskripsi pekerjaan',
+                  labelText: 'Masukkan deskripsi pekerjaan',
                 ),
               ),
               SizedBox(height: 20),
@@ -276,7 +308,10 @@ class _AbsenPageState extends State<AbsenPage> {
                 child: ElevatedButton(
 
                   onPressed: absenState.checkStatus == '0-0' || absenState.checkStatus != '0-0' && absenState.checkStatus != 'A-A' ? () {
+                    setState(() {
+                      isLoading = true;
 
+                    });
                     _saveAbsenData(
                       absenState.checkStatus,
                       authState.idPeg,
@@ -313,7 +348,7 @@ class _AbsenPageState extends State<AbsenPage> {
 
             ],
           ),
-        ),
+        )
       ),
     );
   }
@@ -325,17 +360,17 @@ class _AbsenPageState extends State<AbsenPage> {
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
+        valid = true;
       });
     }
   }
 
   void _saveAbsenData(status, empId, note, foto, shift, condition, nama) async {
-
-    // if(status.isEmpty || empId.isEmpty || note.isEmpty || foto.isEmpty || shift.isEmpty || condition.isEmpty){
-    //   _showErrorDialog('Data tidak lengkap',
-    //       'Maaf, Anda tidak dapat melakukan absen karena ada data yang belum anda isi.');
-    //   return;
-    // }
+    if (valid == false || descriptionController.text.isEmpty) {
+      _showErrorDialog('Data Tidak Lengkap',
+          'Maaf, Anda tidak dapat melakukan absen karena anda belum melengkapi data.');
+      return;
+    }
 
     if (canMockLocation) {
       _showErrorDialog('Perangkat Anda Terdeteksi Fake GPS',
@@ -347,13 +382,11 @@ class _AbsenPageState extends State<AbsenPage> {
           'Maaf, Anda tidak dapat melakukan absen karena Anda terdeteksi menggunakan perangkat palsu.');
       return;
     }
-
-    if(isSafeDevice==false){
-      _showErrorDialog('Perangkat Anda Tidak Aman',
-          'Maaf, Anda tidak dapat melakukan absen karena Anda terdeteksi menggunakan perangkat yang tidak aman.');
-      return;
-    }
-
+    // if(isSafeDevice==true){
+    //   _showErrorDialog('Perangkat Anda Tidak Aman',
+    //       'Maaf, Anda tidak dapat melakukan absen karena Anda terdeteksi menggunakan perangkat yang tidak aman.');
+    //   return;
+    // }
     if (distanceToKantor! <= 0.09) {
       DateTime dateTime = DateTime.now();
 
@@ -361,7 +394,11 @@ class _AbsenPageState extends State<AbsenPage> {
       final request = http.MultipartRequest(
         'POST',
         Uri.parse('https://garamina.com/fintech2/integrasi/android/insert_absen/login'),
+
       );
+
+      request.headers['APIKEY'] = '8deca313c70c6195eba4208b8dc6d56b';
+
 
       // Tambahkan data form
       request.fields['status'] = status == '0-0' ? 'in' : 'out';
@@ -386,6 +423,7 @@ class _AbsenPageState extends State<AbsenPage> {
 
       // Tangani respons
       if (response.statusCode == 200) {
+
         final responseData = await response.stream.bytesToString();
 
         final parsedData = json.decode(responseData);
@@ -401,9 +439,15 @@ class _AbsenPageState extends State<AbsenPage> {
           throw Exception('Gagal: ${parsedData['msg']}');
         }
       } else {
+        setState(() {
+          isLoading = false;
+        });
         throw Exception('Gagal: Terjadi kesalahan saat melakukan absen. Silakan coba lagi2.');
       }
     } else {
+      setState(() {
+        isLoading = false;
+      });
       _showErrorDialog('Anda berada di luar kantor!!',
           'Maaf, Anda tidak dapat melakukan absen karena lokasi Anda di luar jangkauan.');
       return;
@@ -434,6 +478,9 @@ class _AbsenPageState extends State<AbsenPage> {
         );
       },
     );
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _showSuccessDialog(

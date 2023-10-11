@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:intl/intl.dart';
 import 'auth_state.dart';
 import 'absen_state.dart';
@@ -140,7 +139,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(height: 12),
+                                SizedBox(height: 20),
                                 Text(
                                   'Waktu:',
                                   style: TextStyle(
@@ -150,6 +149,18 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                 ),
                                 Text(
                                   time,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                SizedBox(height: 20),
+                                Text(
+                                  'Lokasi:',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  authState.lokasi ?? '',
                                   style: TextStyle(fontSize: 16),
                                 ),
                               ],
@@ -300,6 +311,9 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
   Future<Map<String, dynamic>> sendAbsenRequest(String idPeg) async {
     final response = await http.post(
       Uri.parse('https://garamina.com/fintech2/integrasi/android/login/v_absen'),
+      headers: {
+        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+      },
       body: {'id_peg': idPeg},
     );
 
