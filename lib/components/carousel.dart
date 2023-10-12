@@ -4,14 +4,14 @@ import 'package:carousel_slider/carousel_slider.dart';
 class CarouselSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 150,
       child: CarouselSlider(
         options: CarouselOptions(
           aspectRatio: 16 / 9,
           enlargeCenterPage: true,
           autoPlay: true,
-          autoPlayInterval: Duration(seconds: 3),
+          autoPlayInterval: const Duration(seconds: 3),
           autoPlayCurve: Curves.fastOutSlowIn,
         ),
         items: [

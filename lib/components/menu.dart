@@ -17,11 +17,11 @@ class BottomMenu extends StatelessWidget {
       currentIndex: selectedIndex,
       onTap: onItemTapped,
       items: [
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Home',
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Icon(Icons.history),
           label: 'Riwayat',
         ),
@@ -33,11 +33,11 @@ class BottomMenu extends StatelessWidget {
           ),
           label: 'Absen',
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Icon(Icons.notifications),
           label: 'Notifikasi',
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Icon(Icons.account_circle),
           label: 'Akun',
         ),

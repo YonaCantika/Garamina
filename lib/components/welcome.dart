@@ -10,11 +10,11 @@ class WelcomeSection extends StatelessWidget {
     return Container(
       color: Colors.blue,
       height: 100,
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Center(
         child: Text(
           authState.namaUser ?? '',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 24,
             color: Colors.white,
           ),

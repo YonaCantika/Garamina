@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'auth_state.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +19,7 @@ class HistoriPage extends StatefulWidget {
 
 class _HistoriPageState extends State<HistoriPage> {
   int _selectedIndex = 0;
+  DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> cutiData = [];
 
   @override
@@ -30,12 +30,15 @@ class _HistoriPageState extends State<HistoriPage> {
 
   Future<void> fetchDataFromApi() async {
     final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/history_absen');
-    final now = DateTime.now();
-    final formattedDate = DateFormat('yyyy-MM').format(now);
+    // final now = DateTime.now();
+    // final formattedDate = DateFormat('yyyy-MM').format(now);
 
     final response = await http.post(
       apiUrl,
-      body: {"periodeTanggal": formattedDate, "idPegawai": "797"},
+      headers: {
+        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+      },
+      body: {"periodeTanggal": '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}', "idPegawai": "797"},
     );
 
     if (response.statusCode == 200) {
@@ -53,7 +56,7 @@ class _HistoriPageState extends State<HistoriPage> {
     final authState = Provider.of<AuthState>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Histori'),
+        title: const Text('Histori'),
       ),
       backgroundColor: Colors.blue,
       body: Column(
@@ -65,7 +68,7 @@ class _HistoriPageState extends State<HistoriPage> {
           // Bagian 3: ListView dengan Border Radius di Atas
           Expanded(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -75,8 +78,8 @@ class _HistoriPageState extends State<HistoriPage> {
               child: Column(
                 children: [
                   // Judul "Karyawan Cuti"
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Histori Absen',
                       style: TextStyle(
@@ -88,7 +91,7 @@ class _HistoriPageState extends State<HistoriPage> {
                   // Daftar data ListView
                   Expanded(
                     child: cutiData.isEmpty
-                        ? Center(
+                        ? const Center(
                       child: Text('Loading...'), // Tampilkan teks "Loading..." ketika data masih kosong
                     )
                         : ListView.builder(
@@ -108,7 +111,7 @@ class _HistoriPageState extends State<HistoriPage> {
                                 ],
                               ),
                             ),
-                            Divider(),
+                            const Divider(),
                           ],
                         );
                       },

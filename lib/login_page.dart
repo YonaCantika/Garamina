@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'auth_state.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:safe_device/safe_device.dart';
 
 import 'dashboard_page.dart';
 
@@ -15,8 +13,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isObscured = true;
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
   // Fungsi untuk melakukan login
@@ -73,9 +71,9 @@ class _LoginPageState extends State<LoginPage> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: Text('Login Gagal'),
+                title: const Text('Login Gagal'),
                 content:
-                Text('Username atau password salah. Silakan coba lagi.'),
+                const Text('Username atau password salah. Silakan coba lagi.'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
@@ -84,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                         _isLoading = false;
                       });
                     },
-                    child: Text('OK'),
+                    child: const Text('OK'),
                   ),
                 ],
               );
@@ -92,14 +90,14 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       } else {
-        // Handle respons selain status code 200 sesuai kebutuhan
+        // Handle respons selain status code 200
         showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('Login Gagal'),
+              title: const Text('Login Gagal'),
               content:
-              Text('Server bermasalah, silahkan hubungi admin!'),
+              const Text('Server bermasalah, silahkan hubungi admin!'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -108,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                       _isLoading = false;
                     });
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -149,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login Page'),
+        title: const Text('Login Page'),
       ),
       body: Stack(
         children: [
@@ -157,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
             Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/img/bg.png'), // Background image
+                image: const AssetImage('assets/img/bg.png'), // Background image
                 fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
                 colorFilter: ColorFilter.mode(
                   Colors.white.withOpacity(0.7), // Warna efek putih dengan opasitas 0.7 (untuk penyesuaian)
@@ -182,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ) :
             Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/img/bg.png'), // Background image
                 fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
@@ -199,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: 150,
                     height: 150,
                   ),
-                  SizedBox(height: 40), // Spasi antara logo dan form
+                  const SizedBox(height: 40), // Spasi antara logo dan form
                   Card(
                     elevation: 5, // Efek shadow
                     shape: RoundedRectangleBorder(
@@ -212,10 +210,10 @@ class _LoginPageState extends State<LoginPage> {
                         children: <Widget>[
                           // Form login
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             child: TextField(
                               controller: _usernameController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Username',
                                 prefixIcon: Icon(Icons.person),
                                 border: OutlineInputBorder(),
@@ -223,12 +221,12 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
                             child: TextField(
                               controller: _passwordController,
                               decoration: InputDecoration(
                                 labelText: 'Password',
-                                prefixIcon: Icon(Icons.lock),
+                                prefixIcon: const Icon(Icons.lock),
                                 suffixIcon: IconButton(
                                   onPressed: () {
                                     setState(() {
@@ -241,12 +239,12 @@ class _LoginPageState extends State<LoginPage> {
                                         : Icons.visibility,
                                   ),
                                 ),
-                                border: OutlineInputBorder(),
+                                border: const OutlineInputBorder(),
                               ),
                               obscureText: _isObscured,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                               height: 20), // Spasi antara password dan tombol login
                           SizedBox(
                             width: double
@@ -263,7 +261,7 @@ class _LoginPageState extends State<LoginPage> {
                                   height: 25,
                                 ),
                               ) // Tampilkan gambar GIF saat _isLoading adalah true
-                                  : Text('Login'),
+                                  : const Text('Login'),
                             ),
                           ),
                         ],

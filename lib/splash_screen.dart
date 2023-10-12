@@ -10,7 +10,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => LoginPage(),
@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Column(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(15),
@@ -35,10 +35,10 @@ class _SplashScreenState extends State<SplashScreen> {
             size: 30,
           ),
         ),
-        SizedBox(height: 5), // Spasi vertikal antara ikon dan teks
+        const SizedBox(height: 5), // Spasi vertikal antara ikon dan teks
         Text(
           text,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 12, // Ukuran teks
             color: Colors.black, // Warna teks
           ),
@@ -54,13 +54,13 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 150),
+            const SizedBox(height: 150),
             Image.asset(
               'assets/img/loader.gif',
               width: 200,
               height: 200,
             ),
-            SizedBox(height: 100), // Spasi vertikal
+            const SizedBox(height: 100), // Spasi vertikal
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -70,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 _buildIconWithText(Icons.devices, Colors.purple, 'Perangkat'),
               ],
             ),
-            SizedBox(height: 20), // Spasi vertikal
+            const SizedBox(height: 20), // Spasi vertikal
             // Text(
             //   'Garamina Mobile',
             //   style: TextStyle(
@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen> {
             //     fontWeight: FontWeight.bold, // Ketebalan teks
             //   ),
             // ),
-            SizedBox(height: 20), // Spasi vertikal
+            const SizedBox(height: 20), // Spasi vertikal
             // Tambahkan gambar di paling bawah
             Expanded(
               child: Align(

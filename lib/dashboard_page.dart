@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:intl/intl.dart';
 import 'auth_state.dart';
 import 'package:provider/provider.dart';
 
 import 'histori_page.dart';
-import 'absen_page.dart';
 import 'dataAbsen_page.dart';
 import 'izin_page.dart';
 import 'cuti_page.dart';
@@ -25,6 +20,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
+
   List<Map<String, dynamic>> cutiData = [];
 
   @override
@@ -32,12 +28,13 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dashboard'),
+        title: const Text('Dashboard'),
       ),
       backgroundColor: Colors.blue,
       body: SingleChildScrollView(
@@ -51,7 +48,7 @@ class _DashboardPageState extends State<DashboardPage> {
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
@@ -60,15 +57,16 @@ class _DashboardPageState extends State<DashboardPage> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
               child: Column(
+
                 children: [
                   // Judul "Karyawan Cuti"
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Dashboard',
                       style: TextStyle(
@@ -84,12 +82,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     color: Colors.blue, // Warna latar belakang biru untuk Card
-                    child: Container(
+                    child: SizedBox(
                       height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
                       child: ListTile(
                         leading:
-                        Icon(Icons.hotel, size: 40, color: Colors.white),
-                        title: Text(
+                        const Icon(Icons.hotel, size: 40, color: Colors.white),
+                        title: const Text(
                           'Karyawan Cuti',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
@@ -110,12 +108,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     color: Colors.blue, // Warna latar belakang biru untuk Card
-                    child: Container(
+                    child: SizedBox(
                       height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
                       child: ListTile(
                         leading:
-                        Icon(Icons.mail, size: 40, color: Colors.white),
-                        title: Text(
+                        const Icon(Icons.mail, size: 40, color: Colors.white),
+                        title: const Text(
                           'Karyawan Izin',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
@@ -136,12 +134,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     color: Colors.blue, // Warna latar belakang biru untuk Card
-                    child: Container(
+                    child: SizedBox(
                       height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
                       child: ListTile(
                         leading:
-                        Icon(Icons.business, size: 40, color: Colors.white),
-                        title: Text(
+                        const Icon(Icons.business, size: 40, color: Colors.white),
+                        title: const Text(
                           'Karyawan Dinas',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
@@ -162,12 +160,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     color: Colors.blue, // Warna latar belakang biru untuk Card
-                    child: Container(
+                    child: SizedBox(
                       height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
                       child: ListTile(
                         leading:
-                        Icon(Icons.cake, size: 40, color: Colors.white),
-                        title: Text(
+                        const Icon(Icons.cake, size: 40, color: Colors.white),
+                        title: const Text(
                           'Karyawan Ulang Tahun',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
@@ -188,12 +186,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     color: Colors.blue, // Warna latar belakang biru untuk Card
-                    child: Container(
+                    child: SizedBox(
                       height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
                       child: ListTile(
                         leading:
-                        Icon(Icons.wallet, size: 40, color: Colors.white),
-                        title: Text(
+                        const Icon(Icons.wallet, size: 40, color: Colors.white),
+                        title: const Text(
                           'Gaji',
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),

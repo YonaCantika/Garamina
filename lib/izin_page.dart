@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'auth_state.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +19,7 @@ class IzinPage extends StatefulWidget {
 
 class _IzinPageState extends State<IzinPage> {
   int _selectedIndex = 0;
+  DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> cutiData = [];
 
   @override
@@ -30,13 +30,16 @@ class _IzinPageState extends State<IzinPage> {
 
   Future<void> fetchDataFromApi() async {
     final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/izin');
-    final now = DateTime.now();
-    final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+
+    // final formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
     final response = await http.post(
       apiUrl,
+      headers: {
+        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+      },
       body: {
-        'mulaiIzin': formattedDate,
+        'mulaiIzin': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
       },
     );
 
@@ -55,7 +58,7 @@ class _IzinPageState extends State<IzinPage> {
     final authState = Provider.of<AuthState>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Izin'),
+        title: const Text('Izin'),
       ),
       backgroundColor: Colors.blue,
       body: Column(
@@ -67,7 +70,7 @@ class _IzinPageState extends State<IzinPage> {
           // Bagian 3: ListView dengan Border Radius di Atas
           Expanded(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -77,8 +80,8 @@ class _IzinPageState extends State<IzinPage> {
               child: Column(
                 children: [
                   // Judul "Karyawan Cuti"
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Karyawan Izin',
                       style: TextStyle(
@@ -90,7 +93,7 @@ class _IzinPageState extends State<IzinPage> {
                   // Daftar data ListView
                   Expanded(
                     child: cutiData.isEmpty
-                        ? Center(
+                        ? const Center(
                       child: Text('Loading...'), // Tampilkan teks "Loading..." ketika data masih kosong
                     )
                         :ListView.builder(
@@ -115,7 +118,7 @@ class _IzinPageState extends State<IzinPage> {
                               ),
                               // trailing: Icon(Icons.arrow_forward),
                             ),
-                            Divider(),
+                            const Divider(),
                           ],
                         );
                       },

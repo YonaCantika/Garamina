@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:intl/intl.dart';
 import 'auth_state.dart';
-import 'absen_state.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
 import 'histori_page.dart';
-import 'absen_page.dart';
 import 'dataAbsen_page.dart';
-import 'izin_page.dart';
-import 'cuti_page.dart';
-import 'dinas_page.dart';
-import 'login_page.dart';
 import 'components/menu.dart';
 
 class AkunPage extends StatefulWidget {
@@ -35,10 +25,9 @@ class _AkunPageState extends State<AkunPage> {
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
-    final absenState = Provider.of<AbsenState>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Akun'),
+        title: const Text('Akun'),
       ),
 
       backgroundColor: Colors.blue,
@@ -48,8 +37,8 @@ class _AkunPageState extends State<AkunPage> {
           Container(
             color: Colors.blue,
             height: 100,
-            padding: EdgeInsets.all(16),
-            child: Center(
+            padding: const EdgeInsets.all(16),
+            child: const Center(
               child: Text(
                 'Profil Karyawan',
                 style: TextStyle(
@@ -60,7 +49,7 @@ class _AkunPageState extends State<AkunPage> {
             ),
           ),
           // Bagian 2: Circle Avatar dengan sedikit spasi di bawahnya
-          Container(
+          SizedBox(
             height: 150, // Sesuaikan tinggi Circle Avatar sesuai kebutuhan Anda
             child: Column(
               children: [
@@ -89,7 +78,7 @@ class _AkunPageState extends State<AkunPage> {
           Expanded(
             child: Container(
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
@@ -99,8 +88,8 @@ class _AkunPageState extends State<AkunPage> {
               child: Column(
                 children: [
                   // Judul "Data Karyawan"
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Data Karyawan',
                       style: TextStyle(
@@ -114,12 +103,12 @@ class _AkunPageState extends State<AkunPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.only(left: 20.0), // Padding sebelah kiri
+                        padding: const EdgeInsets.only(left: 20.0), // Padding sebelah kiri
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            SizedBox(height: 20),
-                            Text(
+                            const SizedBox(height: 20),
+                            const Text(
                               'Nama Karyawan:',
                               style: TextStyle(
                                 fontSize: 17,
@@ -128,10 +117,10 @@ class _AkunPageState extends State<AkunPage> {
                             ),
                             Text(
                               authState.namaUser ?? '',
-                              style: TextStyle(fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             ),
-                            SizedBox(height: 12),
-                            Text(
+                            const SizedBox(height: 12),
+                            const Text(
                               'NIK:',
                               style: TextStyle(
                                 fontSize: 17,
@@ -140,10 +129,10 @@ class _AkunPageState extends State<AkunPage> {
                             ),
                             Text(
                               authState.nik ?? '',
-                              style: TextStyle(fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             ),
-                            SizedBox(height: 12),
-                            Text(
+                            const SizedBox(height: 12),
+                            const Text(
                               'Cost Center:',
                               style: TextStyle(
                                 fontSize: 17,
@@ -152,16 +141,16 @@ class _AkunPageState extends State<AkunPage> {
                             ),
                             Text(
                               authState.costCenter ?? '',
-                              style: TextStyle(fontSize: 16),
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                     ],
                   ),
 
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Positioned(
                     bottom: 50,
                     left: 20,
@@ -181,13 +170,13 @@ class _AkunPageState extends State<AkunPage> {
                                   SystemNavigator.pop();
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.all(16),
+                                  padding: const EdgeInsets.all(16),
                                   primary: Colors.red,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'Logout',
                                   style: TextStyle(
                                     fontSize: 18,
