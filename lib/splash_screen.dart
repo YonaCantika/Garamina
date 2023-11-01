@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Widget _buildIconWithText(
-      IconData iconData, Color backgroundColor, String text) {
+      path, Color backgroundColor, String text) {
     return Column(
       children: <Widget>[
         Container(
@@ -28,19 +28,33 @@ class _SplashScreenState extends State<SplashScreen> {
           decoration: BoxDecoration(
             color: backgroundColor,
             borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 3,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
-          child: Icon(
-            iconData,
-            color: Colors.white,
-            size: 30,
+          // child: Icon(
+          //   iconData,
+          //   color: Colors.white,
+          //   size: 30,
+          // ),
+          child: Image.asset(
+            path,
+            width: 50,
+            height: 50,
           ),
         ),
         const SizedBox(height: 5), // Spasi vertikal antara ikon dan teks
         Text(
           text,
           style: const TextStyle(
-            fontSize: 12, // Ukuran teks
-            color: Colors.black, // Warna teks
+            fontSize: 14,
+            color: Colors.grey,
+            fontWeight:FontWeight.bold,
           ),
         ),
       ],
@@ -50,6 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -64,26 +79,19 @@ class _SplashScreenState extends State<SplashScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                _buildIconWithText(Icons.security, Colors.blue, 'Keamanan'),
-                _buildIconWithText(Icons.location_on, Colors.green, 'Lokasi'),
-                _buildIconWithText(Icons.access_time, Colors.orange, 'Waktu'),
-                _buildIconWithText(Icons.devices, Colors.purple, 'Perangkat'),
+                _buildIconWithText('assets/img/screen/emergency.png', Colors.blue, 'Emergency'),
+                _buildIconWithText('assets/img/screen/gps.png', Colors.green, 'Detection'),
+                _buildIconWithText('assets/img/screen/location.png', Colors.orange, 'Realtime'),
+                _buildIconWithText('assets/img/screen/phone.png', Colors.purple, 'Secure'),
               ],
             ),
             const SizedBox(height: 20), // Spasi vertikal
-            // Text(
-            //   'Garamina Mobile',
-            //   style: TextStyle(
-            //     fontSize: 24, // Ukuran teks
-            //     color: Colors.blue, // Warna teks
-            //     fontWeight: FontWeight.bold, // Ketebalan teks
-            //   ),
-            // ),
             const SizedBox(height: 20), // Spasi vertikal
             // Tambahkan gambar di paling bawah
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
+                // child: const Text("from"),
                 child: Image.asset(
                   'assets/img/bumn.png',
                   width: 100,

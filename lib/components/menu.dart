@@ -18,27 +18,27 @@ class BottomMenu extends StatelessWidget {
       onTap: onItemTapped,
       items: [
         const BottomNavigationBarItem(
-          icon: Icon(Icons.home),
+          icon: const Icon(Icons.home),
           label: 'Home',
         ),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.history),
+          icon: const Icon(Icons.history),
           label: 'Riwayat',
         ),
         BottomNavigationBarItem(
           icon: Image.asset(
             'assets/img/logo.png',
-            width: 30, // Sesuaikan lebar gambar
-            height: 30, // Sesuaikan tinggi gambar
+            width: 23,
+            height: 23,
           ),
           label: 'Absen',
         ),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.notifications),
+          icon: const Icon(Icons.notifications),
           label: 'Notifikasi',
         ),
         const BottomNavigationBarItem(
-          icon: Icon(Icons.account_circle),
+          icon: const Icon(Icons.account_circle),
           label: 'Akun',
         ),
       ],

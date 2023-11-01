@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -38,6 +39,7 @@ class _CutiPageState extends State<CutiPage> {
       },
       body: {
         'mulaiCuti': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        'selesaiCuti': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
       },
     );
 
@@ -64,7 +66,34 @@ class _CutiPageState extends State<CutiPage> {
           // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
           // Bagian 2: Carousel Slider
-          CarouselSection(),
+          Container(
+            height: 150, // Sesuaikan tinggi carousel sesuai kebutuhan Anda
+            child: CarouselSlider(
+              options: CarouselOptions(
+                aspectRatio:
+                16 / 9, // Sesuaikan dengan rasio aspek yang diinginkan
+                enlargeCenterPage: true,
+                autoPlay: true,
+                autoPlayInterval: Duration(seconds: 3), // Interval otomatis
+                autoPlayCurve: Curves.fastOutSlowIn,
+              ),
+              items: [
+                // Item Carousel 1 dengan gambar
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                      'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
+                ),
+                // Item Carousel 2 dengan gambar
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                      'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
+                ),
+                // Tambahkan item Carousel selanjutnya sesuai kebutuhan
+              ],
+            ),
+          ),
           // Bagian 3: ListView dengan Border Radius di Atas
           Expanded(
             child: Container(

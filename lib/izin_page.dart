@@ -21,6 +21,8 @@ class _IzinPageState extends State<IzinPage> {
   int _selectedIndex = 0;
   DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> cutiData = [];
+  bool dataResponse = false;
+  bool loading = true;
 
   @override
   void initState() {
@@ -40,11 +42,15 @@ class _IzinPageState extends State<IzinPage> {
       },
       body: {
         'mulaiIzin': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        'selesaiIzin': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
       },
     );
 
     if (response.statusCode == 200) {
+      loading = false;
       final data = jsonDecode(response.body);
+      data.length <= 0 ?
+      dataResponse = false: dataResponse = true;
       setState(() {
         cutiData = List<Map<String, dynamic>>.from(data);
       });
@@ -92,11 +98,15 @@ class _IzinPageState extends State<IzinPage> {
                   ),
                   // Daftar data ListView
                   Expanded(
-                    child: cutiData.isEmpty
+                    child: loading == true
                         ? const Center(
                       child: Text('Loading...'), // Tampilkan teks "Loading..." ketika data masih kosong
                     )
-                        :ListView.builder(
+                        : dataResponse == false
+                        ? const Center(
+                      child: Text('Hari ini belum ada yang izin!'), // Tampilkan teks "Loading..." ketika data masih kosong
+                    )
+                        : ListView.builder(
                       shrinkWrap: true,
                       itemCount: cutiData.length,
                       itemBuilder: (context, index) {

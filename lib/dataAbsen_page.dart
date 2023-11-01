@@ -5,6 +5,7 @@ import 'auth_state.dart';
 import 'absen_state.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'histori_page.dart';
 import 'absen_page.dart';
@@ -172,6 +173,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                     try {
                                       final responseData =
                                           await sendAbsenRequest(idPeg);
+                                      print(responseData);
 
                                       absenState.setAbsenData(
                                         checkStatusPegawai: responseData[
@@ -192,6 +194,12 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                         msg: responseData['msg'],
                                       );
 
+                                      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+                                      await prefs.setString('checkStatus', responseData['check_status'].toString());
+                                      await prefs.setString('checkShiftM', responseData['check_shift_M'].toString());
+                                      await prefs.setString('koordinat', responseData['koordinat'].toString());
+
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -199,6 +207,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                         ),
                                       );
                                     } catch (error) {
+                                      // print(error);
                                       showDialog(
                                         context: context,
                                         builder: (context) {
@@ -294,6 +303,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
+
       if (responseData['msg'] == 'Sukses') {
         return responseData;
       } else {

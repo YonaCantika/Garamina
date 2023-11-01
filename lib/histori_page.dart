@@ -51,6 +51,8 @@ class _HistoriPageState extends State<HistoriPage> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
@@ -98,22 +100,122 @@ class _HistoriPageState extends State<HistoriPage> {
                       shrinkWrap: true,
                       itemCount: cutiData.length,
                       itemBuilder: (context, index) {
-                        final tanggalCuti = cutiData[index]['TANGGAL'];
-                        final keteranganCuti = cutiData[index]['KETERANGAN'];
-                        return Column(
-                          children: [
-                            ListTile(
-                              title: Text('Tanggal: $tanggalCuti'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Keterangan: $keteranganCuti'),
-                                ],
+                        final tanggal = cutiData[index]['TANGGAL'];
+                        final keterangan = cutiData[index]['KETERANGAN'];
+
+                        final fotoIn = 'https://garamina.com/erp/assets/upload/${cutiData[index]['FOTO_IN']}';
+                        final jarakIn = cutiData[index]['JARAK_IN'];
+                        final jamIn = cutiData[index]['JAM_IN'];
+                        final statusAbsenIn = cutiData[index]['STATUS_ABSEN_IN'];
+
+                        final fotoOut = 'https://garamina.com/erp/assets/upload/${cutiData[index]['FOTO_OUT']}';
+                        final jarakOut = cutiData[index]['JARAK_OUT'];
+                        final jamOut = cutiData[index]['JAM_OUT'];
+                        final statusAbsenOut = cutiData[index]['STATUS_ABSEN_OUT'];
+                        final nilaiInsentif = cutiData[index]['NILAI_INSENTIF'];
+                        return GestureDetector(
+                          onTap: () {
+                            // Tampilkan alert ketika diklik
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Detail Absen:'),
+                                  content: Column(
+                                    children: [
+                                      cutiData[index]['KETERANGAN'] == 'Libur'?
+                                  Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(height: 20),
+                                      Image.asset(
+                                        'assets/img/holiday.gif',
+                                        width: 200,
+                                        height: 200,
+                                      ),
+                                    ],
+                                  ):
+                                        //in
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            const SizedBox(height: 20),
+                                            if (cutiData[index]['FOTO_IN'] != null) // Periksa apakah ada URL gambar
+                                              Image.network(
+                                                fotoIn,
+                                                height: 200, // Sesuaikan ukuran gambar sesuai kebutuhan Anda
+                                                width: 200,
+                                                fit: BoxFit.cover,
+                                              ),
+                                          ],
+                                        ),
+                                        cutiData[index]['FOTO_IN'] != null?
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children:[
+                                            Text('Jarak Masuk: $jarakIn'),
+                                            Text('Jam Masuk: $jamIn'),
+                                            Text('Status Masuk: $statusAbsenIn'),
+                                            Text('Jarak Pulang: $jarakOut'),
+                                          ],
+                                        ) : cutiData[index]['KETERANGAN'] == 'Masuk' || cutiData[index]['KETERANGAN'] == 'Tidak Absen' ?
+                                        const Text("Anda belum absen masuk!"): const Text(""),
+                                        //out
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            const SizedBox(height: 20),
+                                            if (cutiData[index]['FOTO_OUT'] != null) // Periksa apakah ada URL gambar
+                                              Image.network(
+                                                fotoOut,
+                                                height: 200, // Sesuaikan ukuran gambar sesuai kebutuhan Anda
+                                                width: 200,
+                                                fit: BoxFit.cover,
+                                              ),
+                                          ],
+                                        ),
+                                        cutiData[index]['FOTO_OUT'] != null?
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children:[
+                                            Text('Jarak Pulang: $jarakOut'),
+                                            Text('Jam Pulang: $jamOut'),
+                                            Text('Status Pulang: $statusAbsenOut'),
+                                            Text('Uang Kehadiran: $nilaiInsentif'),
+                                          ],
+                                        ): cutiData[index]['KETERANGAN'] == 'Masuk' || cutiData[index]['KETERANGAN'] == 'Tidak Absen' ?
+                                        const Text("Anda belum absen Pulang!"): const Text(""),
+
+                                    ],
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // Tutup dialog
+                                      },
+                                      child: const Text('Tutup'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Column(
+                            children: [
+                              ListTile(
+                                title: Text('Tanggal: $tanggal'),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Keterangan: $keterangan'),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const Divider(),
-                          ],
+                              const Divider(),
+                            ],
+                          ),
                         );
+
                       },
                     ),
                   ),

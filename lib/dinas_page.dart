@@ -21,6 +21,8 @@ class _DinasPageState extends State<DinasPage> {
   int _selectedIndex = 0;
   DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> cutiData = [];
+  bool dataResponse = false;
+  bool loading = true;
 
   @override
   void initState() {
@@ -40,11 +42,16 @@ class _DinasPageState extends State<DinasPage> {
       },
       body: {
         'mulaiDinas': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        'selesaiDinas': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
       },
     );
 
     if (response.statusCode == 200) {
+      loading = false;
       final data = jsonDecode(response.body);
+      // print(data);
+      data.length <= 0 ?
+      dataResponse = false: dataResponse = true;
       setState(() {
         cutiData = List<Map<String, dynamic>>.from(data);
       });
@@ -58,7 +65,7 @@ class _DinasPageState extends State<DinasPage> {
     final authState = Provider.of<AuthState>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: const Text('Dinas'),
       ),
       backgroundColor: Colors.blue,
       body: Column(
@@ -92,9 +99,13 @@ class _DinasPageState extends State<DinasPage> {
                   ),
                   // Daftar data ListView
                   Expanded(
-                    child: cutiData.isEmpty
+                    child: loading == true
                         ? const Center(
                       child: Text('Loading...'), // Tampilkan teks "Loading..." ketika data masih kosong
+                    )
+                        : dataResponse == false
+                        ? const Center(
+                      child: Text('Hari ini belum ada yang dinas!'), // Tampilkan teks "Loading..." ketika data masih kosong
                     )
                         :ListView.builder(
                       shrinkWrap: true,
