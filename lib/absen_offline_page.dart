@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +12,7 @@ import 'package:safe_device/safe_device.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:image/image.dart' as img;
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
@@ -477,17 +480,37 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     }
 
     // Mendapatkan MultipartFile dari foto
-    final mimeTypeData = lookupMimeType(foto.path, headerBytes: [0xFF, 0xD8]);
-    final file = await http.MultipartFile.fromPath('foto', foto.path,
-        contentType: MediaType.parse(mimeTypeData!));
+    // final mimeTypeData = lookupMimeType(foto.path, headerBytes: [0xFF, 0xD8]);
+    // final file = await http.MultipartFile.fromPath('foto', foto.path,
+    //     contentType: MediaType.parse(mimeTypeData!));
+
+
+    // Load gambar dari path file
+    final image = img.decodeImage(File(foto.path).readAsBytesSync());
+
+    // Menentukan lebar dan tinggi
+    final int desiredWidth = 400;
+    final int desiredHeight = 300;
+
+    // Memperkecil gambar
+    final img.Image resizedImage = img.copyResize(image!, width: desiredWidth, height: desiredHeight);
+
+    // Mengatur kualitas gambar
+    final File compressedFile = File(foto.path)..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 60));
+
+    // Mencari mimeTypeData untuk file yang sudah diperkecil
+    final mimeTypeData = lookupMimeType(compressedFile.path, headerBytes: [0xFF, 0xD8]);
+
+    // Buat MultipartFile dari file yang sudah diperkecil
+    final file = await http.MultipartFile.fromPath('foto', compressedFile.path, contentType: MediaType.parse(mimeTypeData!));
 
     final directory = await getApplicationDocumentsDirectory();
     final imagePath = '${directory.path}/foto${dateTime.toIso8601String()}.jpg';
 
     try {
       // Cek apakah file foto ada sebelum mencoba menyalinnya
-      if (await foto.exists()) {
-        await foto.copy(imagePath);
+      if (await compressedFile.exists()) {
+        await compressedFile.copy(imagePath);
         print('Gambar berhasil disalin ke: $imagePath');
       } else {
         print('File foto tidak ditemukan');

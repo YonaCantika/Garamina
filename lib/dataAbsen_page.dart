@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'histori_page.dart';
 import 'absen_page.dart';
 import 'dashboard_page.dart';
+import 'notif_page.dart';
 import 'akun_page.dart';
 import 'components/menu.dart';
 import 'components/welcome.dart';
@@ -140,7 +141,6 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                               authState.lokasi ?? '',
                               style: const TextStyle(fontSize: 16),
                             ),
-
                           ],
                         ),
                       ),
@@ -148,116 +148,115 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
 
                     ],
                   ),
-
-
-
                   const SizedBox(height: 20),
-                  Positioned(
-                    bottom: 50,
-                    left: 20,
-                    right: 20,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 50,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  final idPeg = authState.idPeg;
-                                  if (idPeg != null) {
-                                    try {
-                                      final responseData =
-                                          await sendAbsenRequest(idPeg);
-                                      print(responseData);
 
-                                      absenState.setAbsenData(
-                                        checkStatusPegawai: responseData[
-                                            'check_status_pegawai'],
-                                        checkStatusSPPD:
-                                            responseData['check_status_sppd'],
-                                        checkStatusDetasering: responseData[
-                                            'check_status_detasering'],
-                                        checkStatus:
-                                            responseData['check_status'],
-                                        checkShiftM:
-                                            responseData['check_shift_M'],
-                                        koordinat: responseData['koordinat'],
-                                        statusCuti: responseData['status_cuti'],
-                                        jarakKantor:
-                                            responseData['jarak_kantor'],
-                                        status: responseData['status'],
-                                        msg: responseData['msg'],
-                                      );
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double
+                              .infinity, // Membuat tombol login memenuhi lebar
+                          height: 60,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              final idPeg = authState.idPeg;
+                              if (idPeg != null) {
+                                try {
+                                  final responseData =
+                                  await sendAbsenRequest(idPeg);
+                                  print(responseData);
 
-                                      final SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  absenState.setAbsenData(
+                                    checkStatusPegawai: responseData[
+                                    'check_status_pegawai'],
+                                    checkStatusSPPD:
+                                    responseData['check_status_sppd'],
+                                    checkStatusDetasering: responseData[
+                                    'check_status_detasering'],
+                                    checkStatus:
+                                    responseData['check_status'],
+                                    checkShiftM:
+                                    responseData['check_shift_M'],
+                                    koordinat: responseData['koordinat'],
+                                    statusCuti: responseData['status_cuti'],
+                                    jarakKantor:
+                                    responseData['jarak_kantor'],
+                                    status: responseData['status'],
+                                    msg: responseData['msg'],
+                                  );
 
-                                      await prefs.setString('checkStatus', responseData['check_status'].toString());
-                                      await prefs.setString('checkShiftM', responseData['check_shift_M'].toString());
-                                      await prefs.setString('koordinat', responseData['koordinat'].toString());
+                                  final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => AbsenPage(),
-                                        ),
-                                      );
-                                    } catch (error) {
-                                      // print(error);
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return AlertDialog(
-                                            title:
-                                                const Text('Gagal Melakukan Absen'),
-                                            content: const Text(
-                                                'Terjadi kesalahan saat melakukan absen. Silakan coba lagi.'),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const Text('OK'),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    }
-                                  } else {
-                                    // Handle the case where idPeg is null here, e.g., by showing an error message.
+                                  if(prefs.getString('koordinat')!=null){
+                                    print('not set');
+                                  }else{
+                                    print('set');
+                                    await prefs.setString('checkStatus', responseData['check_status'].toString());
+                                    await prefs.setString('checkShiftM', responseData['check_shift_M'].toString());
+                                    await prefs.setString('koordinat', responseData['koordinat'].toString());
                                   }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(16),
-                                  primary: Colors.orange,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Absen',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
+
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AbsenPage(),
+                                    ),
+                                  );
+                                } catch (error) {
+                                  // print(error);
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title:
+                                        const Text('Gagal Melakukan Absen'),
+                                        content: const Text(
+                                            'Terjadi kesalahan saat melakukan absen. Silakan coba lagi.'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                              } else {
+                                // Handle the case where idPeg is null here, e.g., by showing an error message.
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.all(16),
+                              primary: Colors.orange,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Absen',
+                              style: TextStyle(
+                                fontSize: 18,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                      ],
+                    )
                   ),
+
+
                 ],
               ),
             ),
           ),
         ],
       ),
+
       // Bagian 4: Menu dengan Icon dan Text di Bawah
       bottomNavigationBar: BottomMenu(
         selectedIndex: _selectedIndex,
@@ -276,6 +275,13 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => HistoriPage(),
+              ),
+            );
+          }
+          if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => NotifPage(),
               ),
             );
           }

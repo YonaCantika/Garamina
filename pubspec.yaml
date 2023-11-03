@@ -44,6 +44,7 @@ dependencies:
   path_provider: ^2.1.1
   device_info: ^2.0.0
   intl: ^0.18.1
+  flutter_typeahead: ^4.8.0
   audioplayers: ^5.2.0
 
   # The following adds the Cupertino Icons font to your application.
@@ -93,7 +94,11 @@ flutter:
     - assets/img/screen/gps.png
     - assets/img/screen/location.png
     - assets/img/screen/phone.png
-    - assets/img/holiday.gif
+    - assets/img/holiday.png
+    - assets/img/dashboard/develop.png
+    - assets/img/dashboard/employee.png
+    - assets/img/pusatInformasi/regulasi.png
+    - assets/img/profile/default.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

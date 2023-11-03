@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'histori_page.dart';
 import 'dataAbsen_page.dart';
+import 'notif_page.dart';
 import 'components/menu.dart';
 
 class AkunPage extends StatefulWidget {
@@ -50,26 +51,59 @@ class _AkunPageState extends State<AkunPage> {
           ),
           // Bagian 2: Circle Avatar dengan sedikit spasi di bawahnya
           SizedBox(
-            height: 150, // Sesuaikan tinggi Circle Avatar sesuai kebutuhan Anda
+            height: 170, // Sesuaikan tinggi Circle Avatar sesuai kebutuhan Anda
             child: Column(
               children: [
-                CircleAvatar(
-                  radius:
-                      75, // Sesuaikan radius lingkaran sesuai kebutuhan Anda
-                  backgroundColor:
-                      Colors.blue, // Warna latar belakang lingkaran
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/img/slider/1.JPG', // Ganti dengan path gambar Anda
-                      width:
-                          150, // Sesuaikan lebar gambar sesuai kebutuhan Anda
-                      height:
-                          150, // Sesuaikan tinggi gambar sesuai kebutuhan Anda
-                      fit: BoxFit
-                          .cover, // Sesuaikan tampilan gambar sesuai kebutuhan Anda
+                authState.foto != 'default.png' ?
+                Container(
+                  decoration: const BoxDecoration(
+                  color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [BoxShadow(blurRadius: 10, color: Colors.yellowAccent, spreadRadius: 5)],
+                  ),
+                  child: CircleAvatar(
+                    radius:
+                    75,
+                    backgroundColor:
+                    Colors.blue, // Warna latar belakang lingkaran
+                    child: ClipOval(
+                      child: Image.network(
+                        authState.foto.toString(),
+                        width:
+                        135, // Sesuaikan lebar gambar sesuai kebutuhan Anda
+                        height:
+                        135, // Sesuaikan tinggi gambar sesuai kebutuhan Anda
+                        fit: BoxFit
+                            .cover, // Sesuaikan tampilan gambar sesuai kebutuhan Anda
+                      ),
                     ),
                   ),
-                ), // Tambahkan spasi di bawah CircleAvatar
+                ) :
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [BoxShadow(blurRadius: 10, color: Colors.yellowAccent, spreadRadius: 5)],
+                  ),
+                  child: CircleAvatar(
+                    radius:
+                    75,
+                    backgroundColor:
+                    Colors.blue, // Warna latar belakang lingkaran
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/img/profile/${authState.foto.toString()}',
+                        width:
+                        135, // Sesuaikan lebar gambar sesuai kebutuhan Anda
+                        height:
+                        135, // Sesuaikan tinggi gambar sesuai kebutuhan Anda
+                        fit: BoxFit
+                            .cover, // Sesuaikan tampilan gambar sesuai kebutuhan Anda
+                      ),
+                    ),
+                  ),
+                ),
+                 // Tambahkan spasi di bawah CircleAvatar
               ],
             ),
           ),
@@ -151,43 +185,35 @@ class _AkunPageState extends State<AkunPage> {
                   ),
 
                   const SizedBox(height: 20),
-                  Positioned(
-                    bottom: 50,
-                    left: 20,
-                    right: 20,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
                         children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 60,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  SystemNavigator.pop();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(16),
-                                  primary: Colors.red,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
+                          SizedBox(
+                            width: double
+                                .infinity,
+                            height: 60,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                SystemNavigator.pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.all(16),
+                                primary: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: const Text(
-                                  'Logout',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
+                              ),
+                              child: const Text(
+                                'Logout',
+                                style: TextStyle(
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
                           ),
                         ],
-                      ),
-                    ),
+                      )
                   ),
 
 
@@ -217,6 +243,13 @@ class _AkunPageState extends State<AkunPage> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DataAbsenPage(),
+              ),
+            );
+          }
+          if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => NotifPage(),
               ),
             );
           }

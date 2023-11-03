@@ -31,20 +31,22 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
     getDataFromSharedPreferences();
   }
 
-  void showErrorDialog(String message) {
+  void showErrorDialog(String title, String message) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Login Gagal'),
+          title: Text(title),
           content: Text(message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                setState(() {
-                  // _isLoading = false;
-                });
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) => LoginPage(),
+                  ),
+                );
               },
               child: Text('OK'),
             ),
@@ -63,6 +65,10 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
 
   Future<void> sinkronisasi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getString('absenData')==null){
+      showErrorDialog('Data Kosong','Anda tidak bisa melakukan sinkronisasi karena data absen kosong!');
+    }
+
     final List<dynamic> absenDataList = json.decode(absenDataString!);
     print(absenDataList.toString());
 
@@ -110,10 +116,10 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
           ),
         );
       } else {
-        showErrorDialog('Username atau password salah. Silakan coba lagi.');
+        showErrorDialog('Gagal','Sinkronisasi Gagal!');
       }
     } else {
-      showErrorDialog('Server bermasalah, silahkan hubungi admin!');
+      showErrorDialog('Gagal','Server masih maintenance');
     }
     // try {
     //
@@ -124,6 +130,10 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
 
   Future<void> getDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getString('idPeg')==null || prefs.getString('koordinat')==null){
+      showErrorDialog('Data Kosong','Data anda belum tercatat di menu emergency, hubungi admin untuk informasi lebih lanjut!');
+    }
+
 
     absenDataString = prefs.getString('absenData');
     print(absenDataString);

@@ -301,7 +301,7 @@ class _AbsenPageState extends State<AbsenPage> {
               // tombol kamera
               SizedBox(
                 width: double
-                    .infinity, // Membuat tombol login memenuhi lebar
+                    .infinity,
                 height: 60,
                 child: ElevatedButton.icon(
                   onPressed:(){

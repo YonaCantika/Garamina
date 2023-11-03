@@ -33,10 +33,30 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
   }
 
+  // void showDialog(String status, String message) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('${status!}'),
+  //         content: Text('${message}'),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: const Text('Oke'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+
 
   @override
   Widget build(BuildContext context) {
-    final authState = Provider.of<AuthState>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
@@ -71,7 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
                 children: [
                   // Judul "Karyawan Cuti"
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Dashboard',
@@ -82,6 +102,55 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ),
                   // Card vertikal (cuti, izin, dinas)
+                  Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    color: Colors.blue, // Warna latar belakang biru untuk Card
+                    child: SizedBox(
+                      height: 90, // Sesuaikan tinggi Card sesuai kebutuhan Anda
+                      child: ListTile(
+                        leading:
+                        const Icon(Icons.info, size: 40, color: Colors.white),
+                        title: const Text(
+                          'Pusat Informasi',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (BuildContext context) {
+                              return FractionallySizedBox(
+                                heightFactor: 0.8, // Sesuaikan faktor tinggi modal
+                                child: SingleChildScrollView(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text(
+                                          'Pusat Informasi',
+                                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height:20),
+                                        Image.asset(
+                                          'assets/img/pusatInformasi/regulasi.png',
+                                          width: 450,
+                                          height: 450,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                   Card(
                     elevation: 5,
                     shape: RoundedRectangleBorder(
@@ -193,30 +262,18 @@ class _DashboardPageState extends State<DashboardPage> {
                                                   child: Column(
                                                     mainAxisSize: MainAxisSize.min,
                                                     children: [
-                                                      Text(
+                                                      const Text(
                                                         'Pengajuan Izin',
                                                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                                       ),
-                                                      TextFormField(
-                                                        decoration: InputDecoration(labelText: 'Keterangan'),
-                                                        // Tambahkan controller untuk mengambil nilai input
+                                                      Image.asset(
+                                                        'assets/img/dashboard/develop.png',
+                                                        width: 300,
+                                                        height: 300,
                                                       ),
-                                                      TextFormField(
-                                                        decoration: InputDecoration(labelText: 'Periode (tanggal)'),
-                                                        // Tambahkan controller untuk mengambil nilai input
-                                                      ),
-                                                      TextFormField(
-                                                        decoration: InputDecoration(labelText: 'Pengganti'),
-                                                        // Tambahkan controller untuk mengambil nilai input
-                                                      ),
-                                                      ElevatedButton(
-                                                        onPressed: () {
-                                                          // Tambahkan kode untuk mengirim data pengajuan cuti
-                                                          // Misalnya, kirim data ke server atau penyimpanan lokal
-                                                          // Kemudian tutup modal input
-                                                          Navigator.of(context).pop();
-                                                        },
-                                                        child: Text('Ajukan Izin'),
+                                                      const Text(
+                                                        'On Going...',
+                                                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),
                                                       ),
                                                     ],
                                                   ),
@@ -295,26 +352,14 @@ class _DashboardPageState extends State<DashboardPage> {
                                                         'Pengajuan Dinas',
                                                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                                       ),
-                                                      TextFormField(
-                                                        decoration: InputDecoration(labelText: 'Keterangan'),
-                                                        // Tambahkan controller untuk mengambil nilai input
+                                                      Image.asset(
+                                                        'assets/img/dashboard/develop.png',
+                                                        width: 300,
+                                                        height: 300,
                                                       ),
-                                                      TextFormField(
-                                                        decoration: InputDecoration(labelText: 'Periode (tanggal)'),
-                                                        // Tambahkan controller untuk mengambil nilai input
-                                                      ),
-                                                      TextFormField(
-                                                        decoration: InputDecoration(labelText: 'Pengganti'),
-                                                        // Tambahkan controller untuk mengambil nilai input
-                                                      ),
-                                                      ElevatedButton(
-                                                        onPressed: () {
-                                                          // Tambahkan kode untuk mengirim data pengajuan cuti
-                                                          // Misalnya, kirim data ke server atau penyimpanan lokal
-                                                          // Kemudian tutup modal input
-                                                          Navigator.of(context).pop();
-                                                        },
-                                                        child: Text('Ajukan Dinas'),
+                                                      const Text(
+                                                        'Next Develop...',
+                                                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),
                                                       ),
                                                     ],
                                                   ),
@@ -360,7 +405,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     ListTile(
-                                      title: Text('Lihat Data Ulang Tahun'),
+                                      title: const Text('Lihat Ulang Tahun'),
                                       onTap: () {
                                         Navigator.of(context).pop();
                                         Navigator.push(
@@ -372,11 +417,41 @@ class _DashboardPageState extends State<DashboardPage> {
                                       },
                                     ),
                                     ListTile(
-                                      title: Text('Menu lainnya'),
+                                      title: const Text('Beri Kejutan'),
                                       onTap: () {
-                                        // Tindakan yang diambil saat "Input" dipilih
-                                        Navigator.of(context).pop(); // Tutup bottom sheet
-                                        // Tambahkan kode untuk input data
+                                        Navigator.of(context).pop();
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (BuildContext context) {
+                                            return FractionallySizedBox(
+                                              heightFactor: 0.8, // Sesuaikan faktor tinggi modal
+                                              child: SingleChildScrollView(
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(16),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        'Beri Kejutan',
+                                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                                      ),
+                                                      Image.asset(
+                                                        'assets/img/dashboard/develop.png',
+                                                        width: 300,
+                                                        height: 300,
+                                                      ),
+                                                      const Text(
+                                                        'Next Develop...',
+                                                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
                                       },
                                     ),
                                   ],
@@ -412,23 +487,83 @@ class _DashboardPageState extends State<DashboardPage> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     ListTile(
-                                      title: Text('Lihat Data Gaji'),
+                                      title: const Text('Lihat Gaji'),
                                       onTap: () {
                                         Navigator.of(context).pop();
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => UlangTahunPage(),
-                                          ),
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (BuildContext context) {
+                                            return FractionallySizedBox(
+                                              heightFactor: 0.8, // Sesuaikan faktor tinggi modal
+                                              child: SingleChildScrollView(
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(16),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        'Lihat Gaji',
+                                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                                      ),
+                                                      Image.asset(
+                                                        'assets/img/dashboard/develop.png',
+                                                        width: 300,
+                                                        height: 300,
+                                                      ),
+                                                      const Text(
+                                                        'Next Develop...',
+                                                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
                                         );
                                       },
                                     ),
                                     ListTile(
-                                      title: Text('Menu Lainnya'),
+                                      title: const Text('Berbagi Kebahagiaan'),
                                       onTap: () {
-                                        // Tindakan yang diambil saat "Input" dipilih
-                                        Navigator.of(context).pop(); // Tutup bottom sheet
-                                        // Tambahkan kode untuk input data
+                                        Navigator.of(context).pop();
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          builder: (BuildContext context) {
+                                            return FractionallySizedBox(
+                                              heightFactor: 0.8, // Sesuaikan faktor tinggi modal
+                                              child: SingleChildScrollView(
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(16),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        'Berbagi Kebahagiaan',
+                                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                                      ),
+                                                      Image.asset(
+                                                        'assets/img/dashboard/employee.png',
+                                                        width: 300,
+                                                        height: 300,
+                                                      ),
+                                                      // const Text(
+                                                      //   'Agar Aplikasi ini runtut',
+                                                      //   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey),
+                                                      // ),
+                                                      // const Text(
+                                                      //   'Boleh dong saya direkrut',
+                                                      //   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey),
+                                                      // ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
                                       },
                                     ),
                                   ],

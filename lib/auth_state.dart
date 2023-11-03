@@ -9,6 +9,7 @@ class AuthState extends ChangeNotifier {
   String? idLokasi;
   String? lokasi;
   String? status;
+  String? foto;
 
   void setAuthData({
     String? namaUser,
@@ -19,6 +20,7 @@ class AuthState extends ChangeNotifier {
     String? idLokasi,
     String? lokasi,
     String? status,
+    String? foto,
   }) {
     this.namaUser = namaUser;
     this.nik = nik;
@@ -28,6 +30,7 @@ class AuthState extends ChangeNotifier {
     this.idLokasi = idLokasi;
     this.lokasi = lokasi;
     this.status = status;
+    this.foto = foto;
     notifyListeners();
   }
 }

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../auth_state.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class FormCuti extends StatefulWidget {
   @override
@@ -25,6 +26,7 @@ class _FormCutiState extends State<FormCuti> {
   TextEditingController keteranganCutiController = TextEditingController();
   int _ready = 0;
   String? idAtasan;
+  TextEditingController penggantiController = TextEditingController();
 
   @override
   void initState() {
@@ -32,6 +34,35 @@ class _FormCutiState extends State<FormCuti> {
     _getDataCuti();
     _getAtasan();
     _getPengganti();
+  }
+
+
+  Future<void> _getPengganti() async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://garamina.com/fintech2/integrasi/android/cuti_izin/all_pegawai'),
+        headers: {
+          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        },
+        body: {
+          'empid': '797',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        dataPengganti = List<Map<String, dynamic>>.from(json.decode(response.body));
+        if (dataPengganti.isNotEmpty) {
+          selectedPengganti = dataPengganti[0]['nik'].toString();
+        }
+        setState(() {
+          _ready += 1;
+        });
+      } else {
+        // Handle error
+      }
+    } catch (e) {
+      // Handle error
+    }
   }
 
   Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
@@ -103,33 +134,7 @@ class _FormCutiState extends State<FormCuti> {
     }
   }
 
-  Future<void> _getPengganti() async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://garamina.com/fintech2/integrasi/android/cuti_izin/all_pegawai'),
-        headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
-        },
-        body: {
-          'empid': '797',
-        },
-      );
 
-      if (response.statusCode == 200) {
-        dataPengganti = List<Map<String, dynamic>>.from(json.decode(response.body));
-        if (dataPengganti.isNotEmpty) {
-          selectedPengganti = dataPengganti[0]['nik'].toString();
-        }
-        setState(() {
-          _ready +=1;
-        });
-      } else {
-        // Handle error
-      }
-    } catch (e) {
-      // Handle error
-    }
-  }
 
   int _hitungJumlahHariCuti() {
     DateTime mulaiCuti = DateFormat("dd-MM-yyyy").parse(mulaiCutiController.text);
@@ -144,7 +149,7 @@ class _FormCutiState extends State<FormCuti> {
     return jumlahHariCuti;
   }
 
-  void _ajukanCuti(nik) {
+  void _ajukanCuti(nik, idPeg) {
     int jumlahHariCuti = _hitungJumlahHariCuti();
     print(jumlahHariCuti);
     int sisaCuti = int.tryParse(sisaCutiController.text) ?? 0;
@@ -159,7 +164,7 @@ class _FormCutiState extends State<FormCuti> {
 
       _sendDataCuti(
         selectedTipeCuti,
-        '797',
+        int.parse(idPeg),
         selectedPengganti,
         idAtasan,
         mulaiCutiController.text.toString(),
@@ -172,7 +177,7 @@ class _FormCutiState extends State<FormCuti> {
         keteranganCutiController.text,
         int.parse(nik),
       );
-      sisaCuti -= jumlahHariCuti;
+      // sisaCuti -= jumlahHariCuti;
       sisaCutiController.text = sisaCuti.toString();
     }catch(e){
       print(e);
@@ -236,6 +241,7 @@ class _FormCutiState extends State<FormCuti> {
       print(responseData[0]['status']);
       print(responseData);
       if (responseData[0]['status'] == true) {
+        Navigator.of(context).pop();
         _showDialog("Berhasil", responseData[0]['pesan']);
       } else {
         _showDialog("Gagal", responseData[0]['pesan']);
@@ -274,8 +280,6 @@ class _FormCutiState extends State<FormCuti> {
   }
 
 
-
-
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
@@ -287,13 +291,14 @@ class _FormCutiState extends State<FormCuti> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _ready == 2 ?
-               Column(
+              _ready == 2
+                  ? Column(
                 children: [
                   const Text(
                     'Pengajuan Cuti',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
+                  // jenis cuti
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -319,6 +324,30 @@ class _FormCutiState extends State<FormCuti> {
                         decoration: const InputDecoration(labelText: 'Tipe Cuti'),
                       ),
                     ],
+                  ),
+                  // pengganti
+                  TypeAheadField<Map<String, dynamic>>(
+                    textFieldConfiguration: TextFieldConfiguration(
+                      controller: penggantiController,
+                      decoration: InputDecoration(
+                        labelText: 'Pengganti',
+                      ),
+                    ),
+                    suggestionsCallback: (pattern) {
+                      return dataPengganti
+                          .where((item) =>
+                          item['nama'].toLowerCase().contains(pattern.toLowerCase()))
+                          .toList();
+                    },
+                    itemBuilder: (context, suggestion) {
+                      return ListTile(
+                        title: Text(suggestion['nama'].toString()),
+                      );
+                    },
+                    onSuggestionSelected: (suggestion) {
+                      penggantiController.text = suggestion['nama'].toString();
+                      selectedPengganti = suggestion['nik'].toString();
+                    },
                   ),
                   // tanggal
                   Row(
@@ -353,7 +382,6 @@ class _FormCutiState extends State<FormCuti> {
                       ),
                     ],
                   ),
-
                   // jatah dan sisa cuti
                   Row(
                     children: [
@@ -383,7 +411,6 @@ class _FormCutiState extends State<FormCuti> {
                       ),
                     ],
                   ),
-
                   // lokasi dan nomor hp
                   Row(
                     children: [
@@ -411,36 +438,11 @@ class _FormCutiState extends State<FormCuti> {
                       ),
                     ],
                   ),
-
                   // atasan
                   TextFormField(
                     controller: atasanController,
                     readOnly: true,
                     decoration: const InputDecoration(labelText: 'Atasan'),
-                  ),
-                  // pengganti
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      DropdownButtonFormField<String>(
-                        value: selectedPengganti,
-                        items: dataPengganti.map((Map<String, dynamic> dataPengganti) {
-                          final String nik = dataPengganti['nik'].toString();
-                          return DropdownMenuItem<String>(
-                            value: nik,
-                            child: Text(dataPengganti['nama']),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          if (dataPengganti.any((dataPengganti) => dataPengganti['nik'].toString() == newValue)) {
-                            setState(() {
-                              selectedPengganti = newValue!;
-                            });
-                          }
-                        },
-                        decoration: const InputDecoration(labelText: 'Pengganti'),
-                      ),
-                    ],
                   ),
                   // keterangan
                   TextFormField(
@@ -449,13 +451,11 @@ class _FormCutiState extends State<FormCuti> {
                   ),
                   const SizedBox(height: 12), // Spasi antara password dan tombol login
                   SizedBox(
-                    width: double
-                        .infinity, // Membuat tombol login memenuhi lebar
+                    width: double.infinity, // Membuat tombol login memenuhi lebar
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Navigator.of(context).pop();
-                        _ajukanCuti(authState.nik!);
+                        _ajukanCuti(authState.nik!,authState.idPeg!);
                         // Tambahkan kode untuk mengirim data pengajuan cuti ke server atau penyimpanan lokal
                       },
                       style: ElevatedButton.styleFrom(
@@ -469,11 +469,11 @@ class _FormCutiState extends State<FormCuti> {
                     ),
                   ),
                 ],
-              ) :
-                const Column(
-                  children: [Text("Loading...")],
-                ),
-            ]
+              )
+                  : const Column(
+                children: [Text("Loading...")],
+              ),
+            ],
           ),
         ),
       ),

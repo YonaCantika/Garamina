@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import 'histori_page.dart';
 import 'dataAbsen_page.dart';
+import 'notif_page.dart';
 import 'akun_page.dart';
 import 'components/menu.dart';
 import 'components/welcome.dart';
@@ -158,6 +159,13 @@ class _DinasPageState extends State<DinasPage> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DataAbsenPage(),
+              ),
+            );
+          }
+          if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => NotifPage(),
               ),
             );
           }

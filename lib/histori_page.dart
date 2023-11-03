@@ -6,11 +6,13 @@ import 'auth_state.dart';
 import 'package:provider/provider.dart';
 
 import 'dashboard_page.dart';
+import 'notif_page.dart';
 import 'akun_page.dart';
 import 'dataAbsen_page.dart';
 import 'components/menu.dart';
 import 'components/welcome.dart';
 import 'components/carousel.dart';
+import 'auth_state.dart';
 
 class HistoriPage extends StatefulWidget {
   @override
@@ -29,6 +31,7 @@ class _HistoriPageState extends State<HistoriPage> {
   }
 
   Future<void> fetchDataFromApi() async {
+    final authState = Provider.of<AuthState>(context);
     final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/history_absen');
     // final now = DateTime.now();
     // final formattedDate = DateFormat('yyyy-MM').format(now);
@@ -38,7 +41,10 @@ class _HistoriPageState extends State<HistoriPage> {
       headers: {
         'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
       },
-      body: {"periodeTanggal": '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}', "idPegawai": "797"},
+      body: {
+        "periodeTanggal": '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        "idPegawai": authState.idPeg
+      },
     );
 
     if (response.statusCode == 200) {
@@ -129,7 +135,7 @@ class _HistoriPageState extends State<HistoriPage> {
                                     children: [
                                       const SizedBox(height: 20),
                                       Image.asset(
-                                        'assets/img/holiday.gif',
+                                        'assets/img/holiday.png',
                                         width: 200,
                                         height: 200,
                                       ),
@@ -245,6 +251,13 @@ class _HistoriPageState extends State<HistoriPage> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DataAbsenPage(),
+              ),
+            );
+          }
+          if (index == 3) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => NotifPage(),
               ),
             );
           }

@@ -43,10 +43,15 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _setPreference(costCenter, idPeg, namaUser, nik) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('costCenter', costCenter.toString());
-    prefs.setString('idPeg', idPeg.toString());
-    prefs.setString('namaUser', namaUser.toString());
-    prefs.setString('nik',nik.toString());
+    if(prefs.getString('idPeg')!=null){
+      print('not set');
+    }else{
+      print('set');
+      prefs.setString('costCenter', costCenter.toString());
+      prefs.setString('idPeg', idPeg.toString());
+      prefs.setString('namaUser', namaUser.toString());
+      prefs.setString('nik',nik.toString());
+    }
   }
 
 
@@ -98,6 +103,7 @@ class _LoginPageState extends State<LoginPage> {
               namaUser: responseData['namaUser'],
               nik: responseData['nik'],
               status: responseData['status'],
+              foto: responseData['foto'],
             );
 
             // Arahkan ke halaman menu
