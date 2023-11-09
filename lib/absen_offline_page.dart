@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'package:audioplayers/audioplayers.dart';
 
+import 'components/actionComponent.dart';
 import 'location/location_service.dart';
 import 'location/user_location.dart';
 // import 'auth_state.dart';
@@ -127,6 +128,15 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Halaman Absen'),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              buildUserGuide(context),
+              buildInformationCenter(context),
+            ],
+          ),
+        ],
       ),
       body:
       isLoading == true ?
@@ -401,9 +411,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                   ),
                 ),
               ),
-
-
-
             ],
           ),
         )

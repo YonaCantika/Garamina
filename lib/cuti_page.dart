@@ -6,12 +6,14 @@ import 'dart:convert';
 import 'auth_state.dart';
 import 'package:provider/provider.dart';
 
+import 'components/actionComponent.dart';
 import 'histori_page.dart';
 import 'dataAbsen_page.dart';
 import 'notif_page.dart';
 import 'akun_page.dart';
 import 'components/menu.dart';
 import 'components/welcome.dart';
+import 'components/customExpandedContainer.dart';
 
 class CutiPage extends StatefulWidget {
   @override
@@ -22,6 +24,8 @@ class _CutiPageState extends State<CutiPage> {
   int _selectedIndex = 0;
   DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> cutiData = [];
+  bool loading = true;
+  bool dataResponse = false;
 
   @override
   void initState() {
@@ -44,7 +48,10 @@ class _CutiPageState extends State<CutiPage> {
     );
 
     if (response.statusCode == 200) {
+      loading = false;
       final data = jsonDecode(response.body);
+      data.length <= 0 ?
+      dataResponse = false: dataResponse = true;
       setState(() {
         cutiData = List<Map<String, dynamic>>.from(data);
       });
@@ -55,10 +62,18 @@ class _CutiPageState extends State<CutiPage> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = Provider.of<AuthState>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Cuti'),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              buildUserGuide(context),
+              buildInformationCenter(context),
+            ],
+          ),
+        ],
       ),
       backgroundColor: Colors.blue,
       body: Column(
@@ -82,80 +97,46 @@ class _CutiPageState extends State<CutiPage> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                      'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
+                      'assets/img/slider/1.JPG'),
                 ),
                 // Item Carousel 2 dengan gambar
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.asset(
-                      'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
+                      'assets/img/slider/2.JPG'),
                 ),
-                // Tambahkan item Carousel selanjutnya sesuai kebutuhan
               ],
             ),
           ),
           // Bagian 3: ListView dengan Border Radius di Atas
-          Expanded(
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              child: Column(
-                children: [
-                  // Judul "Karyawan Cuti"
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      'Karyawan Cuti',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  // Daftar data ListView
-                  Expanded(
-                    child: cutiData.isEmpty
-                        ? const Center(
-                      child: Text('Loading...'), // Tampilkan teks "Loading..." ketika data masih kosong
-                    )
-                        : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: cutiData.length,
-                      itemBuilder: (context, index) {
-                        final namaPegawai = cutiData[index]['NAMA_PEGAWAI'];
-                        final periode = cutiData[index]['PERIODE'];
-                        final pengganti = cutiData[index]['PENGGANTI'];
-                        final keterangan = cutiData[index]['NAMA_CUTI'];
-                        final divisi = cutiData[index]['DIVISI'];
-                        return Column(
-                          children: [
-                            ListTile(
-                              title: Text('Nama: $namaPegawai'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Divisi: $divisi'),
-                                  Text('Keterangan: $keterangan'),
-                                  Text('Pengganti: $pengganti'),
-                                  Text('Periode: $periode'),
-                                ],
-                              ),
-                            ),
-                            const Divider(),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
+          CustomExpandedContainer(
+            title: 'Karyawan Cuti',
+            data: cutiData,
+            loading: loading,
+            dataResponse: dataResponse,
+            itemBuilder: (context, index) {
+              final namaPegawai = cutiData[index]['NAMA_PEGAWAI'];
+              final periode = cutiData[index]['PERIODE'];
+              final keterangan = cutiData[index]['KETERANGAN'];
+              final pengganti = cutiData[index]['PENGGANTI'];
 
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text('Nama: $namaPegawai'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Keterangan: $keterangan'),
+                        Text('Pengganti: $pengganti'),
+                        Text('Periode: $periode'),
+                      ],
+                    ),
+                  ),
+                  const Divider(),
                 ],
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),

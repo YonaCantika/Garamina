@@ -9,6 +9,7 @@ import 'package:device_info/device_info.dart';
 
 
 import 'auth_state.dart';
+import 'components/actionComponent.dart';
 import 'dashboard_page.dart';
 import 'dataAbsenOffline_page.dart';
 
@@ -23,20 +24,25 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool checkedValue = false;
+  String? macAddress;
 
 
-  // String macAddress = await getMacAddress();
+  @override
+  void initState() {
+    super.initState();
+    getMacAddress();
+  }
 
-  Future<String> getMacAddress() async {
+   getMacAddress() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       print(androidInfo.androidId);
-      return androidInfo.androidId;
+      macAddress = androidInfo.androidId.toString();
     } else if (Platform.isIOS) {
-      return "Not available on iOS";
+      print( "Not available on iOS");
     } else {
-      return "Not available on this platform";
+      print( "Not available on this platform");
     }
   }
 
@@ -60,12 +66,8 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       _isLoading = true;
     });
-
     final username = _usernameController.text;
     final password = _passwordController.text;
-    final macAddress = getMacAddress();
-    print(macAddress);
-
     try {
       final response = await http.post(
         Uri.parse('https://garamina.com/fintech2/integrasi/android/login/login'),
@@ -75,13 +77,15 @@ class _LoginPageState extends State<LoginPage> {
         body: {
           'username': username,
           'password': password,
-          'macAddress' : macAddress.toString(),
+          // 'macAddress' : macAddress.toString(),
+          'macAddress' : 'a6e32d201fd94ee7'
         },
       );
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         print(responseData);
+        print(macAddress.toString());
 
         if (responseData['msg'] == 'Sukses') {
           if( responseData['status_macAddress'] == 'true'){
@@ -231,6 +235,15 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Login'),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              buildUserGuide(context),
+              buildInformationCenter(context),
+            ],
+          ),
+        ],
         automaticallyImplyLeading: false,
       ),
       body: Stack(
@@ -267,7 +280,7 @@ class _LoginPageState extends State<LoginPage> {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/img/bg.png'), // Background image
-                fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
+                fit: BoxFit.cover,
               ),
             ),
 

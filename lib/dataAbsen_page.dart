@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'components/actionComponent.dart';
 import 'histori_page.dart';
 import 'absen_page.dart';
 import 'dashboard_page.dart';
@@ -52,6 +53,15 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Absen'),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              buildUserGuide(context),
+              buildInformationCenter(context),
+            ],
+          ),
+        ],
       ),
       backgroundColor: Colors.blue,
       body: Column(

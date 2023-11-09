@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'absen_offline_page.dart';
+import 'components/actionComponent.dart';
 import 'login_page.dart';
 
 class DataAbsenOfflinePage extends StatefulWidget {
@@ -177,6 +178,15 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Absen'),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              buildUserGuide(context),
+              buildInformationCenter(context),
+            ],
+          ),
+        ],
         automaticallyImplyLeading: false,
       ),
       backgroundColor: Colors.blue,

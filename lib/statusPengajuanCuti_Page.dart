@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -6,37 +7,35 @@ import 'auth_state.dart';
 import 'package:provider/provider.dart';
 
 import 'components/actionComponent.dart';
+import 'components/customExpandedContainer.dart';
 import 'histori_page.dart';
+import 'dataAbsen_page.dart';
 import 'notif_page.dart';
 import 'akun_page.dart';
-import 'dataAbsen_page.dart';
 import 'components/menu.dart';
 import 'components/welcome.dart';
-import 'components/carousel.dart';
-import 'components/customExpandedContainer.dart';
 
-class IzinPage extends StatefulWidget {
+class StatusPengajuanCutiPage extends StatefulWidget {
   @override
-  _IzinPageState createState() => _IzinPageState();
+  _StatusPengajuanCutiPageState createState() => _StatusPengajuanCutiPageState();
 }
 
-class _IzinPageState extends State<IzinPage> {
+class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
   int _selectedIndex = 0;
   DateTime dateTime = DateTime.now();
-  List<Map<String, dynamic>> izinData = [];
+  List<Map<String, dynamic>> pengajuanCutiData = [];
+  int count =0;
   bool dataResponse = false;
   bool loading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchDataFromApi();
   }
 
-  Future<void> fetchDataFromApi() async {
-    final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/izin');
-
-    // final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+  Future<void> fetchDataFromApi(idPeg) async {
+    count++;
+    final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/myCuti');
 
     final response = await http.post(
       apiUrl,
@@ -44,8 +43,7 @@ class _IzinPageState extends State<IzinPage> {
         'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
       },
       body: {
-        'mulaiIzin': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
-        'selesaiIzin': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        'empId': idPeg.toString()
       },
     );
 
@@ -54,8 +52,9 @@ class _IzinPageState extends State<IzinPage> {
       final data = jsonDecode(response.body);
       data.length <= 0 ?
       dataResponse = false: dataResponse = true;
+      print(data);
       setState(() {
-        izinData = List<Map<String, dynamic>>.from(data);
+        pengajuanCutiData = List<Map<String, dynamic>>.from(data);
       });
     } else {
       throw Exception('Failed to load data from the API');
@@ -65,9 +64,11 @@ class _IzinPageState extends State<IzinPage> {
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
+    count < 1 ?
+    fetchDataFromApi(authState.idPeg):null;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Izin'),
+        title: const Text('Status Cuti'),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -84,31 +85,66 @@ class _IzinPageState extends State<IzinPage> {
           // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
           // Bagian 2: Carousel Slider
-          CarouselSection(),
+          Container(
+            height: 150, // Sesuaikan tinggi carousel sesuai kebutuhan Anda
+            child: CarouselSlider(
+              options: CarouselOptions(
+                aspectRatio:
+                16 / 9, // Sesuaikan dengan rasio aspek yang diinginkan
+                enlargeCenterPage: true,
+                autoPlay: true,
+                autoPlayInterval: Duration(seconds: 3), // Interval otomatis
+                autoPlayCurve: Curves.fastOutSlowIn,
+              ),
+              items: [
+                // Item Carousel 1 dengan gambar
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                      'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
+                ),
+                // Item Carousel 2 dengan gambar
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                      'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
+                ),
+                // Tambahkan item Carousel selanjutnya sesuai kebutuhan
+              ],
+            ),
+          ),
           // Bagian 3: ListView dengan Border Radius di Atas
           CustomExpandedContainer(
-            title: 'Karyawan Izin',
-            data: izinData,
+            title: 'Pengajuan Cuti',
+            data: pengajuanCutiData,
             loading: loading,
             dataResponse: dataResponse,
             itemBuilder: (context, index) {
-              final namaPegawai = izinData[index]['NAMA_PEGAWAI'];
-              final periode = izinData[index]['PERIODE'];
-              final keterangan = izinData[index]['KETERANGAN'];
-              final pengganti = izinData[index]['PENGGANTI'];
+              final nomorCuti = pengajuanCutiData[index]['NOMOR_CUTI'];
+              final tipeCuti = pengajuanCutiData[index]['TIPE_CUTI'];
+              final keterangan = pengajuanCutiData[index]['KETERANGAN'];
+              final tanggalPengajuan = pengajuanCutiData[index]['TANGGAL_PENGAJUAN'];
+              final mulaiCuti = pengajuanCutiData[index]['MULAI_CUTI'];
+              final selesaiCuti = pengajuanCutiData[index]['SELESAI_CUTI'];
+              final lamaCuti = pengajuanCutiData[index]['LAMA_CUTI'];
+              final statusCuti = pengajuanCutiData[index]['STATUS_CUTI'];
               return Column(
                 children: [
                   ListTile(
-                    title: Text('Nama: $namaPegawai'),
+                    title: Text('Tipe Cuti: $tipeCuti'),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Keterangan: $keterangan'),
-                        Text('Pengganti: $pengganti'),
-                        Text('Periode: $periode'),
+                        Text('Mulai Cuti: $mulaiCuti'),
+                        Text('Selesai Cuti: $selesaiCuti'),
+                        Text('Status: $statusCuti'),
                       ],
                     ),
-                    // trailing: Icon(Icons.arrow_forward),
+                    trailing: statusCuti == 'Sudah Approval' ?
+                    const Icon(Icons.verified, size: 30, color: Colors.green) :
+                    statusCuti == 'Belum Approval' ? const Icon(Icons.hourglass_top, size: 30, color: Colors.orange) :
+                    const Icon(Icons.rate_review, size: 30, color: Colors.red),
                   ),
                   const Divider(),
                 ],
@@ -125,7 +161,6 @@ class _IzinPageState extends State<IzinPage> {
             _selectedIndex = index;
           });
           if (index == 1) {
-            // Navigasi ke halaman "IzinPage"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => HistoriPage(),
@@ -133,7 +168,6 @@ class _IzinPageState extends State<IzinPage> {
             );
           }
           if (index == 2) {
-            // Navigasi ke halaman "IzinPage"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => DataAbsenPage(),
@@ -148,7 +182,6 @@ class _IzinPageState extends State<IzinPage> {
             );
           }
           if (index == 4) {
-            // Navigasi ke halaman "AkunPage"
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => AkunPage(),

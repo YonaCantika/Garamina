@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auth_state.dart';
+import 'components/actionComponent.dart';
+import 'dashboard_page.dart';
 import 'histori_page.dart';
 import 'akun_page.dart';
 import 'dataAbsen_page.dart';
@@ -34,6 +36,15 @@ class _NotifPageState extends State<NotifPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifikasi'),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              buildUserGuide(context),
+              buildInformationCenter(context),
+            ],
+          ),
+        ],
       ),
       backgroundColor: Colors.white,
       body: Column(
@@ -95,6 +106,14 @@ class _NotifPageState extends State<NotifPage> {
           setState(() {
             _selectedIndex = index;
           });
+          if (index == 0) {
+            // Navigasi ke halaman "DashboardPage"
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => DashboardPage(),
+              ),
+            );
+          }
           if (index == 1) {
             Navigator.of(context).push(
               MaterialPageRoute(

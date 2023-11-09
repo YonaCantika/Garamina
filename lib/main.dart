@@ -4,6 +4,7 @@ import 'auth_state.dart';
 import 'absen_state.dart';
 
 import 'splash_screen.dart';
+import 'login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: SplashScreen(),
+        // home: LoginPage(),
         debugShowCheckedModeBanner: true,
       ),
     );

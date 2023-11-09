@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:garamina/login_page.dart';
 import 'auth_state.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'components/actionComponent.dart';
+import 'dashboard_page.dart';
 import 'histori_page.dart';
 import 'dataAbsen_page.dart';
 import 'notif_page.dart';
@@ -22,6 +26,11 @@ class _AkunPageState extends State<AkunPage> {
     super.initState();
   }
 
+  Future<void> clearSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +38,15 @@ class _AkunPageState extends State<AkunPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Akun'),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              buildUserGuide(context),
+              buildInformationCenter(context),
+            ],
+          ),
+        ],
       ),
 
       backgroundColor: Colors.blue,
@@ -81,9 +99,9 @@ class _AkunPageState extends State<AkunPage> {
                 ) :
                 Container(
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.yellowAccent,
                     shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(blurRadius: 10, color: Colors.yellowAccent, spreadRadius: 5)],
+                    boxShadow: [BoxShadow(blurRadius: 10, color: Colors.orange, spreadRadius: 5)],
                   ),
                   child: CircleAvatar(
                     radius:
@@ -195,7 +213,34 @@ class _AkunPageState extends State<AkunPage> {
                             height: 60,
                             child: ElevatedButton(
                               onPressed: () {
-                                SystemNavigator.pop();
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Peringatan'),
+                                      content: const Text('Pastikan anda tidak memiliki data absen di menu emergency'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: const Text('Batal'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: const Text('Oke'),
+                                          onPressed: () {
+                                            clearSharedPreferences();
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) => LoginPage(),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.all(16),
@@ -230,6 +275,14 @@ class _AkunPageState extends State<AkunPage> {
           setState(() {
             _selectedIndex = index;
           });
+          if (index == 0) {
+            // Navigasi ke halaman "DashboardPage"
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => DashboardPage(),
+              ),
+            );
+          }
           if (index == 1) {
             // Navigasi ke halaman "AkunPage"
             Navigator.of(context).push(

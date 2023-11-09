@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 import 'package:image/image.dart' as img;
 
+import 'components/actionComponent.dart';
 import 'location/location_service.dart';
 import 'location/user_location.dart';
 import 'auth_state.dart';
@@ -99,6 +100,15 @@ class _AbsenPageState extends State<AbsenPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Halaman Absen'),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              buildUserGuide(context),
+              buildInformationCenter(context),
+            ],
+          ),
+        ],
       ),
       body:
       isLoading == true ?
@@ -346,7 +356,7 @@ class _AbsenPageState extends State<AbsenPage> {
                   const SizedBox(height: 20),
 
                   //input kondisi
-                  Text(
+                  const Text(
                     'Kondisi Saat Ini:',
                     style: TextStyle(
                       fontSize: 18,
@@ -575,7 +585,7 @@ class _AbsenPageState extends State<AbsenPage> {
         _showSuccessDialog(nama, status, condition, koordinatUser!, alamatLengkap!, dateTime, foto, parsedData['judul'], parsedData['slogan']);
 
         status == '0-0' ?
-        await prefs.setString('checkStatus', 'A-0') : status == 'A-0' ?
+        await prefs.setString('checkStatus', 'A-') : status == 'A-' ?
     await prefs.setString('checkStatus', '0-0') : null;
 
 
