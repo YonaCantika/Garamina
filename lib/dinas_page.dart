@@ -117,45 +117,45 @@ class _DinasPageState extends State<DinasPage> {
         ],
       ),
       // Bagian 4: Menu dengan Icon dan Text di Bawah
-      bottomNavigationBar: BottomMenu(
-        selectedIndex: _selectedIndex,
-        onItemTapped: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (index == 1) {
-            // Navigasi ke halaman "DinasPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => HistoriPage(),
-              ),
-            );
-          }
-          if (index == 2) {
-            // Navigasi ke halaman "DinasPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DataAbsenPage(),
-              ),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => NotifPage(),
-              ),
-            );
-          }
-          if (index == 4) {
-            // Navigasi ke halaman "AkunPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AkunPage(),
-              ),
-            );
-          }
-        },
-      ),
+      // bottomNavigationBar: BottomMenu(
+      //   selectedIndex: _selectedIndex,
+      //   onItemTapped: (int index) {
+      //     setState(() {
+      //       _selectedIndex = index;
+      //     });
+      //     if (index == 1) {
+      //       // Navigasi ke halaman "DinasPage"
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => HistoriPage(),
+      //         ),
+      //       );
+      //     }
+      //     if (index == 2) {
+      //       // Navigasi ke halaman "DinasPage"
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => DataAbsenPage(),
+      //         ),
+      //       );
+      //     }
+      //     if (index == 3) {
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => NotifPage(),
+      //         ),
+      //       );
+      //     }
+      //     if (index == 4) {
+      //       // Navigasi ke halaman "AkunPage"
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => AkunPage(),
+      //         ),
+      //       );
+      //     }
+      //   },
+      // ),
     );
   }
 }

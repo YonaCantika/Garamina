@@ -4,17 +4,10 @@ import 'package:garamina/statusPengajuanIzin_page.dart';
 import 'auth_state.dart';
 import 'package:provider/provider.dart';
 
-import 'histori_page.dart';
-import 'dataAbsen_page.dart';
 import 'izin_page.dart';
 import 'cuti_page.dart';
 import 'dinas_page.dart';
-import 'akun_page.dart';
-import 'notif_page.dart';
 import 'ulangTahun_page.dart';
-import 'components/menu.dart';
-import 'components/welcome.dart';
-import 'components/carousel.dart';
 import 'components/form_cuti.dart';
 import 'components/form_izin.dart';
 import 'components/customCard.dart';
@@ -26,12 +19,7 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  int _selectedIndex = 0;
-  final List<String> tipeCutiOptions = ['Pilihan 1', 'Pilihan 2', 'Pilihan 3'];
-  String selectedTipeCuti = 'Pilihan 1';
   DateTime dateTime = DateTime.now();
-
-  List<Map<String, dynamic>> cutiData = [];
 
   @override
   void initState() {
@@ -59,16 +47,14 @@ class _DashboardPageState extends State<DashboardPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Bagian 1: Selamat Datang dengan Background Biru
-            // WelcomeSection(),
-            // Bagian 2: Carousel Slider
+            // Bagian 1: card data
             Container(
               height: 200,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.bottomRight,
                   end: Alignment.topLeft,
-                  colors: [Colors.blue, Colors.yellowAccent],
+                  colors: [Colors.blue, Colors.yellow],
                   stops: [0.9, 0.0], // 30% dari sudut
                 ),
                 borderRadius: const BorderRadius.only(
@@ -120,7 +106,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             const Text('Kerja Kita Prestasi Bersama!',
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.yellowAccent,
+                                color: Colors.yellow,
                                 fontWeight: FontWeight.bold
                               ),
                             ),
@@ -133,27 +119,13 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(
               height: 8,
             ),
-            // CarouselSection(),
-            // Bagian 3: ListView dengan Border Radius di Atas
+            // Bagian 3:
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                // borderRadius: const BorderRadius.only(
-                //   topLeft: Radius.circular(20),
-                //   topRight: Radius.circular(20),
-                // ),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.grey.withOpacity(0.5),
-                //     spreadRadius: 2,
-                //     blurRadius: 5,
-                //     offset: const Offset(0, 3),
-                //   ),
-                // ],
               ),
               child: Column(
                 children: [
-                  // Judul "Karyawan Cuti"
                   const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
@@ -172,51 +144,49 @@ class _DashboardPageState extends State<DashboardPage> {
                       showModalBottomSheet(
                         context: context,
                         builder: (BuildContext context) {
-                          return Container(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                ListTile(
-                                  title: const Text('Data Karyawan Cuti'),
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => CutiPage(),
-                                      ),
-                                    );
-                                  },
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              ListTile(
+                                title: const Text('Data Karyawan Cuti'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CutiPage(),
+                                    ),
+                                  );
+                                },
 
-                                ),
-                                ListTile(
-                                  title: Text('Pengajuan Cuti'),
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      builder: (BuildContext context) {
-                                        return FormCuti(); // Panggil FormCuti di sini
-                                      },
-                                    );
-                                  },
-                                ),
-                                ListTile(
-                                  title: const Text('Status Pengajuan Cuti'),
-                                  onTap: () {
-                                    Navigator.of(context).pop();
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => StatusPengajuanCutiPage(),
-                                      ),
-                                    );
-                                  },
+                              ),
+                              ListTile(
+                                title: const Text('Pengajuan Cuti'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (BuildContext context) {
+                                      return FormCuti(); // Panggil FormCuti di sini
+                                    },
+                                  );
+                                },
+                              ),
+                              ListTile(
+                                title: const Text('Status Pengajuan Cuti'),
+                                onTap: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => StatusPengajuanCutiPage(),
+                                    ),
+                                  );
+                                },
 
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           );
                         },
                       );
@@ -281,7 +251,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   // dinas
                   CustomCard(
-                    icon: Icons.mail,
+                    icon: Icons.business,
                     title: 'Karyawan Dinas',
                     onTap: () {
                       showModalBottomSheet(
@@ -354,7 +324,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   // ultah
                   CustomCard(
-                    icon: Icons.mail,
+                    icon: Icons.cake,
                     title: 'Ulang Tahun',
                     onTap: () {
                       showModalBottomSheet(
@@ -385,7 +355,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   // gaji
                   CustomCard(
-                    icon: Icons.mail,
+                    icon: Icons.wallet,
                     title: 'Gaji',
                     onTap: () {
                       showModalBottomSheet(
@@ -488,43 +458,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ],
         ),
       ),
-      // Bagian 4: Menu dengan Icon dan Text di Bawah
-      bottomNavigationBar: BottomMenu(
-        selectedIndex: _selectedIndex,
-        onItemTapped: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => HistoriPage(),
-              ),
-            );
-          }
-          if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DataAbsenPage(),
-              ),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => NotifPage(),
-              ),
-            );
-          }
-          if (index == 4) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AkunPage(),
-              ),
-            );
-          }
-        },
-      ),
+
     );
   }
 }

@@ -21,7 +21,6 @@ class HistoriPage extends StatefulWidget {
 }
 
 class _HistoriPageState extends State<HistoriPage> {
-  int _selectedIndex = 0;
   DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> historiData = [];
   int count =0;
@@ -36,8 +35,6 @@ class _HistoriPageState extends State<HistoriPage> {
   Future<void> fetchDataFromApi(idPeg) async {
     count++;
     final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/history_absen');
-    // final now = DateTime.now();
-    // final formattedDate = DateFormat('yyyy-MM').format(now);
 
     try{
       final response = await http.post(
@@ -89,6 +86,7 @@ class _HistoriPageState extends State<HistoriPage> {
             ],
           ),
         ],
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: Colors.blue,
       body: Column(
@@ -231,45 +229,45 @@ class _HistoriPageState extends State<HistoriPage> {
         ],
       ),
       // Bagian 4: Menu dengan Icon dan Text di Bawah
-      bottomNavigationBar: BottomMenu(
-        selectedIndex: _selectedIndex,
-        onItemTapped: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (index == 0) {
-            // Navigasi ke halaman "DashboardPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DashboardPage(),
-              ),
-            );
-          }
-          if (index == 2) {
-            // Navigasi ke halaman "DashboardPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DataAbsenPage(),
-              ),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => NotifPage(),
-              ),
-            );
-          }
-          if (index == 4) {
-            // Navigasi ke halaman "AkunPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AkunPage(),
-              ),
-            );
-          }
-        },
-      ),
+      // bottomNavigationBar: BottomMenu(
+      //   selectedIndex: _selectedIndex,
+      //   onItemTapped: (int index) {
+      //     setState(() {
+      //       _selectedIndex = index;
+      //     });
+      //     if (index == 0) {
+      //       // Navigasi ke halaman "DashboardPage"
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => DashboardPage(),
+      //         ),
+      //       );
+      //     }
+      //     if (index == 2) {
+      //       // Navigasi ke halaman "DashboardPage"
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => DataAbsenPage(),
+      //         ),
+      //       );
+      //     }
+      //     if (index == 3) {
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => NotifPage(),
+      //         ),
+      //       );
+      //     }
+      //     if (index == 4) {
+      //       // Navigasi ke halaman "AkunPage"
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => AkunPage(),
+      //         ),
+      //       );
+      //     }
+      //   },
+      // ),
     );
   }
 }

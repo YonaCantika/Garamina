@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:io';
@@ -16,14 +15,10 @@ import 'package:image/image.dart' as img;
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:audioplayers/audioplayers.dart';
 
 import 'components/actionComponent.dart';
 import 'location/location_service.dart';
 import 'location/user_location.dart';
-// import 'auth_state.dart';
-// import 'absen_state.dart';
-import 'dataAbsen_page.dart';
 import 'dataAbsenOffline_page.dart';
 
 class AbsenOfflinePage extends StatefulWidget {
@@ -71,7 +66,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     locationService = LocationService();
     initPlatformState();
     getDataFromSharedPreferences();
-    // getAddress();
   }
 
   Future<void> getDataFromSharedPreferences() async {
@@ -171,7 +165,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               StreamBuilder<UserLocation>(
                 stream: locationService?.locationStream,
@@ -210,8 +203,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
 
                     final distance = calculateDistance(lat1, lon1, lat2, lon2);
                     distanceToKantor = distance;
-
-
 
 
                     // Menggunakan Geocoding untuk mengonversi koordinat menjadi alamat
@@ -265,9 +256,9 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                             color: Colors.green[900],
                             borderRadius: BorderRadius.circular(5),
                           ),
-                          child: Text(
-                            'Absen darurat di menu Emergency mengabaikan jarak antara lokasi user dengan lokasi kantor',
-                            style: const TextStyle(
+                          child: const Text(
+                            'Anda bisa absen dari mana saja di menu emergency!',
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
                             ),
@@ -307,62 +298,84 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                 },
               ),
               const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: () {
-                  _getImageFromCamera();
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              imageFile != null ?
+              // menampilkan hasil gambar
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (imageFile != null)
+                    Image.file(
+                      imageFile!,
+                      height: 150,
+                      width: 200,
+                      fit: BoxFit.cover,
+                    ),
+                ],
+              ):
+              // tombol kamera
+              SizedBox(
+                width: double
+                    .infinity,
+                height: 60,
+                child: ElevatedButton.icon(
+                  onPressed:(){
+                    _getImageFromCamera();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(16),
+                    primary: Colors.orange,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  icon: const Icon(Icons.camera),
+                  label: const Text(
+                    'Ambil gambar',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
                   ),
                 ),
-                icon: const Icon(Icons.camera),
-                label: const Text(
-                  'Ambil Gambar',
-                  style: TextStyle(
-                    fontSize: 18,
+              ),
+              const SizedBox(height: 20),
+              // rata kanan
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // input deskripsi
+                  const Text(
+                    'Deskripsi:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              if (imageFile != null)
-                Image.file(
-                  imageFile!,
-                  height: 100,
-                  width: 100,
-                  fit: BoxFit.cover,
-                ),
-              const SizedBox(height: 20),
-              const Text(
-                'Deskripsi:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Masukkan deskripsi pekerjaan',
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Kondisi Saat Ini:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Wrap(
-                children: <Widget>[
-                  _buildConditionBox('semangat'),
-                  _buildConditionBox('sedih'),
-                  _buildConditionBox('gembira'),
-                  _buildConditionBox('tertekan'),
-                  _buildConditionBox('nyaman'),
-                  _buildConditionBox('boring'),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(
+                      hintText: 'Masukkan deskripsi pekerjaan',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  //input kondisi
+                  const Text(
+                    'Kondisi Saat Ini:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Wrap(
+                    children: <Widget>[
+                      _buildConditionBox('Semangat😎', 'semangat'),
+                      _buildConditionBox('Sedih😭', 'sedih'),
+                      _buildConditionBox('Gembira😆', 'gembira'),
+                      _buildConditionBox('Tertekan😥', 'tertekan'),
+                      _buildConditionBox('Nyaman😊', 'nyaman'),
+                      _buildConditionBox('Boring😶', 'boring'),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -423,10 +436,28 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     final pickedFile = await imagePicker.getImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
+      File originalFile = File(pickedFile.path);
+
+      // Load gambar dari path file
+      final originalImage = img.decodeImage(originalFile.readAsBytesSync());
+
+      // Membalik gambar secara horizontal jika diambil dengan kamera depan
+      final img.Image flippedImage = img.flipHorizontal(originalImage!);
+
+      // Simpan gambar yang sudah dibalik ke file baru
+      final File flippedFile = File(pickedFile.path.replaceFirst('.jpg', '_flipped.jpg'))
+        ..writeAsBytesSync(img.encodeJpg(flippedImage));
+
       setState(() {
-        imageFile = File(pickedFile.path);
+        imageFile = flippedFile;
         valid = true;
       });
+
+
+      // setState(() {
+      //   imageFile = File(pickedFile.path);
+      //   valid = true;
+      // });
     }
   }
 
@@ -485,12 +516,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
         });
       }
     }
-
-    // Mendapatkan MultipartFile dari foto
-    // final mimeTypeData = lookupMimeType(foto.path, headerBytes: [0xFF, 0xD8]);
-    // final file = await http.MultipartFile.fromPath('foto', foto.path,
-    //     contentType: MediaType.parse(mimeTypeData!));
-
 
     // Load gambar dari path file
     final image = img.decodeImage(File(foto.path).readAsBytesSync());
@@ -567,22 +592,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     await prefs.setString('checkStatus', 'A-') : status == 'A-' ?
     await prefs.setString('checkStatus', '0-0') : null;
 
-
-
-    //singel data
-    // final Map<String, dynamic> absenData = {
-    //   'status': status == '0-0' ? 'in' : 'out',
-    //   'empId': empId.toString(),
-    //   'shift': 'A',
-    //   'note': note.text,
-    //   'koordinat': koordinatUser!,
-    //   'datetime': dateTime.toIso8601String(),
-    //   'emoticon': condition,
-    //   'jarak': '0.0',
-    //   'alamat': alamatLengkap ?? '',
-    //   // 'foto' : file
-    // };
-    // prefs.setString('absenData', json.encode(absenData));
     setState(() {
       isLoading = false;
     });
@@ -671,11 +680,11 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
   }
 
 
-  Widget _buildConditionBox(String condition) {
+  Widget _buildConditionBox(String condition, String value) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedCondition = condition;
+          selectedCondition = value;
         });
       },
       child: Container(
@@ -683,7 +692,7 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           border: Border.all(
-            color: selectedCondition == condition ? Colors.blue : Colors.grey,
+            color: selectedCondition == value ? Colors.blue : Colors.grey,
             width: 2.0,
           ),
           borderRadius: BorderRadius.circular(10),
@@ -692,7 +701,7 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
           condition,
           style: TextStyle(
             fontSize: 16,
-            color: selectedCondition == condition ? Colors.blue : Colors.black,
+            color: selectedCondition == value ? Colors.blue : Colors.black,
           ),
         ),
       ),

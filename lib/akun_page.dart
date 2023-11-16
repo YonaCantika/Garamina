@@ -6,11 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'components/actionComponent.dart';
-import 'dashboard_page.dart';
-import 'histori_page.dart';
-import 'dataAbsen_page.dart';
-import 'notif_page.dart';
-import 'components/menu.dart';
 
 class AkunPage extends StatefulWidget {
   @override
@@ -18,8 +13,6 @@ class AkunPage extends StatefulWidget {
 }
 
 class _AkunPageState extends State<AkunPage> {
-  int _selectedIndex = 0;
-  List<Map<String, dynamic>> cutiData = [];
 
   @override
   void initState() {
@@ -47,6 +40,7 @@ class _AkunPageState extends State<AkunPage> {
             ],
           ),
         ],
+        automaticallyImplyLeading: false,
       ),
 
       backgroundColor: Colors.blue,
@@ -268,47 +262,6 @@ class _AkunPageState extends State<AkunPage> {
           ),
         ],
       ),
-      // Bagian 4: Menu dengan Icon dan Text di Bawah
-      bottomNavigationBar: BottomMenu(
-        selectedIndex: _selectedIndex,
-        onItemTapped: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (index == 0) {
-            // Navigasi ke halaman "DashboardPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DashboardPage(),
-              ),
-            );
-          }
-          if (index == 1) {
-            // Navigasi ke halaman "AkunPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => HistoriPage(),
-              ),
-            );
-          }
-          if (index == 2) {
-            // Navigasi ke halaman "AkunPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DataAbsenPage(),
-              ),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => NotifPage(),
-              ),
-            );
-          }
-        },
-      ),
-
     );
   }
 }

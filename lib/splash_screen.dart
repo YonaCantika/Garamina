@@ -8,6 +8,11 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 5), () {
@@ -37,18 +42,13 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ],
           ),
-          // child: Icon(
-          //   iconData,
-          //   color: Colors.white,
-          //   size: 30,
-          // ),
           child: Image.asset(
             path,
             width: 50,
             height: 50,
           ),
         ),
-        const SizedBox(height: 5), // Spasi vertikal antara ikon dan teks
+        const SizedBox(height: 5),
         Text(
           text,
           style: const TextStyle(
@@ -75,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen> {
               width: 200,
               height: 200,
             ),
-            const SizedBox(height: 100), // Spasi vertikal
+            const SizedBox(height: 100),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
@@ -85,13 +85,12 @@ class _SplashScreenState extends State<SplashScreen> {
                 _buildIconWithText('assets/img/screen/phone.png', Colors.purple, 'Secure'),
               ],
             ),
-            const SizedBox(height: 20), // Spasi vertikal
-            const SizedBox(height: 20), // Spasi vertikal
-            // Tambahkan gambar di paling bawah
+            const SizedBox(height: 20),
+            const SizedBox(height: 20),
+            // gambar bumn
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
-                // child: const Text("from"),
                 child: Image.asset(
                   'assets/img/bumn.png',
                   width: 100,

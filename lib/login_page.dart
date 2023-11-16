@@ -7,11 +7,11 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info/device_info.dart';
 
-
 import 'auth_state.dart';
 import 'components/actionComponent.dart';
-import 'dashboard_page.dart';
+import 'components/loadingComponent.dart';
 import 'dataAbsenOffline_page.dart';
+import 'components/menu.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -46,7 +46,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
   Future<void> _setPreference(costCenter, idPeg, namaUser, nik) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     if(prefs.getString('idPeg')!=null){
@@ -59,7 +58,6 @@ class _LoginPageState extends State<LoginPage> {
       prefs.setString('nik',nik.toString());
     }
   }
-
 
   // Fungsi untuk melakukan login
   Future<void> _login() async {
@@ -77,8 +75,8 @@ class _LoginPageState extends State<LoginPage> {
         body: {
           'username': username,
           'password': password,
-          // 'macAddress' : macAddress.toString(),
-          'macAddress' : 'a6e32d201fd94ee7'
+          'macAddress' : macAddress.toString(),
+          // 'macAddress' : 'a6e32d201fd94ee7'
         },
       );
 
@@ -113,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
             // Arahkan ke halaman menu
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => DashboardPage(),
+                builder: (context) => CustomBottomNavBar(),
               ),
             );
           }else{
@@ -235,6 +233,7 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Login'),
+
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -249,33 +248,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Stack(
         children: [
           _isLoading == true ?
-            Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: const AssetImage('assets/img/bg.png'), // Background image
-                fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
-                colorFilter: ColorFilter.mode(
-                  Colors.white.withOpacity(0.5), // Warna efek putih dengan opasitas 0.7 (untuk penyesuaian)
-                  BlendMode.dstATop, // Mode efek putih
-                ),
-              ),
-
-            ),
-
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  // Tambahkan logo di atas form
-                  Image.asset(
-                    'assets/img/loader.gif',
-                    width: 150,
-                    height: 150,
-                  ),
-                ],
-              ),
-            ),
-          ) :
+            LoadingComponent():
             Container(
             decoration: const BoxDecoration(
               image: DecorationImage(

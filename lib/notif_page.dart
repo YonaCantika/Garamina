@@ -100,43 +100,43 @@ class _NotifPageState extends State<NotifPage> {
 
         ],
       ),
-      bottomNavigationBar: BottomMenu(
-        selectedIndex: _selectedIndex,
-        onItemTapped: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (index == 0) {
-            // Navigasi ke halaman "DashboardPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DashboardPage(),
-              ),
-            );
-          }
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => HistoriPage(),
-              ),
-            );
-          }
-          if (index == 2) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DataAbsenPage(),
-              ),
-            );
-          }
-          if (index == 4) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AkunPage(),
-              ),
-            );
-          }
-        },
-      ),
+      // bottomNavigationBar: BottomMenu(
+      //   selectedIndex: _selectedIndex,
+      //   onItemTapped: (int index) {
+      //     setState(() {
+      //       _selectedIndex = index;
+      //     });
+      //     if (index == 0) {
+      //       // Navigasi ke halaman "DashboardPage"
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => DashboardPage(),
+      //         ),
+      //       );
+      //     }
+      //     if (index == 1) {
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => HistoriPage(),
+      //         ),
+      //       );
+      //     }
+      //     if (index == 2) {
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => DataAbsenPage(),
+      //         ),
+      //       );
+      //     }
+      //     if (index == 4) {
+      //       Navigator.of(context).push(
+      //         MaterialPageRoute(
+      //           builder: (context) => AkunPage(),
+      //         ),
+      //       );
+      //     }
+      //   },
+      // ),
     );
   }
 }

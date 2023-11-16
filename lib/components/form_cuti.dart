@@ -51,6 +51,7 @@ class _FormCutiState extends State<FormCuti> {
 
       if (response.statusCode == 200) {
         dataPengganti = List<Map<String, dynamic>>.from(json.decode(response.body));
+        // print('jumlah karyawan: ${dataPengganti.length}');
         if (dataPengganti.isNotEmpty) {
           selectedPengganti = dataPengganti[0]['nik'].toString();
         }
@@ -211,7 +212,7 @@ class _FormCutiState extends State<FormCuti> {
       keteranganCuti,
       nik,
       ) async{
-    print('${idTipe}, ${idPegawai}, ${idPengganti}, ${idAtasan}, ${mulaiCuti}, ${selesaiCuti}, ${jatahCuti}, ${jumlahCuti}, ${sisaCuti}, ${lokasiCuti}, ${telpCuti}, ${keteranganCuti}, ${nik}');
+    // print('${idTipe}, ${idPegawai}, ${idPengganti}, ${idAtasan}, ${mulaiCuti}, ${selesaiCuti}, ${jatahCuti}, ${jumlahCuti}, ${sisaCuti}, ${lokasiCuti}, ${telpCuti}, ${keteranganCuti}, ${nik}');
 
     final response = await http.post(
       Uri.parse('https://garamina.com/fintech2/integrasi/android/cuti_izin/insert_cuti'),
@@ -238,8 +239,8 @@ class _FormCutiState extends State<FormCuti> {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
 
-      print(responseData[0]['status']);
-      print(responseData);
+      // print(responseData[0]['status']);
+      // print(responseData);
       if (responseData[0]['status'] == true) {
         Navigator.of(context).pop();
         _showDialog("Berhasil", responseData[0]['pesan']);
@@ -264,8 +265,8 @@ class _FormCutiState extends State<FormCuti> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('${status!}'),
-          content: Text('${message}'),
+          title: Text(status!),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               child: const Text('Oke'),
@@ -329,7 +330,7 @@ class _FormCutiState extends State<FormCuti> {
                   TypeAheadField<Map<String, dynamic>>(
                     textFieldConfiguration: TextFieldConfiguration(
                       controller: penggantiController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Pengganti',
                       ),
                     ),
@@ -341,7 +342,7 @@ class _FormCutiState extends State<FormCuti> {
                     },
                     itemBuilder: (context, suggestion) {
                       return ListTile(
-                        title: Text(suggestion['nama'].toString()),
+                        title: Text('${suggestion['nik'].toString()} - ${suggestion['nama'].toString()}'),
                       );
                     },
                     onSuggestionSelected: (suggestion) {

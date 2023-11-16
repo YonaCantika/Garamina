@@ -111,10 +111,10 @@ class _FormIzinState extends State<FormIzin> {
 
     if (response.statusCode == 200) {
       kategoriIzin = List<Map<String, dynamic>>.from(json.decode(response.body));
-      print(kategoriIzin);
+      // print(kategoriIzin);
       if (kategoriIzin.isNotEmpty) {
         selectedKategoriIzin = kategoriIzin[0]['id_kategori'].toString();
-        print(selectedKategoriIzin);
+        // print(selectedKategoriIzin);
       }
       setState(() {
         _ready +=1;
@@ -132,10 +132,10 @@ class _FormIzinState extends State<FormIzin> {
 
     if (response.statusCode == 200) {
       tipeIzin = List<Map<String, dynamic>>.from(json.decode(response.body));
-      print(tipeIzin);
+      // print(tipeIzin);
       if (tipeIzin.isNotEmpty) {
         selectedTipeIzin = tipeIzin[0]['id_tipe'].toString();
-        print(selectedTipeIzin);
+        // print(selectedTipeIzin);
       }
     }
   }
@@ -181,7 +181,7 @@ class _FormIzinState extends State<FormIzin> {
         _showDialog("Sukses", "Pengajuan izin berhasil dikirim!");
       }
 
-      print(parsedData[0]["status"]);
+      // print(parsedData[0]["status"]);
       // Tangani respon yang diterima dari server
     } else {
       _showDialog("Gagal", "server bermasalah!!");
@@ -193,8 +193,8 @@ class _FormIzinState extends State<FormIzin> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('${status!}'),
-          content: Text('${message}'),
+          title: Text(status!),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               child: const Text('Oke'),
@@ -281,7 +281,7 @@ class _FormIzinState extends State<FormIzin> {
                     },
                     itemBuilder: (context, suggestion) {
                       return ListTile(
-                        title: Text(suggestion['nama'].toString()),
+                        title: Text('${suggestion['nik'].toString()} - ${suggestion['nama'].toString()}'),
                       );
                     },
                     onSuggestionSelected: (suggestion) {
@@ -314,7 +314,7 @@ class _FormIzinState extends State<FormIzin> {
                               selectedKategoriIzin = newValue!;
                               final selectedCutiData = kategoriIzin.firstWhere((kategoriIzin) => kategoriIzin['id_kategori'].toString() == newValue);
                             });
-                            print(selectedKategoriIzin);
+                            // print(selectedKategoriIzin);
                           }
                         },
                         decoration: const InputDecoration(labelText: 'Kategori Izin'),
@@ -366,7 +366,6 @@ class _FormIzinState extends State<FormIzin> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      child: Text('UPLOAD FILE'),
                       onPressed: () async {
                         try {
                           picked = await FilePicker.platform.pickFiles();
@@ -375,15 +374,15 @@ class _FormIzinState extends State<FormIzin> {
                             setState(() {
                               file = picked.files.first.name.toString();
                             });
-                            print('File yang diunggah: ${picked.files.first.name}');
-                            print(picked);
-                            print(file);
+                            // print('File yang diunggah: ${picked.files.first.name}');
+                            // print(picked);
+                            // print(file);
                             // Lakukan sesuatu dengan file yang diunggah di sini
                           } else {
-                            print('Pemilihan file dibatalkan.');
+                            // print('Pemilihan file dibatalkan.');
                           }
                         } catch (e) {
-                          print('Terjadi kesalahan: $e');
+                          // print('Terjadi kesalahan: $e');
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -393,6 +392,7 @@ class _FormIzinState extends State<FormIzin> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
+                      child: const Text('UPLOAD FILE'),
                     ),
                   ) :
                     Text('Document: ${file!}', style: const TextStyle(fontStyle: FontStyle.italic),),

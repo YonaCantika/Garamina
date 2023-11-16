@@ -8,12 +8,8 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'components/actionComponent.dart';
-import 'histori_page.dart';
+import 'dataAbsenOffline_page.dart';
 import 'absen_page.dart';
-import 'dashboard_page.dart';
-import 'notif_page.dart';
-import 'akun_page.dart';
-import 'components/menu.dart';
 import 'components/welcome.dart';
 import 'components/carousel.dart';
 
@@ -23,25 +19,13 @@ class DataAbsenPage extends StatefulWidget {
 }
 
 class _DataAbsenPageState extends State<DataAbsenPage> {
-  int _selectedIndex = 0;
-
-  List<Map<String, dynamic>> cutiData = [];
-  // StreamController<DateTime> _timeStreamController =
-  //     StreamController<DateTime>();
-
   @override
   void initState() {
     super.initState();
-
-    // Memulai Stream waktu
-    // Timer.periodic(Duration(seconds: 1), (timer) {
-    //   _timeStreamController.sink.add(DateTime.now());
-    // });
   }
 
   @override
   void dispose() {
-    // _timeStreamController.close();
     super.dispose();
   }
 
@@ -62,6 +46,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
             ],
           ),
         ],
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: Colors.blue,
       body: Column(
@@ -154,7 +139,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 20), // Jarak antara Column dan StreamBuilder
+                      const SizedBox(width: 20),
 
                     ],
                   ),
@@ -166,78 +151,103 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                       children: [
                         SizedBox(
                           width: double
-                              .infinity, // Membuat tombol login memenuhi lebar
+                              .infinity,
                           height: 60,
                           child: ElevatedButton(
                             onPressed: () async {
-                              final idPeg = authState.idPeg;
-                              if (idPeg != null) {
-                                try {
-                                  final responseData =
-                                  await sendAbsenRequest(idPeg);
-                                  print(responseData);
+                              final SharedPreferences prefs = await SharedPreferences.getInstance();
+                              if(prefs.getString('absenData')!=null){
+                                print('yesss');
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text("Gagal"),
+                                      content: const Text("Terdapat data absen yang belum di sinkrinisasi"),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context).pushReplacement(
+                                              MaterialPageRoute(
+                                                builder: (context) => DataAbsenOfflinePage(),
+                                              ),
+                                            );
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } else{
+                                final idPeg = authState.idPeg;
+                                if (idPeg != null) {
+                                  try {
+                                    final responseData =
+                                    await sendAbsenRequest(idPeg);
+                                    print(responseData);
 
-                                  absenState.setAbsenData(
-                                    checkStatusPegawai: responseData[
-                                    'check_status_pegawai'],
-                                    checkStatusSPPD:
-                                    responseData['check_status_sppd'],
-                                    checkStatusDetasering: responseData[
-                                    'check_status_detasering'],
-                                    checkStatus:
-                                    responseData['check_status'],
-                                    checkShiftM:
-                                    responseData['check_shift_M'],
-                                    koordinat: responseData['koordinat'],
-                                    statusCuti: responseData['status_cuti'],
-                                    jarakKantor:
-                                    responseData['jarak_kantor'],
-                                    status: responseData['status'],
-                                    msg: responseData['msg'],
-                                  );
+                                    absenState.setAbsenData(
+                                      checkStatusPegawai: responseData[
+                                      'check_status_pegawai'],
+                                      checkStatusSPPD:
+                                      responseData['check_status_sppd'],
+                                      checkStatusDetasering: responseData[
+                                      'check_status_detasering'],
+                                      checkStatus:
+                                      responseData['check_status'],
+                                      checkShiftM:
+                                      responseData['check_shift_M'],
+                                      koordinat: responseData['koordinat'],
+                                      statusCuti: responseData['status_cuti'],
+                                      jarakKantor:
+                                      responseData['jarak_kantor'],
+                                      status: responseData['status'],
+                                      msg: responseData['msg'],
+                                    );
 
-                                  final SharedPreferences prefs = await SharedPreferences.getInstance();
+                                    if(prefs.getString('koordinat')!=null){
+                                      print('not set');
+                                    }else{
+                                      print('set');
+                                      await prefs.setString('checkStatus', responseData['check_status'].toString());
+                                      await prefs.setString('checkShiftM', responseData['check_shift_M'].toString());
+                                      await prefs.setString('koordinat', responseData['koordinat'].toString());
+                                    }
 
-                                  if(prefs.getString('koordinat')!=null){
-                                    print('not set');
-                                  }else{
-                                    print('set');
-                                    await prefs.setString('checkStatus', responseData['check_status'].toString());
-                                    await prefs.setString('checkShiftM', responseData['check_shift_M'].toString());
-                                    await prefs.setString('koordinat', responseData['koordinat'].toString());
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AbsenPage(),
+                                      ),
+                                    );
+                                  } catch (error) {
+                                    // print(error);
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title:
+                                          const Text('Gagal Melakukan Absen'),
+                                          content: const Text(
+                                              'Terjadi kesalahan saat melakukan absen. Silakan coba lagi.'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
                                   }
-
-
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AbsenPage(),
-                                    ),
-                                  );
-                                } catch (error) {
-                                  // print(error);
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title:
-                                        const Text('Gagal Melakukan Absen'),
-                                        content: const Text(
-                                            'Terjadi kesalahan saat melakukan absen. Silakan coba lagi.'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: const Text('OK'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
+                                } else {
+                                  // jika id peg null
                                 }
-                              } else {
-                                // Handle the case where idPeg is null here, e.g., by showing an error message.
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -265,45 +275,6 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
             ),
           ),
         ],
-      ),
-
-      // Bagian 4: Menu dengan Icon dan Text di Bawah
-      bottomNavigationBar: BottomMenu(
-        selectedIndex: _selectedIndex,
-        onItemTapped: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (index == 0) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DashboardPage(),
-              ),
-            );
-          }
-          if (index == 1) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => HistoriPage(),
-              ),
-            );
-          }
-          if (index == 3) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => NotifPage(),
-              ),
-            );
-          }
-          if (index == 4) {
-            // Navigasi ke halaman "AkunPage"
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AkunPage(),
-              ),
-            );
-          }
-        },
       ),
     );
   }

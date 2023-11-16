@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:location/location.dart';
 import 'user_location.dart';
 
@@ -14,8 +13,8 @@ class LocationService{
         location.onLocationChanged.listen((locationData) {
           if(locationData != null){
             _locationStreamController.add(UserLocation(
-              latitude: locationData.latitude ?? 0.0, // Gantilah 0.0 dengan nilai default yang sesuai
-              longitude: locationData.longitude ?? 0.0, // Gantilah 0.0 dengan nilai default yang sesuai
+              latitude: locationData.latitude ?? 0.0,
+              longitude: locationData.longitude ?? 0.0,
             ));
           }
         });
