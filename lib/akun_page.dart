@@ -4,6 +4,8 @@ import 'auth_state.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:file_picker/file_picker.dart';
+
 
 import 'components/actionComponent.dart';
 
@@ -13,6 +15,8 @@ class AkunPage extends StatefulWidget {
 }
 
 class _AkunPageState extends State<AkunPage> {
+  String? file = 'null';
+  var picked;
 
   @override
   void initState() {
@@ -62,63 +66,141 @@ class _AkunPageState extends State<AkunPage> {
             ),
           ),
           // Bagian 2: Circle Avatar dengan sedikit spasi di bawahnya
-          SizedBox(
-            height: 170, // Sesuaikan tinggi Circle Avatar sesuai kebutuhan Anda
-            child: Column(
-              children: [
-                authState.foto != 'default.png' ?
-                Container(
-                  decoration: const BoxDecoration(
-                  color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(blurRadius: 10, color: Colors.yellowAccent, spreadRadius: 5)],
-                  ),
-                  child: CircleAvatar(
-                    radius:
-                    75,
-                    backgroundColor:
-                    Colors.blue, // Warna latar belakang lingkaran
-                    child: ClipOval(
-                      child: Image.network(
-                        authState.foto.toString(),
-                        width:
-                        135, // Sesuaikan lebar gambar sesuai kebutuhan Anda
-                        height:
-                        135, // Sesuaikan tinggi gambar sesuai kebutuhan Anda
-                        fit: BoxFit
-                            .cover, // Sesuaikan tampilan gambar sesuai kebutuhan Anda
+          GestureDetector(
+            child: SizedBox(
+              height: 170, // Sesuaikan tinggi Circle Avatar sesuai kebutuhan Anda
+              child: Column(
+                children: [
+                  authState.foto != 'default.png' ?
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [BoxShadow(blurRadius: 10, color: Colors.yellowAccent, spreadRadius: 5)],
+                    ),
+                    child: CircleAvatar(
+                      radius:
+                      75,
+                      backgroundColor:
+                      Colors.blue, // Warna latar belakang lingkaran
+                      child: ClipOval(
+                        child: Image.network(
+                          authState.foto.toString(),
+                          width: 135,
+                          height: 135,
+                          fit: BoxFit
+                              .cover,
+                        ),
+                      ),
+                    ),
+                  ) :
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.yellowAccent,
+                      shape: BoxShape.circle,
+                      boxShadow: [BoxShadow(blurRadius: 10, color: Colors.orange, spreadRadius: 5)],
+                    ),
+                    child: CircleAvatar(
+                      radius:
+                      75,
+                      backgroundColor:
+                      Colors.blue, // Warna latar belakang lingkaran
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/img/profile/${authState.foto.toString()}',
+                          width:
+                          135, // Sesuaikan lebar gambar sesuai kebutuhan Anda
+                          height:
+                          135, // Sesuaikan tinggi gambar sesuai kebutuhan Anda
+                          fit: BoxFit
+                              .cover, // Sesuaikan tampilan gambar sesuai kebutuhan Anda
+                        ),
                       ),
                     ),
                   ),
-                ) :
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.yellowAccent,
-                    shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(blurRadius: 10, color: Colors.orange, spreadRadius: 5)],
-                  ),
-                  child: CircleAvatar(
-                    radius:
-                    75,
-                    backgroundColor:
-                    Colors.blue, // Warna latar belakang lingkaran
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/img/profile/${authState.foto.toString()}',
-                        width:
-                        135, // Sesuaikan lebar gambar sesuai kebutuhan Anda
-                        height:
-                        135, // Sesuaikan tinggi gambar sesuai kebutuhan Anda
-                        fit: BoxFit
-                            .cover, // Sesuaikan tampilan gambar sesuai kebutuhan Anda
-                      ),
-                    ),
-                  ),
-                ),
-                 // Tambahkan spasi di bawah CircleAvatar
-              ],
+                  // Tambahkan spasi di bawah CircleAvatar
+                ],
+              ),
             ),
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (BuildContext context) {
+                  return FractionallySizedBox(
+                    heightFactor: 0.8, // Sesuaikan faktor tinggi modal
+                    child: SingleChildScrollView(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'Update Foto Profil',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 50,),
+                            // document
+                            file == 'null'?
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  try {
+                                    picked = await FilePicker.platform.pickFiles();
+
+                                    if (picked != null && picked.files.isNotEmpty) {
+                                      setState(() {
+                                        file = picked.files.first.name.toString();
+                                      });
+                                    } else {
+                                      // print('Pemilihan file dibatalkan.');
+                                    }
+                                  } catch (e) {
+                                    // print('Terjadi kesalahan: $e');
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(16),
+                                  primary: Colors.orange,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: const Text('Pilih Foto'),
+                              ),
+                            ) :
+                            Text('Foto: ${file!}', style: const TextStyle(fontStyle: FontStyle.italic),),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // _sendDataCuti(authState.idPeg, authState.nik);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.all(16),
+                                  primary: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: const Text('Simpan'),
+                              ),
+                            ),
+
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
           ),
+
 
           // Bagian 3: ListView dengan Border Radius di Atas
           Expanded(
@@ -212,7 +294,7 @@ class _AkunPageState extends State<AkunPage> {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       title: const Text('Peringatan'),
-                                      content: const Text('Pastikan anda tidak memiliki data absen di menu emergency'),
+                                      content: const Text('Semua data yang tersimpan di local akan dihapus!!'),
                                       actions: <Widget>[
                                         TextButton(
                                           child: const Text('Batal'),

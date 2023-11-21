@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:safe_device/safe_device.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
@@ -16,7 +18,9 @@ import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'absen_state.dart';
 import 'components/actionComponent.dart';
+import 'components/loadingComponent.dart';
 import 'location/location_service.dart';
 import 'location/user_location.dart';
 import 'dataAbsenOffline_page.dart';
@@ -27,7 +31,8 @@ class AbsenOfflinePage extends StatefulWidget {
 }
 
 class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
-  LocationService? locationService;
+  LocationService locationService = LocationService();
+  StreamSubscription<UserLocation>? _locationSubscription;
   String? selectedCondition = 'semangat';
   final descriptionController = TextEditingController();
   File? imageFile;
@@ -41,12 +46,8 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
 
 
   //safe device
-  bool isJailBroken = false;
   bool canMockLocation = false;
   bool isRealDevice = true;
-  bool isOnExternalStorage = false;
-  bool isSafeDevice = false;
-  bool isDevelopmentModeEnable = false;
 
   String? idPeg;
   String? namaUser;
@@ -56,14 +57,15 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
 
   @override
   void dispose() {
-    locationService?.dispose();
+    _locationSubscription?.cancel();
+    locationService.stopLocationService();
+    locationService.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    locationService = LocationService();
     initPlatformState();
     getDataFromSharedPreferences();
   }
@@ -90,35 +92,45 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
 
     if (!mounted) return;
     try {
-      isJailBroken = await SafeDevice.isJailBroken;
       canMockLocation = await SafeDevice.canMockLocation;
       isRealDevice = await SafeDevice.isRealDevice;
-      isOnExternalStorage = await SafeDevice.isOnExternalStorage;
-      isSafeDevice = await SafeDevice.isSafeDevice;
-      isDevelopmentModeEnable = await SafeDevice.isDevelopmentModeEnable;
     } catch (error) {
       print(error);
     }
 
     setState(() {
-      isJailBroken = isJailBroken;
       canMockLocation = canMockLocation;
       isRealDevice = isRealDevice;
-      isOnExternalStorage = isOnExternalStorage;
-      isSafeDevice = isSafeDevice;
-      isDevelopmentModeEnable = isDevelopmentModeEnable;
     });
   }
 
+  Future<void> updateStatusEmergency(idPeg, checkStatus) async{
+    try {
+      final response = await http.post(
+        Uri.parse('https://ptgaram.com/api/status_absen_emergency/update_checkStatus'),
+        headers: {
+          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        },
+        body: {
+          'idPeg': idPeg.toString(),
+          'checkStatus': checkStatus.toString(),
+        },
+      );
 
-
-
-
-
-
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+      } else {
+        // Handle error
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final absenState = Provider.of<AbsenState>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Halaman Absen'),
@@ -134,33 +146,7 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
       ),
       body:
       isLoading == true ?
-      Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: const AssetImage('assets/img/bg.png'), // Background image
-            fit: BoxFit.cover, // Sesuaikan ukuran gambar dengan konten
-            colorFilter: ColorFilter.mode(
-              Colors.white.withOpacity(0.7), // Warna efek putih dengan opasitas 0.7 (untuk penyesuaian)
-              BlendMode.dstATop, // Mode efek putih
-            ),
-          ),
-
-        ),
-
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // Tambahkan logo di atas form
-              Image.asset(
-                'assets/img/loader.gif',
-                width: 150,
-                height: 150,
-              ),
-            ],
-          ),
-        ),
-      ) :
+      LoadingComponent() :
       SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -384,7 +370,7 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                 height: 60,
                 child: ElevatedButton(
 
-                  onPressed: checkStatus == '0-0' || checkStatus != '0-0' ? () {
+                  onPressed: checkStatus == '0-0' && isLoading== false || isLoading== false && checkStatus != '0-0' && checkStatus != 'A-A' ? () {
                     setState(() {
                       isLoading = true;
                     });
@@ -415,6 +401,7 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                   ),
                   // Tampilkan label sesuai dengan nilai absenState.check_status
                   child: Text(
+                    isLoading == true ? 'loading...' :
                     checkStatus == '0-0' ? 'Masuk' :
                     checkStatus != '0-0' && checkStatus != 'A-A'  ? 'Pulang' :
                     'Anda sudah absen pulang',
@@ -436,28 +423,27 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     final pickedFile = await imagePicker.getImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
-      File originalFile = File(pickedFile.path);
-
-      // Load gambar dari path file
-      final originalImage = img.decodeImage(originalFile.readAsBytesSync());
-
-      // Membalik gambar secara horizontal jika diambil dengan kamera depan
-      final img.Image flippedImage = img.flipHorizontal(originalImage!);
-
-      // Simpan gambar yang sudah dibalik ke file baru
-      final File flippedFile = File(pickedFile.path.replaceFirst('.jpg', '_flipped.jpg'))
-        ..writeAsBytesSync(img.encodeJpg(flippedImage));
-
-      setState(() {
-        imageFile = flippedFile;
-        valid = true;
-      });
-
-
+      // File originalFile = File(pickedFile.path);
+      //
+      // // Load gambar dari path file
+      // final originalImage = img.decodeImage(originalFile.readAsBytesSync());
+      //
+      // // Membalik gambar secara horizontal jika diambil dengan kamera depan
+      // final img.Image flippedImage = img.flipHorizontal(originalImage!);
+      //
+      // // Simpan gambar yang sudah dibalik ke file baru
+      // final File flippedFile = File(pickedFile.path.replaceFirst('.jpg', '_flipped.jpg'))
+      //   ..writeAsBytesSync(img.encodeJpg(flippedImage));
+      //
       // setState(() {
-      //   imageFile = File(pickedFile.path);
+      //   imageFile = flippedFile;
       //   valid = true;
       // });
+
+      setState(() {
+        imageFile = File(pickedFile.path);
+        valid = true;
+      });
     }
   }
 
@@ -588,13 +574,20 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     final List<String> absenListJson = absenDataList.map((absenData) => json.encode(absenData)).toList();
     prefs.setString('absenData', json.encode(absenListJson));
 
-    status == '0-0' ?
-    await prefs.setString('checkStatus', 'A-') : status == 'A-' ?
-    await prefs.setString('checkStatus', '0-0') : null;
+    // status == '0-0' ?
+    // await prefs.setString('checkStatus', 'A-') : status == 'A-' ?
+    // await prefs.setString('checkStatus', '0-0') : null;
+    if (status == '0-0') {
+      updateStatusEmergency(empId, 'A-');
+      await prefs.setString('checkStatus', 'A-');
+    } else if (status == 'A-') {
+      updateStatusEmergency(empId, 'A-A');
+      await prefs.setString('checkStatus', 'A-A');
+    }
 
-    setState(() {
-      isLoading = false;
-    });
+    // setState(() {
+    //   isLoading = false;
+    // });
     _showSuccessDialog(nama, status, condition, koordinatUser!, alamatLengkap!, dateTime, foto, 'Absen Darurat', 'Kerja kita prestasi bersama');
     setState(() {
       imageFile = null;

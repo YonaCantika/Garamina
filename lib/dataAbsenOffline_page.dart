@@ -14,6 +14,8 @@ class DataAbsenOfflinePage extends StatefulWidget {
 }
 
 class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   String? idPeg;
   String? namaUser;
   String? costCenter;
@@ -173,6 +175,8 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -237,20 +241,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
                 child: const Text('Absen Darurat'),
               ),
               const SizedBox(height: 20,),
-              ElevatedButton(
-                onPressed: () {
-                  dialog('Peringatan', 'Pastikan server sudah aktif sebelum sinkronisasi', false);
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(16),
-                  primary: Colors.green[900],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text('Sinkronisasi'),
-              ),
-            const SizedBox(height: 20,),
             ],
           ),
 

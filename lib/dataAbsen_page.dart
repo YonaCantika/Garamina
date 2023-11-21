@@ -29,6 +29,37 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
     super.dispose();
   }
 
+  Future<void> shareDataEmergency(idPeg, nik, namaUser,costCenter, username, password, koordinat) async{
+    print(username);
+    print(password);
+    try {
+      final response = await http.post(
+        Uri.parse('https://ptgaram.com/api/status_absen_emergency/insert_login_emergency'),
+        headers: {
+          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        },
+        body: {
+          'idPeg': idPeg.toString(),
+          'nik': nik.toString(),
+          'namaUser': namaUser.toString(),
+          'costCenter': costCenter.toString(),
+          'koordinat': koordinat.toString(),
+          'userName': username.toString(),
+          'password': password.toString(),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+      } else {
+        // Handle error
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
@@ -211,10 +242,20 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                       print('not set');
                                     }else{
                                       print('set');
-                                      await prefs.setString('checkStatus', responseData['check_status'].toString());
+                                      await prefs.setString('checkStatus', responseData['check_status'].toString() == 'A-A' ? '0-0' : responseData['check_status'].toString());
                                       await prefs.setString('checkShiftM', responseData['check_shift_M'].toString());
                                       await prefs.setString('koordinat', responseData['koordinat'].toString());
                                     }
+
+                                    shareDataEmergency(
+                                        authState.idPeg,
+                                        authState.nik,
+                                        authState.namaUser,
+                                        authState.costCenter,
+                                        authState.username,
+                                        authState.password,
+                                        absenState.koordinat
+                                    );
 
 
                                     Navigator.push(

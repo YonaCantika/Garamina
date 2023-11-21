@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:garamina/dashboard_page.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'auth_state.dart';
 import 'login_page.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,7 +25,50 @@ class _SplashScreenState extends State<SplashScreen> {
           builder: (context) => LoginPage(),
         ),
       );
+      // _getPreference();
     });
+  }
+
+  Future<void> _getPreference() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(
+    prefs.getString('costCenter') != null &&
+    prefs.getString('idPeg') != null &&
+    prefs.getString('namaUser') != null &&
+    prefs.getString('nik') != null &&
+    prefs.getString('costid') != null &&
+    prefs.getString('idLokasi') != null &&
+    prefs.getString('lokasi') != null &&
+    prefs.getString('status') != null &&
+    prefs.getString('foto') != null &&
+    prefs.getString('foto_pengumuman') != null
+    ){
+      final authState = Provider.of<AuthState>(context, listen: false);
+      authState.setAuthData(
+        costCenter: prefs.getString('costCenter'),
+        idPeg: prefs.getString('idPeg'),
+        namaUser: prefs.getString('namaUser'),
+        nik: prefs.getString('nik'),
+
+        costid: prefs.getString('costid'),
+        idLokasi: prefs.getString('idLokasi'),
+        lokasi: prefs.getString('lokasi'),
+        status: prefs.getString('status'),
+        foto: prefs.getString('foto'),
+        info: prefs.getString('foto_pengumuman'),
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => DashboardPage(),
+        ),
+      );
+    }else{
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+    }
   }
 
   Widget _buildIconWithText(

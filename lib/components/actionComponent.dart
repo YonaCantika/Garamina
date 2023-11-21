@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../auth_state.dart';
 
 Widget buildUserGuide(BuildContext context) {
   return InkWell(
@@ -56,6 +59,7 @@ Widget buildUserGuide(BuildContext context) {
 }
 
 Widget buildInformationCenter(BuildContext context) {
+  final authState = Provider.of<AuthState>(context);
   return InkWell(
     onTap: () {
       showModalBottomSheet(
@@ -75,6 +79,12 @@ Widget buildInformationCenter(BuildContext context) {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
+                    authState.info != null?
+                    Image.network(
+                      authState.info.toString(),
+                      width: 450,
+                      height: 450,
+                    ):
                     Image.asset(
                       'assets/img/pusatInformasi/regulasi.png',
                       width: 450,

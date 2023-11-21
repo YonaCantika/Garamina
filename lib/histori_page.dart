@@ -219,6 +219,10 @@ class _HistoriPageState extends State<HistoriPage> {
                           Text('Keterangan: $keterangan'),
                         ],
                       ),
+                      trailing: Text(keterangan == 'Tidak Absen' ? '🤬' : '',
+                        style: const TextStyle(
+                        fontSize: 24,
+                      ),),
                     ),
                     const Divider(),
                   ],

@@ -19,18 +19,23 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  DateTime dateTime = DateTime.now();
   bool _isObscured = true;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   bool checkedValue = false;
   String? macAddress;
+  String? absenDataString;
+  String? username;
+  String? password;
 
 
   @override
   void initState() {
     super.initState();
     getMacAddress();
+    usernamePassword();
   }
 
    getMacAddress() async {
@@ -46,20 +51,53 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _setPreference(costCenter, idPeg, namaUser, nik) async {
+  Future<void> _setPreference(costCenter,
+      idPeg,
+      namaUser,
+      nik,
+      costid,
+      idLokasi,
+      lokasi,
+      status,
+      foto,
+      foto_pengumuman,
+      username,
+      password) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.getString('idPeg')!=null){
-      print('not set');
+    if(checkedValue){
+      print('data masuk $username');
+      prefs.setString('username',username.toString());
+      prefs.setString('password',password.toString());
+      prefs.setString('checkedValue','true');
     }else{
-      print('set');
+      await prefs.remove('username');
+      await prefs.remove('password');
+      await prefs.remove('checkedValue');
+    }
+    if(prefs.getString('idPeg')!=null){
+      sinkronisasi();
+    }else{
+      // emergency
       prefs.setString('costCenter', costCenter.toString());
       prefs.setString('idPeg', idPeg.toString());
       prefs.setString('namaUser', namaUser.toString());
       prefs.setString('nik',nik.toString());
+
+      // tambahan
+      // prefs.setString('costid',costid.toString());
+      // prefs.setString('idLokasi',idLokasi.toString());
+      // prefs.setString('lokasi',lokasi.toString());
+      // prefs.setString('status',status.toString());
+      // prefs.setString('foto',foto.toString());
+      // prefs.setString('foto_pengumuman',foto_pengumuman.toString());
+      //
+      // print(prefs.getString('costCenter'));
+      // print(prefs.getString('status'));
+      // print(prefs.getString('foto_pengumuman'));
     }
   }
 
-  // Fungsi untuk melakukan login
+  // Fungsi login
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
@@ -89,23 +127,37 @@ class _LoginPageState extends State<LoginPage> {
           if( responseData['status_macAddress'] == 'true'){
             // Login berhasil, simpan data ke Shared Preferences
             _setPreference(
+                // emergency
                 responseData['costCenter'],
                 responseData['idPeg'],
                 responseData['namaUser'],
-                responseData['nik']
+                responseData['nik'],
+                // tambahan
+                responseData['costid'],
+                responseData['idLokasi'],
+                responseData['lokasi'],
+                responseData['status'],
+                responseData['foto'],
+                responseData['foto_pengumuman'],
+                username,
+                password
             );
 
             final authState = Provider.of<AuthState>(context, listen: false);
             authState.setAuthData(
               costCenter: responseData['costCenter'],
-              costid: responseData['costid'],
-              idLokasi: responseData['idLokasi'],
               idPeg: responseData['idPeg'],
-              lokasi: responseData['lokasi'],
               namaUser: responseData['namaUser'],
               nik: responseData['nik'],
+
+              costid: responseData['costid'],
+              idLokasi: responseData['idLokasi'],
+              lokasi: responseData['lokasi'],
               status: responseData['status'],
               foto: responseData['foto'],
+              info: responseData['foto_pengumuman'],
+              username: username,
+              password: password
             );
 
             // Arahkan ke halaman menu
@@ -121,11 +173,27 @@ class _LoginPageState extends State<LoginPage> {
           showErrorDialog('Username atau password salah. Silakan coba lagi.');
         }
       } else {
-        showErrorDialog('Server bermasalah, silahkan hubungi admin!');
+        getDataEmergency(username, password);
+        // showErrorDialog('Server bermasalah, silahkan hubungi admin!');
       }
     } catch (e) {
       showErrorDialog('Periksa koneksi anda lalu coba kembali.');
     }
+  }
+
+  void usernamePassword() async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.getString('username') != null ?
+    _usernameController.text = prefs.getString('username')!: null;
+
+    prefs.getString('password') != null ?
+    _passwordController.text = prefs.getString('password')!: null;
+    prefs.getString('checkedValue') == 'true' ?
+    setState(() {
+      checkedValue = true;
+    }) : setState(() {
+      checkedValue = false;
+    });
   }
 
   void showErrorDialog(String message) {
@@ -227,6 +295,148 @@ class _LoginPageState extends State<LoginPage> {
   }
 
 
+  Future<void> sinkronisasi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getString('absenData')!=null){
+      absenDataString = prefs.getString('absenData');
+
+      final List<dynamic> absenDataList = json.decode(absenDataString!);
+      //image
+      for (var index = 0; index < absenDataList.length; index++) {
+        Map<String, dynamic> jsonData = json.decode(absenDataList[index]);
+        String imagePath = jsonData["foto"];
+        // print(imagePath);
+
+        if (imagePath != null) {
+          File imageFile = File(imagePath);
+          if (imageFile.existsSync()) {
+            List<int> imageBytes = imageFile.readAsBytesSync();
+            String base64Image = base64Encode(imageBytes);
+            jsonData["foto"] = base64Image;
+          }
+          // Setelah mengonversi, perlu mengubah objek JSON yang sudah diperbarui menjadi string kembali.
+          absenDataList[index] = json.encode(jsonData);
+        }
+      }
+      //api
+      final response = await http.post(
+        Uri.parse('https://garamina.com/fintech2/integrasi/android/insert_absen_emergency/login'),
+        headers: {
+          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'Content-Type': 'application/json',
+        },
+        body: absenDataList.toString(),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData[0]['status'] == true) {
+          await prefs.remove('absenData');
+        } else {
+          showErrorDialog('Terdapat data emergency yang tidak bisa di sinkronisasi!');
+        }
+      } else {
+        showErrorDialog('Server masih maintenance');
+      }
+    }else{
+      print('no data absen');
+    }
+  }
+  Future<void> updateStatusEmergency(idPeg, checkStatus) async{
+    try {
+      final response = await http.post(
+        Uri.parse('https://ptgaram.com/api/status_absen_emergency/update_checkStatus'),
+        headers: {
+          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        },
+        body: {
+          'idPeg': idPeg.toString(),
+          'checkStatus': checkStatus.toString(),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+      } else {
+        // Handle error
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  Future<void> setPreferenceEmergency(costCenter, idPeg, namaUser, nik, check_status, check_shift_M, koordinat) async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('costCenter', costCenter.toString());
+    prefs.setString('idPeg', idPeg.toString());
+    prefs.setString('namaUser', namaUser.toString());
+    prefs.setString('nik', nik.toString());
+    prefs.setString('checkStatus', check_status.toString());
+    prefs.setString('checkShiftM', check_shift_M.toString());
+    prefs.setString('koordinat', koordinat.toString());
+  }
+
+  Future<void> getDataEmergency(username, password) async{
+    try {
+      final response = await http.post(
+        Uri.parse('https://ptgaram.com/api/status_absen_emergency/get_status_absen'),
+        headers: {
+          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        },
+        body: {
+          'userName': username.toString(),
+          'password': password.toString(),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+        if(responseData[0]['checkStatus'] == 'A-A'){
+          DateTime tanggalDariResponse = DateTime.parse(responseData[0]['tanggalAbsen']);
+
+          bool bedaHari = tanggalDariResponse.difference(dateTime).inDays != 0;
+          if(bedaHari){
+            updateStatusEmergency(responseData[0]['idPeg'], '0-0');
+            setPreferenceEmergency(responseData[0]['costCenter'], responseData[0]['idPeg'], responseData[0]['namaUser'], responseData[0]['nik'], '0-0', responseData[0]['checkShiftM'], responseData[0]['koordinat']);
+          }else{
+            setPreferenceEmergency(responseData[0]['costCenter'], responseData[0]['idPeg'], responseData[0]['namaUser'], responseData[0]['nik'], responseData[0]['checkStatus'], responseData[0]['checkShiftM'], responseData[0]['koordinat']);
+          }
+        }else{
+          setPreferenceEmergency(responseData[0]['costCenter'], responseData[0]['idPeg'], responseData[0]['namaUser'], responseData[0]['nik'], responseData[0]['checkStatus'], responseData[0]['checkShiftM'], responseData[0]['koordinat']);
+        }
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Peringatan"),
+              content: const Text("Server sedang maintenace, anda diperbolehkan melakukan absen darurat!!"),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Oke'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => DataAbsenOfflinePage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+
+      } else {
+        // Handle error
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -281,7 +491,7 @@ class _LoginPageState extends State<LoginPage> {
                               controller: _usernameController,
                               decoration: const InputDecoration(
                                 labelText: 'Username',
-                                prefixIcon: const Icon(Icons.person),
+                                prefixIcon: Icon(Icons.person),
                                 border: OutlineInputBorder(),
                               ),
                             ),
@@ -339,29 +549,6 @@ class _LoginPageState extends State<LoginPage> {
                               child: const Text('Login'),
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          //emergency button
-                          SizedBox(
-                            width: double
-                                .infinity, // Membuat tombol login memenuhi lebar
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed:
-                              _isLoading ? null :
-                              _daruratAbsen
-                              // getMacAddress
-                              // playAudio
-                              ,
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.all(16),
-                                primary: Colors.orange,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              child: const Text('Emergency'),
-                            ),
-                          ),
                           const SizedBox(height: 40),
                           const Divider(),
                           const Text("Products", style: TextStyle(fontSize: 13, fontWeight:FontWeight.bold, color: Colors.grey),),
@@ -385,100 +572,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       ),
-    );
-  }
-  void _daruratAbsen() async{
-
-    // fix version
-    // try {
-    //   final response = await http.post(
-    //     Uri.parse('https://garamina.com/fintech2/integrasi/android/server_aktif/cek'),
-    //   );
-    //
-    //   if (response.statusCode == 200) {
-    //     final responseData = json.decode(response.body);
-    //
-    //     if (responseData['msg'] == 'Sukses') {
-    //       showDialog(
-    //         context: context,
-    //         builder: (BuildContext context) {
-    //           return AlertDialog(
-    //             title: const Text("Server Berfungsi"),
-    //             content: const Text("Anda tidak bisa mengakses menu Emergency karena server berfungsi dengan baik!!"),
-    //             actions: <Widget>[
-    //               TextButton(
-    //                 child: const Text('oke'),
-    //                 onPressed: () {
-    //                   Navigator.of(context).pop();
-    //                 },
-    //               ),
-    //             ],
-    //           );
-    //         },
-    //       );
-    //     }
-    //   } else {
-    //     showDialog(
-    //       context: context,
-    //       builder: (BuildContext context) {
-    //         return AlertDialog(
-    //           title: const Text("Peringatan"),
-    //           content: const Text("Anda akan memasuki menu darurat, fitur ini hanya boleh digunakan ketika server sedang maintenance, penggunaan menu darurat diluar maintenance tidak diperkenankan!!"),
-    //           actions: <Widget>[
-    //             TextButton(
-    //               child: const Text('Lanjutkan'),
-    //               onPressed: () {
-    //                 Navigator.of(context).pop();
-    //                 Navigator.of(context).push(
-    //                   MaterialPageRoute(
-    //                     builder: (context) => DataAbsenOfflinePage(),
-    //                   ),
-    //                 );
-    //               },
-    //             ),
-    //             TextButton(
-    //               child: const Text('Batal'),
-    //               onPressed: () {
-    //                 Navigator.of(context).pop();
-    //               },
-    //             ),
-    //           ],
-    //         );
-    //       },
-    //     );
-    //   }
-    // } catch (e) {
-    //   showErrorDialog('Periksa koneksi anda lalu coba kembali.');
-    // }
-
-   // testing version
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Peringatan"),
-          content: const Text("Anda akan memasuki menu darurat, fitur ini hanya boleh digunakan ketika server sedang maintenance, penggunaan menu darurat diluar maintenance tidak diperkenankan!!"),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Lanjutkan'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => DataAbsenOfflinePage(),
-                  ),
-                );
-              },
-            ),
-            TextButton(
-              child: const Text('Batal'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }
