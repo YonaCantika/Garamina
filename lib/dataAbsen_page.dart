@@ -8,7 +8,6 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'components/actionComponent.dart';
-import 'dataAbsenOffline_page.dart';
 import 'absen_page.dart';
 import 'components/welcome.dart';
 import 'components/carousel.dart';
@@ -19,9 +18,13 @@ class DataAbsenPage extends StatefulWidget {
 }
 
 class _DataAbsenPageState extends State<DataAbsenPage> {
+  List<Map<String, dynamic>> dataSurvei = [];
+  bool isSurvei = false;
+
   @override
   void initState() {
     super.initState();
+    listSurvei();
   }
 
   @override
@@ -29,12 +32,14 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
     super.dispose();
   }
 
-  Future<void> shareDataEmergency(idPeg, nik, namaUser,costCenter, username, password, koordinat) async{
+  Future<void> shareDataEmergency(
+      idPeg, nik, namaUser, costCenter, username, password, koordinat) async {
     print(username);
     print(password);
     try {
       final response = await http.post(
-        Uri.parse('https://ptgaram.com/api/status_absen_emergency/insert_login_emergency'),
+        Uri.parse(
+            'https://ptgaram.com/api/status_absen_emergency/insert_login_emergency'),
         headers: {
           'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
         },
@@ -57,6 +62,35 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
       }
     } catch (e) {
       // Handle error
+    }
+  }
+
+  Future<void> listSurvei() async {
+    final apiUrl = Uri.parse(
+        'http://192.168.1.252/fintech2/integrasi/android/survei/list_survei');
+
+    final response = await http.post(
+      apiUrl,
+      headers: {
+        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+      },
+      body: {
+        'empId': '797',
+        'tanggal': '2023-11-28',
+      },
+    );
+    print('from data: ${response.body}');
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        dataSurvei = List<Map<String, dynamic>>.from(data);
+        isSurvei = dataSurvei[0]['status'];
+      });
+
+      print('from data: $data');
+      print('from dataSurvei: ${dataSurvei[0]['status']}');
+    } else {
+      throw Exception('Failed to load data from the API');
     }
   }
 
@@ -115,7 +149,8 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.only(left: 20.0), // Padding sebelah kiri
+                        padding: const EdgeInsets.only(
+                            left: 20.0), // Padding sebelah kiri
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -171,80 +206,63 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                         ),
                       ),
                       const SizedBox(width: 20),
-
                     ],
                   ),
                   const SizedBox(height: 20),
 
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          width: double
-                              .infinity,
-                          height: 60,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              final SharedPreferences prefs = await SharedPreferences.getInstance();
-                              if(prefs.getString('absenData')!=null){
-                                print('yesss');
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: const Text("Gagal"),
-                                      content: const Text("Terdapat data absen yang belum di sinkrinisasi"),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context).pushReplacement(
-                                              MaterialPageRoute(
-                                                builder: (context) => DataAbsenOfflinePage(),
-                                              ),
-                                            );
-                                          },
-                                          child: Text('OK'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              } else{
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: double.infinity,
+                            height: 60,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                final SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
                                 final idPeg = authState.idPeg;
                                 if (idPeg != null) {
                                   try {
                                     final responseData =
-                                    await sendAbsenRequest(idPeg);
+                                        await sendAbsenRequest(idPeg);
                                     print(responseData);
 
                                     absenState.setAbsenData(
-                                      checkStatusPegawai: responseData[
-                                      'check_status_pegawai'],
+                                      checkStatusPegawai:
+                                          responseData['check_status_pegawai'],
                                       checkStatusSPPD:
-                                      responseData['check_status_sppd'],
+                                          responseData['check_status_sppd'],
                                       checkStatusDetasering: responseData[
-                                      'check_status_detasering'],
-                                      checkStatus:
-                                      responseData['check_status'],
+                                          'check_status_detasering'],
+                                      checkStatus: responseData['check_status'],
                                       checkShiftM:
-                                      responseData['check_shift_M'],
+                                          responseData['check_shift_M'],
                                       koordinat: responseData['koordinat'],
                                       statusCuti: responseData['status_cuti'],
-                                      jarakKantor:
-                                      responseData['jarak_kantor'],
+                                      jarakKantor: responseData['jarak_kantor'],
                                       status: responseData['status'],
                                       msg: responseData['msg'],
                                     );
 
-                                    if(prefs.getString('koordinat')!=null){
+                                    if (prefs.getString('koordinat') != null) {
                                       print('not set');
-                                    }else{
+                                    } else {
                                       print('set');
-                                      await prefs.setString('checkStatus', responseData['check_status'].toString() == 'A-A' ? '0-0' : responseData['check_status'].toString());
-                                      await prefs.setString('checkShiftM', responseData['check_shift_M'].toString());
-                                      await prefs.setString('koordinat', responseData['koordinat'].toString());
+                                      await prefs.setString(
+                                          'checkStatus',
+                                          responseData['check_status']
+                                                      .toString() ==
+                                                  'A-A'
+                                              ? '0-0'
+                                              : responseData['check_status']
+                                                  .toString());
+                                      await prefs.setString(
+                                          'checkShiftM',
+                                          responseData['check_shift_M']
+                                              .toString());
+                                      await prefs.setString('koordinat',
+                                          responseData['koordinat'].toString());
                                     }
 
                                     shareDataEmergency(
@@ -254,10 +272,12 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                         authState.costCenter,
                                         authState.username,
                                         authState.password,
-                                        absenState.koordinat
-                                    );
-
-
+                                        absenState.koordinat);
+                                    if (responseData['check_status'] == 'A-' &&
+                                        isSurvei == true) {
+                                      // redirect ke halaman survei
+                                    }
+                                    // ignore: use_build_context_synchronously
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -270,8 +290,8 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                       context: context,
                                       builder: (context) {
                                         return AlertDialog(
-                                          title:
-                                          const Text('Gagal Melakukan Absen'),
+                                          title: const Text(
+                                              'Gagal Melakukan Absen'),
                                           content: const Text(
                                               'Terjadi kesalahan saat melakukan absen. Silakan coba lagi.'),
                                           actions: <Widget>[
@@ -289,28 +309,54 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                 } else {
                                   // jika id peg null
                                 }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(16),
-                              primary: Colors.orange,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                // if (prefs.getString('absenData') != null) {
+                                //   print('yesss');
+                                //   showDialog(
+                                //     context: context,
+                                //     builder: (context) {
+                                //       return AlertDialog(
+                                //         title: const Text("Gagal"),
+                                //         content: const Text(
+                                //             "Terdapat data absen yang belum di sinkrinisasi"),
+                                //         actions: <Widget>[
+                                //           TextButton(
+                                //             onPressed: () {
+                                //               Navigator.of(context).pop();
+                                //               Navigator.of(context)
+                                //                   .pushReplacement(
+                                //                 MaterialPageRoute(
+                                //                   builder: (context) =>
+                                //                       DataAbsenOfflinePage(),
+                                //                 ),
+                                //               );
+                                //             },
+                                //             child: Text('OK'),
+                                //           ),
+                                //         ],
+                                //       );
+                                //     },
+                                //   );
+                                // } else {
+
+                                // }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.all(16),
+                                primary: Colors.orange,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
-                            ),
-                            child: const Text(
-                              'Absen',
-                              style: TextStyle(
-                                fontSize: 18,
+                              child: const Text(
+                                'Absen',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  ),
-
-
+                        ],
+                      )),
                 ],
               ),
             ),
@@ -322,7 +368,8 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
 
   Future<Map<String, dynamic>> sendAbsenRequest(String idPeg) async {
     final response = await http.post(
-      Uri.parse('https://garamina.com/fintech2/integrasi/android/login/v_absen'),
+      Uri.parse(
+          'https://garamina.com/fintech2/integrasi/android/login/v_absen'),
       headers: {
         'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
       },

@@ -24,13 +24,12 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         theme: ThemeData(
-          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            unselectedItemColor: Colors.black,
-          ),
-          appBarTheme: const AppBarTheme(
-            elevation: 0, // remove shadow
-          )
-        ),
+            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+              unselectedItemColor: Colors.black,
+            ),
+            appBarTheme: const AppBarTheme(
+              elevation: 0, // remove shadow
+            )),
         home: SplashScreen(),
         // home: LoginPage(),
         debugShowCheckedModeBanner: true,

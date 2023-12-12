@@ -2,16 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-// import 'package:intl/intl.dart';
-import 'auth_state.dart';
-import 'package:provider/provider.dart';
-
 import 'components/actionComponent.dart';
-import 'histori_page.dart';
-import 'dataAbsen_page.dart';
-import 'notif_page.dart';
-import 'akun_page.dart';
-import 'components/menu.dart';
 import 'components/welcome.dart';
 import 'components/customExpandedContainer.dart';
 
@@ -21,7 +12,6 @@ class CutiPage extends StatefulWidget {
 }
 
 class _CutiPageState extends State<CutiPage> {
-  int _selectedIndex = 0;
   DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> cutiData = [];
   bool loading = true;
@@ -34,7 +24,8 @@ class _CutiPageState extends State<CutiPage> {
   }
 
   Future<void> fetchDataFromApi() async {
-    final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/cuti');
+    final apiUrl = Uri.parse(
+        'https://garamina.com/fintech2/integrasi/android/report/cuti');
 
     final response = await http.post(
       apiUrl,
@@ -42,16 +33,17 @@ class _CutiPageState extends State<CutiPage> {
         'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
       },
       body: {
-        'mulaiCuti': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
-        'selesaiCuti': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        'mulaiCuti':
+            '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        'selesaiCuti':
+            '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
       },
     );
 
     if (response.statusCode == 200) {
       loading = false;
       final data = jsonDecode(response.body);
-      data.length <= 0 ?
-      dataResponse = false: dataResponse = true;
+      data.length <= 0 ? dataResponse = false : dataResponse = true;
       setState(() {
         cutiData = List<Map<String, dynamic>>.from(data);
       });
@@ -78,37 +70,32 @@ class _CutiPageState extends State<CutiPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
+          // Bagian 1: Selamat Datang
           WelcomeSection(),
           // Bagian 2: Carousel Slider
           Container(
-            height: 150, // Sesuaikan tinggi carousel sesuai kebutuhan Anda
+            height: 150,
             child: CarouselSlider(
               options: CarouselOptions(
-                aspectRatio:
-                16 / 9, // Sesuaikan dengan rasio aspek yang diinginkan
+                aspectRatio: 16 / 9,
                 enlargeCenterPage: true,
                 autoPlay: true,
-                autoPlayInterval: Duration(seconds: 3), // Interval otomatis
+                autoPlayInterval: Duration(seconds: 3),
                 autoPlayCurve: Curves.fastOutSlowIn,
               ),
               items: [
-                // Item Carousel 1 dengan gambar
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                      'assets/img/slider/1.JPG'),
+                  child: Image.asset('assets/img/slider/1.JPG'),
                 ),
-                // Item Carousel 2 dengan gambar
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                      'assets/img/slider/2.JPG'),
+                  child: Image.asset('assets/img/slider/2.JPG'),
                 ),
               ],
             ),
           ),
-          // Bagian 3: ListView dengan Border Radius di Atas
+          // Bagian 3: ListView
           CustomExpandedContainer(
             title: 'Karyawan Cuti',
             data: cutiData,
@@ -140,43 +127,6 @@ class _CutiPageState extends State<CutiPage> {
           ),
         ],
       ),
-      // Bagian 4: Menu dengan Icon dan Text di Bawah
-      // bottomNavigationBar: BottomMenu(
-      //   selectedIndex: _selectedIndex,
-      //   onItemTapped: (int index) {
-      //     setState(() {
-      //       _selectedIndex = index;
-      //     });
-      //     if (index == 1) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => HistoriPage(),
-      //         ),
-      //       );
-      //     }
-      //     if (index == 2) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => DataAbsenPage(),
-      //         ),
-      //       );
-      //     }
-      //     if (index == 3) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => NotifPage(),
-      //         ),
-      //       );
-      //     }
-      //     if (index == 4) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => AkunPage(),
-      //         ),
-      //       );
-      //     }
-      //   },
-      // ),
     );
   }
 }

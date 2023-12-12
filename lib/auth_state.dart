@@ -13,21 +13,22 @@ class AuthState extends ChangeNotifier {
   String? info;
   String? username;
   String? password;
+  int? notifCount;
 
-  void setAuthData({
-    String? namaUser,
-    String? nik,
-    String? costCenter,
-    String? costid,
-    String? idPeg,
-    String? idLokasi,
-    String? lokasi,
-    String? status,
-    String? foto,
-    String? info,
-    String? username,
-    String? password
-  }) {
+  void setAuthData(
+      {String? namaUser,
+      String? nik,
+      String? costCenter,
+      String? costid,
+      String? idPeg,
+      String? idLokasi,
+      String? lokasi,
+      String? status,
+      String? foto,
+      String? info,
+      String? username,
+      String? password,
+      int? notifCount}) {
     this.namaUser = namaUser;
     this.nik = nik;
     this.costCenter = costCenter;
@@ -40,6 +41,12 @@ class AuthState extends ChangeNotifier {
     this.info = info;
     this.username = username;
     this.password = password;
+    this.notifCount = notifCount;
+    notifyListeners();
+  }
+
+  void setNotifCount({int? notifCount}) {
+    this.notifCount = notifCount;
     notifyListeners();
   }
 }

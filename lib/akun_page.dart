@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
 
-
 import 'components/actionComponent.dart';
 
 class AkunPage extends StatefulWidget {
@@ -28,7 +27,6 @@ class _AkunPageState extends State<AkunPage> {
     await prefs.clear();
   }
 
-
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
@@ -46,11 +44,10 @@ class _AkunPageState extends State<AkunPage> {
         ],
         automaticallyImplyLeading: false,
       ),
-
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
+          // Bagian 1: Selamat Datang
           Container(
             color: Colors.blue,
             height: 100,
@@ -65,60 +62,61 @@ class _AkunPageState extends State<AkunPage> {
               ),
             ),
           ),
-          // Bagian 2: Circle Avatar dengan sedikit spasi di bawahnya
+          // Bagian 2: Circle Avatar
           GestureDetector(
             child: SizedBox(
-              height: 170, // Sesuaikan tinggi Circle Avatar sesuai kebutuhan Anda
+              height: 170,
               child: Column(
                 children: [
-                  authState.foto != 'default.png' ?
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(blurRadius: 10, color: Colors.yellowAccent, spreadRadius: 5)],
-                    ),
-                    child: CircleAvatar(
-                      radius:
-                      75,
-                      backgroundColor:
-                      Colors.blue, // Warna latar belakang lingkaran
-                      child: ClipOval(
-                        child: Image.network(
-                          authState.foto.toString(),
-                          width: 135,
-                          height: 135,
-                          fit: BoxFit
-                              .cover,
+                  authState.foto != 'default.png'
+                      ? Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: 10,
+                                  color: Colors.yellowAccent,
+                                  spreadRadius: 5)
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 75,
+                            backgroundColor: Colors.blue,
+                            child: ClipOval(
+                              child: Image.network(
+                                authState.foto.toString(),
+                                width: 135,
+                                height: 135,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.yellowAccent,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: 10,
+                                  color: Colors.orange,
+                                  spreadRadius: 5)
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 75,
+                            backgroundColor: Colors.blue,
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/img/profile/${authState.foto.toString()}',
+                                width: 135,
+                                height: 135,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ) :
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.yellowAccent,
-                      shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(blurRadius: 10, color: Colors.orange, spreadRadius: 5)],
-                    ),
-                    child: CircleAvatar(
-                      radius:
-                      75,
-                      backgroundColor:
-                      Colors.blue, // Warna latar belakang lingkaran
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/img/profile/${authState.foto.toString()}',
-                          width:
-                          135, // Sesuaikan lebar gambar sesuai kebutuhan Anda
-                          height:
-                          135, // Sesuaikan tinggi gambar sesuai kebutuhan Anda
-                          fit: BoxFit
-                              .cover, // Sesuaikan tampilan gambar sesuai kebutuhan Anda
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Tambahkan spasi di bawah CircleAvatar
                 ],
               ),
             ),
@@ -128,7 +126,7 @@ class _AkunPageState extends State<AkunPage> {
                 isScrollControlled: true,
                 builder: (BuildContext context) {
                   return FractionallySizedBox(
-                    heightFactor: 0.8, // Sesuaikan faktor tinggi modal
+                    heightFactor: 0.8,
                     child: SingleChildScrollView(
                       child: Container(
                         padding: const EdgeInsets.all(16),
@@ -137,41 +135,52 @@ class _AkunPageState extends State<AkunPage> {
                           children: [
                             const Text(
                               'Update Foto Profil',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(height: 50,),
-                            // document
-                            file == 'null'?
-                            SizedBox(
-                              width: double.infinity,
+                            const SizedBox(
                               height: 50,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  try {
-                                    picked = await FilePicker.platform.pickFiles();
+                            ),
+                            // document
+                            file == 'null'
+                                ? SizedBox(
+                                    width: double.infinity,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        try {
+                                          picked = await FilePicker.platform
+                                              .pickFiles();
 
-                                    if (picked != null && picked.files.isNotEmpty) {
-                                      setState(() {
-                                        file = picked.files.first.name.toString();
-                                      });
-                                    } else {
-                                      // print('Pemilihan file dibatalkan.');
-                                    }
-                                  } catch (e) {
-                                    // print('Terjadi kesalahan: $e');
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.all(16),
-                                  primary: Colors.orange,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
+                                          if (picked != null &&
+                                              picked.files.isNotEmpty) {
+                                            setState(() {
+                                              file = picked.files.first.name
+                                                  .toString();
+                                            });
+                                          } else {
+                                            // print('Pemilihan file dibatalkan.');
+                                          }
+                                        } catch (e) {
+                                          // print('Terjadi kesalahan: $e');
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        padding: const EdgeInsets.all(16),
+                                        primary: Colors.orange,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                      child: const Text('Pilih Foto'),
+                                    ),
+                                  )
+                                : Text(
+                                    'Foto: ${file!}',
+                                    style: const TextStyle(
+                                        fontStyle: FontStyle.italic),
                                   ),
-                                ),
-                                child: const Text('Pilih Foto'),
-                              ),
-                            ) :
-                            Text('Foto: ${file!}', style: const TextStyle(fontStyle: FontStyle.italic),),
                             const SizedBox(height: 20),
                             SizedBox(
                               width: double.infinity,
@@ -190,7 +199,6 @@ class _AkunPageState extends State<AkunPage> {
                                 child: const Text('Simpan'),
                               ),
                             ),
-
                           ],
                         ),
                       ),
@@ -201,8 +209,7 @@ class _AkunPageState extends State<AkunPage> {
             },
           ),
 
-
-          // Bagian 3: ListView dengan Border Radius di Atas
+          // Bagian 3: ListView
           Expanded(
             child: Container(
               width: double.infinity,
@@ -231,7 +238,7 @@ class _AkunPageState extends State<AkunPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.only(left: 20.0), // Padding sebelah kiri
+                        padding: const EdgeInsets.only(left: 20.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -284,8 +291,7 @@ class _AkunPageState extends State<AkunPage> {
                       child: Column(
                         children: [
                           SizedBox(
-                            width: double
-                                .infinity,
+                            width: double.infinity,
                             height: 60,
                             child: ElevatedButton(
                               onPressed: () {
@@ -294,7 +300,8 @@ class _AkunPageState extends State<AkunPage> {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       title: const Text('Peringatan'),
-                                      content: const Text('Semua data yang tersimpan di local akan dihapus!!'),
+                                      content: const Text(
+                                          'Semua data yang tersimpan di local akan dihapus!!'),
                                       actions: <Widget>[
                                         TextButton(
                                           child: const Text('Batal'),
@@ -305,10 +312,11 @@ class _AkunPageState extends State<AkunPage> {
                                         TextButton(
                                           child: const Text('Oke'),
                                           onPressed: () {
-                                            clearSharedPreferences();
+                                            // clearSharedPreferences();
                                             Navigator.of(context).push(
                                               MaterialPageRoute(
-                                                builder: (context) => LoginPage(),
+                                                builder: (context) =>
+                                                    LoginPage(),
                                               ),
                                             );
                                           },
@@ -334,10 +342,7 @@ class _AkunPageState extends State<AkunPage> {
                             ),
                           ),
                         ],
-                      )
-                  ),
-
-
+                      )),
                 ],
               ),
             ),

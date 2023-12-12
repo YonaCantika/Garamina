@@ -5,7 +5,7 @@ class CustomExpandedContainer extends StatelessWidget {
   final List<Map<String, dynamic>> data;
   final bool loading;
   final bool dataResponse;
-  final Widget Function(BuildContext, int) itemBuilder; // Menambahkan itemBuilder
+  final Widget Function(BuildContext, int) itemBuilder;
 
   CustomExpandedContainer({
     required this.title,
@@ -41,19 +41,19 @@ class CustomExpandedContainer extends StatelessWidget {
             Expanded(
               child: loading
                   ? const Center(
-                child: Text('Loading...'),
-              )
+                      child: Text('Loading...'),
+                    )
                   : !dataResponse
-                  ? const Center(
-                child: Text('Data tidak tersedia!'),
-              )
-                  : ListView.builder(
-                shrinkWrap: true,
-                itemCount: data.length,
-                itemBuilder: (context, index) {
-                  return itemBuilder(context, index); // Menggunakan itemBuilder yang disediakan
-                },
-              ),
+                      ? const Center(
+                          child: Text('Data tidak tersedia!'),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            return itemBuilder(context, index);
+                          },
+                        ),
             ),
           ],
         ),

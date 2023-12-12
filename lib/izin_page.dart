@@ -34,7 +34,8 @@ class _IzinPageState extends State<IzinPage> {
   }
 
   Future<void> fetchDataFromApi() async {
-    final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/izin');
+    final apiUrl = Uri.parse(
+        'https://garamina.com/fintech2/integrasi/android/report/izin');
 
     // final formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
@@ -44,16 +45,17 @@ class _IzinPageState extends State<IzinPage> {
         'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
       },
       body: {
-        'mulaiIzin': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
-        'selesaiIzin': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        'mulaiIzin':
+            '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        'selesaiIzin':
+            '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
       },
     );
 
     if (response.statusCode == 200) {
       loading = false;
       final data = jsonDecode(response.body);
-      data.length <= 0 ?
-      dataResponse = false: dataResponse = true;
+      data.length <= 0 ? dataResponse = false : dataResponse = true;
       setState(() {
         izinData = List<Map<String, dynamic>>.from(data);
       });

@@ -36,11 +36,11 @@ class _FormCutiState extends State<FormCuti> {
     _getPengganti();
   }
 
-
   Future<void> _getPengganti() async {
     try {
       final response = await http.post(
-        Uri.parse('https://garamina.com/fintech2/integrasi/android/cuti_izin/all_pegawai'),
+        Uri.parse(
+            'https://garamina.com/fintech2/integrasi/android/cuti_izin/all_pegawai'),
         headers: {
           'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
         },
@@ -50,8 +50,9 @@ class _FormCutiState extends State<FormCuti> {
       );
 
       if (response.statusCode == 200) {
-        dataPengganti = List<Map<String, dynamic>>.from(json.decode(response.body));
-        // print('jumlah karyawan: ${dataPengganti.length}');
+        dataPengganti =
+            List<Map<String, dynamic>>.from(json.decode(response.body));
+
         if (dataPengganti.isNotEmpty) {
           selectedPengganti = dataPengganti[0]['nik'].toString();
         }
@@ -66,7 +67,8 @@ class _FormCutiState extends State<FormCuti> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -81,9 +83,9 @@ class _FormCutiState extends State<FormCuti> {
   }
 
   Future<void> _getDataCuti() async {
-
     final response = await http.post(
-      Uri.parse('https://garamina.com/fintech2/integrasi/android/cuti_izin/cuti'),
+      Uri.parse(
+          'https://garamina.com/fintech2/integrasi/android/cuti_izin/cuti'),
       headers: {
         'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
       },
@@ -101,7 +103,7 @@ class _FormCutiState extends State<FormCuti> {
         sisaCutiController.text = dataCuti[0]['sisa'].toString();
       }
       setState(() {
-        _ready +=1;
+        _ready += 1;
       });
       // try {
       //
@@ -114,7 +116,8 @@ class _FormCutiState extends State<FormCuti> {
   Future<void> _getAtasan() async {
     try {
       final response = await http.post(
-        Uri.parse('https://garamina.com/fintech2/integrasi/android/cuti_izin/atasan_langsung'),
+        Uri.parse(
+            'https://garamina.com/fintech2/integrasi/android/cuti_izin/atasan_langsung'),
         headers: {
           'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
         },
@@ -125,7 +128,8 @@ class _FormCutiState extends State<FormCuti> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        atasanController.text = '${responseData[0]['nik_atasan']} - ${responseData[0]['nama_atasan']}';
+        atasanController.text =
+            '${responseData[0]['nik_atasan']} - ${responseData[0]['nama_atasan']}';
         idAtasan = responseData[0]['nik_atasan'];
       } else {
         // Handle error
@@ -135,11 +139,11 @@ class _FormCutiState extends State<FormCuti> {
     }
   }
 
-
-
   int _hitungJumlahHariCuti() {
-    DateTime mulaiCuti = DateFormat("dd-MM-yyyy").parse(mulaiCutiController.text);
-    DateTime selesaiCuti = DateFormat("dd-MM-yyyy").parse(selesaiCutiController.text);
+    DateTime mulaiCuti =
+        DateFormat("dd-MM-yyyy").parse(mulaiCutiController.text);
+    DateTime selesaiCuti =
+        DateFormat("dd-MM-yyyy").parse(selesaiCutiController.text);
 
     if (mulaiCuti.isAfter(selesaiCuti)) {
       return 0;
@@ -159,10 +163,6 @@ class _FormCutiState extends State<FormCuti> {
     print(selesaiCutiController.text);
 
     try {
-      // String mulaiCuti = '${mulaiCutiController.text.substring(5, 8)}-${mulaiCutiController.text.substring(, 5)}-${mulaiCutiController.text.substring(0, 2)}';
-      // String selesaiCuti = '${selesaiCutiController.text.substring(6, 10)}-${selesaiCutiController.text.substring(3, 5)}-${selesaiCutiController.text.substring(0, 2)}';
-      // print(mulaiCuti);
-
       _sendDataCuti(
         selectedTipeCuti,
         int.parse(idPeg),
@@ -178,69 +178,51 @@ class _FormCutiState extends State<FormCuti> {
         keteranganCutiController.text,
         int.parse(nik),
       );
-      // sisaCuti -= jumlahHariCuti;
+
       sisaCutiController.text = sisaCuti.toString();
-    }catch(e){
+    } catch (e) {
       print(e);
     }
-
-
-    // if (jumlahHariCuti > 0 && jumlahHariCuti <= sisaCuti) {
-    //
-    // } else {
-    //   // Tampilkan pesan kesalahan jika jumlah hari cuti melebihi sisa cuti.
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Jumlah hari cuti melebihi sisa cuti yang tersedia.'),
-    //     ),
-    //   );
-    // }
   }
 
   void _sendDataCuti(
-      idTipe,
-      idPegawai,
-      idPengganti,
-      idAtasan,
-      mulaiCuti,
-      selesaiCuti,
-      jatahCuti,
-      jumlahCuti,
-      sisaCuti,
-      lokasiCuti,
-      telpCuti,
-      keteranganCuti,
-      nik,
-      ) async{
-    // print('${idTipe}, ${idPegawai}, ${idPengganti}, ${idAtasan}, ${mulaiCuti}, ${selesaiCuti}, ${jatahCuti}, ${jumlahCuti}, ${sisaCuti}, ${lokasiCuti}, ${telpCuti}, ${keteranganCuti}, ${nik}');
-
+    idTipe,
+    idPegawai,
+    idPengganti,
+    idAtasan,
+    mulaiCuti,
+    selesaiCuti,
+    jatahCuti,
+    jumlahCuti,
+    sisaCuti,
+    lokasiCuti,
+    telpCuti,
+    keteranganCuti,
+    nik,
+  ) async {
     final response = await http.post(
-      Uri.parse('https://garamina.com/fintech2/integrasi/android/cuti_izin/insert_cuti'),
+      Uri.parse(
+          'https://garamina.com/fintech2/integrasi/android/cuti_izin/insert_cuti'),
       headers: {
         'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
       },
       body: {
-        'idTipe' : idTipe.toString(),
-        'idPegawai' : idPegawai.toString(),
-        'idPengganti' : idPengganti.toString(),
-        'idAtasan' : idAtasan.toString(),
-        'mulaiCuti' : mulaiCuti.toString(),
-        'selesaiCuti' : selesaiCuti.toString(),
-        'jatahCuti' : sisaCuti.toString(),
-        // 'jumlahCuti' : jumlahCuti.toString(),
-        // 'sisaCuti' : sisaCuti.toString(),
-        'lokasiCuti' : lokasiCuti.toString(),
-        'telpCuti' : telpCuti.toString(),
-        'keteranganCuti' : keteranganCuti.toString(),
-        'nik' : nik.toString()
+        'idTipe': idTipe.toString(),
+        'idPegawai': idPegawai.toString(),
+        'idPengganti': idPengganti.toString(),
+        'idAtasan': idAtasan.toString(),
+        'mulaiCuti': mulaiCuti.toString(),
+        'selesaiCuti': selesaiCuti.toString(),
+        'jatahCuti': sisaCuti.toString(),
+        'lokasiCuti': lokasiCuti.toString(),
+        'telpCuti': telpCuti.toString(),
+        'keteranganCuti': keteranganCuti.toString(),
+        'nik': nik.toString()
       },
     );
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-
-      // print(responseData[0]['status']);
-      // print(responseData);
       if (responseData[0]['status'] == true) {
         Navigator.of(context).pop();
         _showDialog("Berhasil", responseData[0]['pesan']);
@@ -250,14 +232,6 @@ class _FormCutiState extends State<FormCuti> {
     } else {
       _showDialog("Gagal", "server bermasalah!!");
     }
-
-    // try {
-    //
-    // } catch (e) {
-    //   print('gagal');
-    //   print(e);
-    //   // showErrorDialog('Periksa koneksi anda lalu coba kembali.');
-    // }
   }
 
   void _showDialog(String status, String message) {
@@ -280,7 +254,6 @@ class _FormCutiState extends State<FormCuti> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
@@ -294,186 +267,209 @@ class _FormCutiState extends State<FormCuti> {
             children: [
               _ready == 2
                   ? Column(
-                children: [
-                  const Text(
-                    'Pengajuan Cuti',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  // jenis cuti
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      DropdownButtonFormField<String>(
-                        value: selectedTipeCuti,
-                        items: dataCuti.map((Map<String, dynamic> cutiData) {
-                          final String idTipe = cutiData['idTipe'].toString();
-                          return DropdownMenuItem<String>(
-                            value: idTipe,
-                            child: Text(cutiData['namaCuti']),
-                          );
-                        }).toList(),
-                        onChanged: (newValue) {
-                          if (dataCuti.any((cutiData) => cutiData['idTipe'].toString() == newValue)) {
-                            setState(() {
-                              selectedTipeCuti = newValue!;
-                              final selectedCutiData = dataCuti.firstWhere((cutiData) => cutiData['idTipe'].toString() == newValue);
-                              jatahCutiController.text = selectedCutiData['jatahCuti'].toString();
-                              sisaCutiController.text = selectedCutiData['sisa'].toString();
-                            });
-                          }
-                        },
-                        decoration: const InputDecoration(labelText: 'Tipe Cuti'),
-                      ),
-                    ],
-                  ),
-                  // pengganti
-                  TypeAheadField<Map<String, dynamic>>(
-                    textFieldConfiguration: TextFieldConfiguration(
-                      controller: penggantiController,
-                      decoration: const InputDecoration(
-                        labelText: 'Pengganti',
-                      ),
-                    ),
-                    suggestionsCallback: (pattern) {
-                      return dataPengganti
-                          .where((item) =>
-                          item['nama'].toLowerCase().contains(pattern.toLowerCase()))
-                          .toList();
-                    },
-                    itemBuilder: (context, suggestion) {
-                      return ListTile(
-                        title: Text('${suggestion['nik'].toString()} - ${suggestion['nama'].toString()}'),
-                      );
-                    },
-                    onSuggestionSelected: (suggestion) {
-                      penggantiController.text = suggestion['nama'].toString();
-                      selectedPengganti = suggestion['nik'].toString();
-                    },
-                  ),
-                  // tanggal
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
+                      children: [
+                        const Text(
+                          'Pengajuan Cuti',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        // jenis cuti
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            TextFormField(
-                              decoration: const InputDecoration(labelText: 'Mulai Cuti'),
-                              controller: mulaiCutiController,
-                              onTap: () {
-                                _selectDate(context, mulaiCutiController);
+                            DropdownButtonFormField<String>(
+                              value: selectedTipeCuti,
+                              items:
+                                  dataCuti.map((Map<String, dynamic> cutiData) {
+                                final String idTipe =
+                                    cutiData['idTipe'].toString();
+                                return DropdownMenuItem<String>(
+                                  value: idTipe,
+                                  child: Text(cutiData['namaCuti']),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                if (dataCuti.any((cutiData) =>
+                                    cutiData['idTipe'].toString() ==
+                                    newValue)) {
+                                  setState(() {
+                                    selectedTipeCuti = newValue!;
+                                    final selectedCutiData =
+                                        dataCuti.firstWhere((cutiData) =>
+                                            cutiData['idTipe'].toString() ==
+                                            newValue);
+                                    jatahCutiController.text =
+                                        selectedCutiData['jatahCuti']
+                                            .toString();
+                                    sisaCutiController.text =
+                                        selectedCutiData['sisa'].toString();
+                                  });
+                                }
                               },
+                              decoration:
+                                  const InputDecoration(labelText: 'Tipe Cuti'),
                             ),
                           ],
                         ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                        // pengganti
+                        TypeAheadField<Map<String, dynamic>>(
+                          textFieldConfiguration: TextFieldConfiguration(
+                            controller: penggantiController,
+                            decoration: const InputDecoration(
+                              labelText: 'Pengganti',
+                            ),
+                          ),
+                          suggestionsCallback: (pattern) {
+                            return dataPengganti
+                                .where((item) => item['nama']
+                                    .toLowerCase()
+                                    .contains(pattern.toLowerCase()))
+                                .toList();
+                          },
+                          itemBuilder: (context, suggestion) {
+                            return ListTile(
+                              title: Text(
+                                  '${suggestion['nik'].toString()} - ${suggestion['nama'].toString()}'),
+                            );
+                          },
+                          onSuggestionSelected: (suggestion) {
+                            penggantiController.text =
+                                suggestion['nama'].toString();
+                            selectedPengganti = suggestion['nik'].toString();
+                          },
+                        ),
+                        // tanggal
+                        Row(
                           children: [
-                            TextFormField(
-                              decoration: const InputDecoration(labelText: 'Selesai Cuti'),
-                              controller: selesaiCutiController,
-                              onTap: () {
-                                _selectDate(context, selesaiCutiController);
-                              },
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                        labelText: 'Mulai Cuti'),
+                                    controller: mulaiCutiController,
+                                    onTap: () {
+                                      _selectDate(context, mulaiCutiController);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                        labelText: 'Selesai Cuti'),
+                                    controller: selesaiCutiController,
+                                    onTap: () {
+                                      _selectDate(
+                                          context, selesaiCutiController);
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  // jatah dan sisa cuti
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                        // jatah dan sisa cuti
+                        Row(
                           children: [
-                            TextFormField(
-                              decoration: const InputDecoration(labelText: 'Jatah Cuti'),
-                              controller: jatahCutiController,
-                              readOnly: true,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                        labelText: 'Jatah Cuti'),
+                                    controller: jatahCutiController,
+                                    readOnly: true,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                        labelText: 'Sisa Cuti'),
+                                    controller: sisaCutiController,
+                                    readOnly: true,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                        // lokasi dan nomor hp
+                        Row(
                           children: [
-                            TextFormField(
-                              decoration: const InputDecoration(labelText: 'Sisa Cuti'),
-                              controller: sisaCutiController,
-                              readOnly: true,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                        labelText: 'Lokasi Cuti'),
+                                    controller: lokasiCutiController,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                        labelText: 'No. Telpon'),
+                                    controller: telpCutiController,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  // lokasi dan nomor hp
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextFormField(
-                              decoration: const InputDecoration(labelText: 'Lokasi Cuti'),
-                              controller: lokasiCutiController,
+                        // atasan
+                        TextFormField(
+                          controller: atasanController,
+                          readOnly: true,
+                          decoration:
+                              const InputDecoration(labelText: 'Atasan'),
+                        ),
+                        // keterangan
+                        TextFormField(
+                          decoration:
+                              const InputDecoration(labelText: 'Keterangan'),
+                          controller: keteranganCutiController,
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _ajukanCuti(authState.nik!, authState.idPeg!);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.all(16),
+                              primary: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
-                          ],
+                            child: const Text('Ajukan Cuti'),
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextFormField(
-                              decoration: const InputDecoration(labelText: 'No. Telpon'),
-                              controller: telpCutiController,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  // atasan
-                  TextFormField(
-                    controller: atasanController,
-                    readOnly: true,
-                    decoration: const InputDecoration(labelText: 'Atasan'),
-                  ),
-                  // keterangan
-                  TextFormField(
-                    decoration: const InputDecoration(labelText: 'Keterangan'),
-                    controller: keteranganCutiController,
-                  ),
-                  const SizedBox(height: 12), // Spasi antara password dan tombol login
-                  SizedBox(
-                    width: double.infinity, // Membuat tombol login memenuhi lebar
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _ajukanCuti(authState.nik!,authState.idPeg!);
-                        // Tambahkan kode untuk mengirim data pengajuan cuti ke server atau penyimpanan lokal
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(16),
-                        primary: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text('Ajukan Cuti'),
-                    ),
-                  ),
-                ],
-              )
+                      ],
+                    )
                   : const Column(
-                children: [Text("Loading...")],
-              ),
+                      children: [Text("Loading...")],
+                    ),
             ],
           ),
         ),

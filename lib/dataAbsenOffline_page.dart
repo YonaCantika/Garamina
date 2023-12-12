@@ -65,11 +65,11 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
     return base64Image;
   }
 
-
   Future<void> sinkronisasi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.getString('absenData')==null){
-      showErrorDialog('Data Kosong','Anda tidak bisa melakukan sinkronisasi karena data absen kosong!');
+    if (prefs.getString('absenData') == null) {
+      showErrorDialog('Data Kosong',
+          'Anda tidak bisa melakukan sinkronisasi karena data absen kosong!');
     }
 
     final List<dynamic> absenDataList = json.decode(absenDataString!);
@@ -96,7 +96,8 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
     print(absenDataList.toString());
 
     final response = await http.post(
-      Uri.parse('https://garamina.com/fintech2/integrasi/android/insert_absen_emergency/login'),
+      Uri.parse(
+          'https://garamina.com/fintech2/integrasi/android/insert_absen_emergency/login'),
       headers: {
         'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
         'Content-Type': 'application/json',
@@ -119,10 +120,10 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
           ),
         );
       } else {
-        showErrorDialog('Gagal','Sinkronisasi Gagal!');
+        showErrorDialog('Gagal', 'Sinkronisasi Gagal!');
       }
     } else {
-      showErrorDialog('Gagal','Server masih maintenance');
+      showErrorDialog('Gagal', 'Server masih maintenance');
     }
     // try {
     //
@@ -133,10 +134,11 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
 
   Future<void> getDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.getString('idPeg')==null || prefs.getString('koordinat')==null){
-      showErrorDialog('Data Kosong','Data anda belum tercatat di menu emergency, hubungi admin untuk informasi lebih lanjut!');
+    if (prefs.getString('idPeg') == null ||
+        prefs.getString('koordinat') == null) {
+      showErrorDialog('Data Kosong',
+          'Data anda belum tercatat di menu emergency, hubungi admin untuk informasi lebih lanjut!');
     }
-
 
     absenDataString = prefs.getString('absenData');
     print(absenDataString);
@@ -145,14 +147,14 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
       final List<dynamic> absenDataList = json.decode(absenDataString!);
       print(absenDataList);
 
-
       if (absenDataList.isNotEmpty) {
         final List<Map<String, dynamic>> absenList = absenDataList
             .map((item) => json.decode(item))
             .cast<Map<String, dynamic>>()
             .toList();
 
-        final List<Map<String, dynamic>> reversedAbsenList = List.from(absenList.reversed);
+        final List<Map<String, dynamic>> reversedAbsenList =
+            List.from(absenList.reversed);
 
         setState(() {
           absenListJson = reversedAbsenList;
@@ -160,8 +162,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
         // print(absenListJson);
       }
     }
-
-
 
     // Mengambil nilai di local
     setState(() {
@@ -174,8 +174,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
       nik = prefs.getString('nik');
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +211,7 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
                     ),
                   ),
                   Text(
-                    checkStatus ??'',
+                    checkStatus ?? '',
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -229,7 +227,10 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  dialog('Peringatan', 'Pastikan nama dan cost center sesuai sebelum melakukan absen darurat', true);
+                  dialog(
+                      'Peringatan',
+                      'Pastikan nama dan cost center sesuai sebelum melakukan absen darurat',
+                      true);
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(16),
@@ -240,11 +241,31 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
                 ),
                 child: const Text('Absen Darurat'),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
             ],
           ),
 
-
+          Container(
+            color: Colors.blue,
+            height: 50,
+            padding: const EdgeInsets.all(16),
+            child: const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center, // Tengahkan teks
+                children: [
+                  Text(
+                    'NB: Waktu Absen di Convert Menjadi WIB',
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.yellow,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ),
 
           // Bagian 3: ListView dengan Border Radius di Atas
           Expanded(
@@ -273,44 +294,46 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
                   Expanded(
                     child: absenListJson.isEmpty
                         ? const Center(
-                      child: Text('Belum ada absen'),
-                    )
+                            child: Text('Belum ada absen'),
+                          )
                         : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: absenListJson.length,
-                      itemBuilder: (context, index) {
-                        final status = absenListJson[index]['status'];
-                        final note = absenListJson[index]['note'];
-                        final datetime = absenListJson[index]['datetime'];
-                        final emoticon = absenListJson[index]['emoticon'];
-                        final foto = absenListJson[index]['foto'];
-                        return Column(
-                            children: [
-                             ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: FileImage(File(foto)),
-                              ),
-                              title: Text('Absen ${status == "out" ? "Pulang" : "Masuk"}'),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                            shrinkWrap: true,
+                            itemCount: absenListJson.length,
+                            itemBuilder: (context, index) {
+                              final status = absenListJson[index]['status'];
+                              final note = absenListJson[index]['note'];
+                              final datetime = absenListJson[index]['datetime'];
+                              final emoticon = absenListJson[index]['emoticon'];
+                              final foto = absenListJson[index]['foto'];
+                              return Column(
                                 children: [
-                                  Text('${datetime.substring(0, 10)}'),
-                                  Text('$note', maxLines:2, overflow: TextOverflow.ellipsis,),
-
+                                  ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundImage: FileImage(File(foto)),
+                                    ),
+                                    title: Text(
+                                        'Absen ${status == "out" ? "Pulang" : "Masuk"}'),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('${datetime.substring(0, 10)}'),
+                                        Text(
+                                          '$note',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                    trailing:
+                                        Text('${datetime.substring(11, 19)}'),
+                                  ),
+                                  const Divider(),
                                 ],
-                              ),
-                              trailing: Text('${datetime.substring(11, 19)}'),
-
-                            ),
-                              const Divider(),
-                            ],
-                        );
-
-
-                      },
-                    ),
+                              );
+                            },
+                          ),
                   ),
-
                 ],
               ),
             ),
@@ -322,8 +345,7 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
     );
   }
 
-
-  void dialog(header, message, opsi){
+  void dialog(header, message, opsi) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -335,12 +357,13 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
               child: const Text('Lanjutkan'),
               onPressed: () {
                 Navigator.of(context).pop();
-                opsi==true ?
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => AbsenOfflinePage(),
-                  ),
-                ): sinkronisasi();
+                opsi == true
+                    ? Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => AbsenOfflinePage(),
+                        ),
+                      )
+                    : sinkronisasi();
               },
             ),
             TextButton(

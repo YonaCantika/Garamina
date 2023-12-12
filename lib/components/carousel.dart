@@ -27,7 +27,6 @@ class CarouselSection extends StatelessWidget {
               'assets/img/slider/2.JPG',
             ),
           ),
-          // Tambahkan item Carousel selanjutnya sesuai kebutuhan
         ],
       ),
     );

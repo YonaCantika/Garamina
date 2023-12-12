@@ -35,7 +35,7 @@ class MapsView extends StatelessWidget {
           ),
         },
         onMapCreated: (GoogleMapController controller) {
-          // Pengendalian peta jika diperlukan
+          // Pengendalian peta
         },
       ),
     );

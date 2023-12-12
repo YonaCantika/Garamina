@@ -1,12 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:garamina/browser_page.dart';
+import 'package:garamina/components/loadingComponent.dart';
+import 'package:garamina/survei_page.dart';
 import 'package:provider/provider.dart';
 import 'auth_state.dart';
 import 'components/actionComponent.dart';
-import 'dashboard_page.dart';
-import 'histori_page.dart';
-import 'akun_page.dart';
-import 'dataAbsen_page.dart';
-import 'components/menu.dart';
+import 'package:http/http.dart' as http;
 
 class NotifPage extends StatefulWidget {
   @override
@@ -14,25 +14,104 @@ class NotifPage extends StatefulWidget {
 }
 
 class _NotifPageState extends State<NotifPage> {
-  int _selectedIndex = 0;
-  // DateTime dateTime = DateTime.now;
-
   // Daftar notifikasi
-  List<String> notifications = [
-    'Notifikasi 1: Selamat datang di aplikasi kami!',
-    'Notifikasi 2: Update penting tersedia. Perbarui sekarang.',
-    'Notifikasi 3: Anda memiliki 3 pesan baru.',
-    'Notifikasi 4: Undangan pertemuan besok.',
-  ];
+  List<Map<String, dynamic>> notifications = [];
+  int? _notificationCount;
+  bool loading = true;
+  DateTime dateTime = DateTime.now();
+  List<Map<String, dynamic>> surveiData = [];
+  bool dataResponseDinas = false;
 
   @override
   void initState() {
     super.initState();
+    fetchDataSurvei();
+  }
+
+  Future<void> getDataNotif(empId) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'https://garamina.com/fintech2/integrasi/android/lonceng/list_lonceng'),
+        headers: {
+          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        },
+        body: {
+          'empId': empId.toString(),
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        print(responseData);
+        setState(() {
+          notifications = List<Map<String, dynamic>>.from(responseData);
+          loading = false;
+        });
+        final authState = Provider.of<AuthState>(context, listen: false);
+        authState.setNotifCount(notifCount: notifications.length);
+      } else {
+        // Handle jika request tidak berhasil
+      }
+    } catch (e) {
+      // Handle jika terjadi kesalahan
+    }
+  }
+
+  Future<void> fetchDataSurvei() async {
+    try {
+      final apiUrl = Uri.parse(
+          'http://192.168.1.252/fintech2/integrasi/android/survei/list_survei');
+
+      final response = await http.post(
+        apiUrl,
+        headers: {
+          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        },
+        body: {
+          'empId': '797',
+          'tanggal':
+              '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print('from survei $data');
+
+        setState(() {
+          surveiData = List<Map<String, dynamic>>.from(data);
+        });
+
+        if (data.length > 0) {
+          setState(() {
+            loading = false;
+            dataResponseDinas = true;
+          });
+        } else {
+          setState(() {
+            loading = false;
+            dataResponseDinas = false;
+          });
+        }
+      } else {
+        throw Exception(
+            'Failed to load data from the API. Status Code: ${response.statusCode}');
+      }
+    } catch (e) {
+      setState(() {
+        loading = false;
+        dataResponseDinas = false;
+      });
+
+      print('Error fetching data from API: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
+    getDataNotif(authState.idPeg);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifikasi'),
@@ -49,94 +128,132 @@ class _NotifPageState extends State<NotifPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Bagian menampilkan daftar notifikasi
+          const SizedBox(
+            height: 20,
+          ),
+          const Text(
+            'Notifikasi Umum',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.grey, fontSize: 15),
+          ),
           Expanded(
-            child: ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text('Detail Notifikasi'),
-                              content: Text(notifications[index]),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Tutup'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        margin: const EdgeInsets.only(top: 8), // Margin antar notifikasi
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(10), // Atur border radius di sini
-                        ),
+            child: notifications.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.separated(
+                    itemCount: notifications.length,
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BrowserPage(),
+                            ),
+                          );
+                        },
                         child: ListTile(
-                          leading: const Icon(Icons.notifications, color: Colors.white),
                           title: Text(
-                            notifications[index],
-                            style: const TextStyle(color: Colors.white),
+                            notifications[index]['namaModul'],
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          subtitle: Text(notifications[index]['msg']),
+                          leading: Stack(
+                            children: [
+                              const Icon(
+                                Icons.notifications,
+                                size: 30,
+                                color: Colors.grey,
+                              ),
+                              Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      notifications[index]['total'].toString(),
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  )),
+                            ],
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
+                      );
+                    },
+                  ),
           ),
-
+          const SizedBox(
+            height: 20,
+          ),
+          const Text('Notifikasi Survei',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontSize: 15)),
+          Expanded(
+            child: surveiData.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.separated(
+                    itemCount: surveiData.length,
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SurveiPage(),
+                            ),
+                          );
+                        },
+                        child: ListTile(
+                          title: Text(
+                            surveiData[index]['judul'],
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          subtitle: Text(surveiData[index]['tipe_survei']),
+                          leading: Stack(
+                            children: [
+                              const Icon(
+                                Icons.notifications,
+                                size: 30,
+                                color: Colors.grey,
+                              ),
+                              // Positioned(
+                              //     top: 0,
+                              //     right: 0,
+                              //     child: Container(
+                              //       padding: const EdgeInsets.all(2),
+                              //       decoration: BoxDecoration(
+                              //         color: Colors.red,
+                              //         borderRadius: BorderRadius.circular(8),
+                              //       ),
+                              //       child: Text(
+                              //         surveiData[index]['total'].toString(),
+                              //         style: const TextStyle(
+                              //           fontSize: 11,
+                              //           color: Colors.white,
+                              //           fontWeight: FontWeight.bold,
+                              //         ),
+                              //       ),
+                              //     )),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
         ],
       ),
-      // bottomNavigationBar: BottomMenu(
-      //   selectedIndex: _selectedIndex,
-      //   onItemTapped: (int index) {
-      //     setState(() {
-      //       _selectedIndex = index;
-      //     });
-      //     if (index == 0) {
-      //       // Navigasi ke halaman "DashboardPage"
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => DashboardPage(),
-      //         ),
-      //       );
-      //     }
-      //     if (index == 1) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => HistoriPage(),
-      //         ),
-      //       );
-      //     }
-      //     if (index == 2) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => DataAbsenPage(),
-      //         ),
-      //       );
-      //     }
-      //     if (index == 4) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => AkunPage(),
-      //         ),
-      //       );
-      //     }
-      //   },
-      // ),
     );
   }
 }

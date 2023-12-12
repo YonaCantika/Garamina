@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:garamina/dashboard_page.dart';
+import 'package:garamina/single_choice_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_state.dart';
@@ -22,6 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
+          // builder: (context) => SurveySingleChoicePage(),
           builder: (context) => LoginPage(),
         ),
       );
@@ -31,25 +33,22 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _getPreference() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(
-    prefs.getString('costCenter') != null &&
-    prefs.getString('idPeg') != null &&
-    prefs.getString('namaUser') != null &&
-    prefs.getString('nik') != null &&
-    prefs.getString('costid') != null &&
-    prefs.getString('idLokasi') != null &&
-    prefs.getString('lokasi') != null &&
-    prefs.getString('status') != null &&
-    prefs.getString('foto') != null &&
-    prefs.getString('foto_pengumuman') != null
-    ){
+    if (prefs.getString('costCenter') != null &&
+        prefs.getString('idPeg') != null &&
+        prefs.getString('namaUser') != null &&
+        prefs.getString('nik') != null &&
+        prefs.getString('costid') != null &&
+        prefs.getString('idLokasi') != null &&
+        prefs.getString('lokasi') != null &&
+        prefs.getString('status') != null &&
+        prefs.getString('foto') != null &&
+        prefs.getString('foto_pengumuman') != null) {
       final authState = Provider.of<AuthState>(context, listen: false);
       authState.setAuthData(
         costCenter: prefs.getString('costCenter'),
         idPeg: prefs.getString('idPeg'),
         namaUser: prefs.getString('namaUser'),
         nik: prefs.getString('nik'),
-
         costid: prefs.getString('costid'),
         idLokasi: prefs.getString('idLokasi'),
         lokasi: prefs.getString('lokasi'),
@@ -62,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
           builder: (context) => DashboardPage(),
         ),
       );
-    }else{
+    } else {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => LoginPage(),
@@ -71,8 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  Widget _buildIconWithText(
-      path, Color backgroundColor, String text) {
+  Widget _buildIconWithText(path, Color backgroundColor, String text) {
     return Column(
       children: <Widget>[
         Container(
@@ -101,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen> {
           style: const TextStyle(
             fontSize: 14,
             color: Colors.grey,
-            fontWeight:FontWeight.bold,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],
@@ -126,10 +124,14 @@ class _SplashScreenState extends State<SplashScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                _buildIconWithText('assets/img/screen/emergency.png', Colors.blue, 'Emergency'),
-                _buildIconWithText('assets/img/screen/gps.png', Colors.green, 'Detection'),
-                _buildIconWithText('assets/img/screen/location.png', Colors.orange, 'Realtime'),
-                _buildIconWithText('assets/img/screen/phone.png', Colors.purple, 'Secure'),
+                _buildIconWithText('assets/img/screen/emergency.png',
+                    Colors.blue, 'Emergency'),
+                _buildIconWithText(
+                    'assets/img/screen/gps.png', Colors.green, 'Detection'),
+                _buildIconWithText('assets/img/screen/location.png',
+                    Colors.orange, 'Realtime'),
+                _buildIconWithText(
+                    'assets/img/screen/phone.png', Colors.purple, 'Secure'),
               ],
             ),
             const SizedBox(height: 20),

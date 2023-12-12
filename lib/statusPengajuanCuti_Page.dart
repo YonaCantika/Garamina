@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:garamina/components/form_cuti.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 // import 'package:intl/intl.dart';
@@ -17,14 +18,15 @@ import 'components/welcome.dart';
 
 class StatusPengajuanCutiPage extends StatefulWidget {
   @override
-  _StatusPengajuanCutiPageState createState() => _StatusPengajuanCutiPageState();
+  _StatusPengajuanCutiPageState createState() =>
+      _StatusPengajuanCutiPageState();
 }
 
 class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
   int _selectedIndex = 0;
   DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> pengajuanCutiData = [];
-  int count =0;
+  int count = 0;
   bool dataResponse = false;
   bool loading = true;
 
@@ -35,23 +37,21 @@ class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
 
   Future<void> fetchDataFromApi(idPeg) async {
     count++;
-    final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/myCuti');
+    final apiUrl = Uri.parse(
+        'https://garamina.com/fintech2/integrasi/android/report/myCuti');
 
     final response = await http.post(
       apiUrl,
       headers: {
         'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
       },
-      body: {
-        'empId': idPeg.toString()
-      },
+      body: {'empId': idPeg.toString()},
     );
 
     if (response.statusCode == 200) {
       loading = false;
       final data = jsonDecode(response.body);
-      data.length <= 0 ?
-      dataResponse = false: dataResponse = true;
+      data.length <= 0 ? dataResponse = false : dataResponse = true;
       print(data);
       setState(() {
         pengajuanCutiData = List<Map<String, dynamic>>.from(data);
@@ -64,8 +64,7 @@ class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
-    count < 1 ?
-    fetchDataFromApi(authState.idPeg):null;
+    count < 1 ? fetchDataFromApi(authState.idPeg) : null;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Status Cuti'),
@@ -85,34 +84,35 @@ class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
           // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
           // Bagian 2: Carousel Slider
-          Container(
-            height: 150, // Sesuaikan tinggi carousel sesuai kebutuhan Anda
-            child: CarouselSlider(
-              options: CarouselOptions(
-                aspectRatio:
-                16 / 9, // Sesuaikan dengan rasio aspek yang diinginkan
-                enlargeCenterPage: true,
-                autoPlay: true,
-                autoPlayInterval: Duration(seconds: 3), // Interval otomatis
-                autoPlayCurve: Curves.fastOutSlowIn,
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              width: double.infinity, // Membuat tombol login memenuhi lebar
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (BuildContext context) {
+                      return FormCuti(); // Panggil FormCuti di sini
+                    },
+                  );
+                }, // Disable tombol saat _isLoading adalah true
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(16),
+                  primary: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text('Ajukan Cuti'),
               ),
-              items: [
-                // Item Carousel 1 dengan gambar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                      'assets/img/slider/1.JPG'), // Ganti dengan path gambar Anda
-                ),
-                // Item Carousel 2 dengan gambar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                      'assets/img/slider/2.JPG'), // Ganti dengan path gambar Anda
-                ),
-                // Tambahkan item Carousel selanjutnya sesuai kebutuhan
-              ],
             ),
           ),
+
+          const SizedBox(height: 20),
+
           // Bagian 3: ListView dengan Border Radius di Atas
           CustomExpandedContainer(
             title: 'Pengajuan Cuti',
@@ -123,7 +123,8 @@ class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
               final nomorCuti = pengajuanCutiData[index]['NOMOR_CUTI'];
               final tipeCuti = pengajuanCutiData[index]['TIPE_CUTI'];
               final keterangan = pengajuanCutiData[index]['KETERANGAN'];
-              final tanggalPengajuan = pengajuanCutiData[index]['TANGGAL_PENGAJUAN'];
+              final tanggalPengajuan =
+                  pengajuanCutiData[index]['TANGGAL_PENGAJUAN'];
               final mulaiCuti = pengajuanCutiData[index]['MULAI_CUTI'];
               final selesaiCuti = pengajuanCutiData[index]['SELESAI_CUTI'];
               final lamaCuti = pengajuanCutiData[index]['LAMA_CUTI'];
@@ -141,10 +142,14 @@ class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
                         Text('Status: $statusCuti'),
                       ],
                     ),
-                    trailing: statusCuti == 'Sudah Approval' ?
-                    const Icon(Icons.verified, size: 30, color: Colors.green) :
-                    statusCuti == 'Belum Approval' ? const Icon(Icons.hourglass_top, size: 30, color: Colors.orange) :
-                    const Icon(Icons.rate_review, size: 30, color: Colors.red),
+                    trailing: statusCuti == 'Sudah Approval'
+                        ? const Icon(Icons.verified,
+                            size: 30, color: Colors.green)
+                        : statusCuti == 'Belum Approval'
+                            ? const Icon(Icons.hourglass_top,
+                                size: 30, color: Colors.orange)
+                            : const Icon(Icons.rate_review,
+                                size: 30, color: Colors.red),
                   ),
                   const Divider(),
                 ],
