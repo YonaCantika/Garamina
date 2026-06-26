@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:garamina/auth_state.dart';
+import 'package:garamina/browser_page.dart';
 import 'package:garamina/single_choice_page.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -8,6 +9,7 @@ import 'components/actionComponent.dart';
 import 'components/welcome.dart';
 import 'components/carousel.dart';
 import 'components/customExpandedContainer.dart';
+import 'package:garamina/services/api_services.dart';
 
 class SurveiPage extends StatefulWidget {
   @override
@@ -18,29 +20,27 @@ class _SurveiPageState extends State<SurveiPage> {
   // int _selectedIndex = 0;
   DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> surveiData = [];
-  bool dataResponseDinas = false;
+  bool dataResponseSurvei = false;
   bool loading = true;
+  bool noData = false;
 
   @override
   void initState() {
     super.initState();
-    fetchDataFromApi();
   }
 
-  Future<void> fetchDataFromApi() async {
-    // final authState = Provider.of<AuthState>(context);
-
+  Future<void> fetchDataFromApi(idPeg) async {
     try {
       final apiUrl = Uri.parse(
-          'http://192.168.1.252/fintech2/integrasi/android/survei/list_survei');
+          ApiServices.listSurvei);
 
       final response = await http.post(
         apiUrl,
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
-          'empId': '797',
+          'empId': idPeg.toString(),
           'tanggal':
               '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
         },
@@ -53,16 +53,21 @@ class _SurveiPageState extends State<SurveiPage> {
         setState(() {
           surveiData = List<Map<String, dynamic>>.from(data);
         });
+        if (data['status'] != true || data['status'] != 'true') {
+          setState(() {
+            noData = true;
+          });
+        }
 
         if (data.length > 0) {
           setState(() {
             loading = false;
-            dataResponseDinas = true;
+            dataResponseSurvei = true;
           });
         } else {
           setState(() {
-            loading = false;
-            dataResponseDinas = false;
+            loading = true;
+            dataResponseSurvei = false;
           });
         }
       } else {
@@ -72,7 +77,7 @@ class _SurveiPageState extends State<SurveiPage> {
     } catch (e) {
       setState(() {
         loading = false;
-        dataResponseDinas = false;
+        dataResponseSurvei = false;
       });
 
       print('Error fetching data from API: $e');
@@ -81,7 +86,8 @@ class _SurveiPageState extends State<SurveiPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final authState = Provider.of<AuthState>(context);
+    final authState = Provider.of<AuthState>(context);
+    fetchDataFromApi(authState.idPeg);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Survei'),
@@ -109,31 +115,36 @@ class _SurveiPageState extends State<SurveiPage> {
             title: 'List Survei',
             data: surveiData,
             loading: loading,
-            dataResponse: dataResponseDinas,
+            dataResponse: dataResponseSurvei,
             itemBuilder: (context, index) {
               return Column(
                 children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SurveySingleChoicePage(),
+                  noData == true
+                      ? const Text('belum survei!!')
+                      : InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BrowserPage(),
+                              ),
+                            );
+                          },
+                          child: ListTile(
+                            title: Text('${surveiData[index]['judul']}'),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    'Tipe: ${surveiData[index]['tipe_survei']}'),
+                                Text(
+                                    'Status: ${surveiData[index]['status_survei']}'),
+                              ],
+                            ),
+                            trailing:
+                                Text('${surveiData[index]['tanggalSampai']}'),
+                          ),
                         ),
-                      );
-                    },
-                    child: ListTile(
-                      title: Text('${surveiData[index]['judul']}'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Tipe: ${surveiData[index]['tipe_survei']}'),
-                          Text('Status: ${surveiData[index]['status_survei']}'),
-                        ],
-                      ),
-                      trailing: Text('${surveiData[index]['tanggalSampai']}'),
-                    ),
-                  ),
                   const Divider(),
                 ],
               );

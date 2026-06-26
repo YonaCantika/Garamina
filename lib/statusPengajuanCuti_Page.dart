@@ -15,6 +15,7 @@ import 'notif_page.dart';
 import 'akun_page.dart';
 import 'components/menu.dart';
 import 'components/welcome.dart';
+import 'package:garamina/services/api_services.dart';
 
 class StatusPengajuanCutiPage extends StatefulWidget {
   @override
@@ -38,12 +39,12 @@ class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
   Future<void> fetchDataFromApi(idPeg) async {
     count++;
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/myCuti');
+        ApiServices.reportMyCuti);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {'empId': idPeg.toString()},
     );
@@ -81,13 +82,11 @@ class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
-          // Bagian 2: Carousel Slider
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
-              width: double.infinity, // Membuat tombol login memenuhi lebar
+              width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
@@ -95,13 +94,13 @@ class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
                     context: context,
                     isScrollControlled: true,
                     builder: (BuildContext context) {
-                      return FormCuti(); // Panggil FormCuti di sini
+                      return FormCuti();
                     },
                   );
-                }, // Disable tombol saat _isLoading adalah true
+                },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(16),
-                  primary: Colors.orange,
+                  backgroundColor: Colors.orange,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -110,10 +109,7 @@ class _StatusPengajuanCutiPageState extends State<StatusPengajuanCutiPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 20),
-
-          // Bagian 3: ListView dengan Border Radius di Atas
           CustomExpandedContainer(
             title: 'Pengajuan Cuti',
             data: pengajuanCutiData,

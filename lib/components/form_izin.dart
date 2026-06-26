@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../auth_state.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:garamina/services/api_services.dart';
 
 class FormIzin extends StatefulWidget {
   @override
@@ -30,6 +31,7 @@ class _FormIzinState extends State<FormIzin> {
   String? idAtasan;
   TextEditingController penggantiController = TextEditingController();
   String? ket;
+  int count = 0;
 
   var picked;
   String? file = 'null';
@@ -38,7 +40,6 @@ class _FormIzinState extends State<FormIzin> {
   void initState() {
     super.initState();
     _getPengganti();
-    _getAtasan();
     _getKategoriIzin();
     _getTipeIzin();
   }
@@ -47,9 +48,9 @@ class _FormIzinState extends State<FormIzin> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://garamina.com/fintech2/integrasi/android/cuti_izin/all_pegawai'),
+            ApiServices.allPegawai),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           'empid': '797',
@@ -73,16 +74,17 @@ class _FormIzinState extends State<FormIzin> {
     }
   }
 
-  Future<void> _getAtasan() async {
+  Future<void> _getAtasan(idPeg) async {
+    count++;
     try {
       final response = await http.post(
         Uri.parse(
-            'https://garamina.com/fintech2/integrasi/android/cuti_izin/atasan_langsung'),
+            ApiServices.atasanLangsung),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
-          'empid': '797',
+          'empid': idPeg.toString(),
         },
       );
 
@@ -105,19 +107,18 @@ class _FormIzinState extends State<FormIzin> {
   Future<void> _getKategoriIzin() async {
     final response = await http.post(
       Uri.parse(
-          'https://garamina.com/fintech2/integrasi/android/cuti_izin/kategory_izin'),
+          ApiServices.kategoryIzin),
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
     );
 
     if (response.statusCode == 200) {
       kategoriIzin =
           List<Map<String, dynamic>>.from(json.decode(response.body));
-      // print(kategoriIzin);
+
       if (kategoriIzin.isNotEmpty) {
         selectedKategoriIzin = kategoriIzin[0]['id_kategori'].toString();
-        // print(selectedKategoriIzin);
       }
       setState(() {
         _ready += 1;
@@ -128,18 +129,17 @@ class _FormIzinState extends State<FormIzin> {
   Future<void> _getTipeIzin() async {
     final response = await http.post(
       Uri.parse(
-          'https://garamina.com/fintech2/integrasi/android/cuti_izin/tipe_izin'),
+          ApiServices.tipeIzin),
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
     );
 
     if (response.statusCode == 200) {
       tipeIzin = List<Map<String, dynamic>>.from(json.decode(response.body));
-      // print(tipeIzin);
+
       if (tipeIzin.isNotEmpty) {
         selectedTipeIzin = tipeIzin[0]['id_tipe'].toString();
-        // print(selectedTipeIzin);
       }
     }
   }
@@ -166,8 +166,8 @@ class _FormIzinState extends State<FormIzin> {
     var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            'https://garamina.com/fintech2/integrasi/android/cuti_izin/insert_izin'));
-    request.headers['APIKEY'] = '8deca313c70c6195eba4208b8dc6d56b';
+            ApiServices.insertIzin));
+    request.headers['APIKEY'] = ApiServices.apiKey;
     request.fields['idPegawai'] = idPegawai.toString();
     request.fields['idPengganti'] = selectedPengganti.toString();
     request.fields['idAtasan'] = idAtasan.toString();
@@ -219,6 +219,7 @@ class _FormIzinState extends State<FormIzin> {
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
+    count <= 1 ? _getAtasan(authState.idPeg) : null;
     return FractionallySizedBox(
       heightFactor: 0.8,
       child: SingleChildScrollView(
@@ -235,7 +236,6 @@ class _FormIzinState extends State<FormIzin> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        // tanggal
                         Row(
                           children: [
                             Expanded(
@@ -271,13 +271,11 @@ class _FormIzinState extends State<FormIzin> {
                             ),
                           ],
                         ),
-                        // keterangan
                         TextFormField(
                           decoration:
                               const InputDecoration(labelText: 'Keterangan'),
                           controller: keteranganIzinController,
                         ),
-                        // pengganti
                         TypeAheadField<Map<String, dynamic>>(
                           textFieldConfiguration: TextFieldConfiguration(
                             controller: penggantiController,
@@ -304,14 +302,12 @@ class _FormIzinState extends State<FormIzin> {
                             selectedPengganti = suggestion['nik'].toString();
                           },
                         ),
-                        // atasan
                         TextFormField(
                           controller: atasanController,
                           readOnly: true,
                           decoration:
                               const InputDecoration(labelText: 'Atasan'),
                         ),
-                        // kategori izin
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -346,7 +342,6 @@ class _FormIzinState extends State<FormIzin> {
                             ),
                           ],
                         ),
-                        // tipe izin
                         Visibility(
                           visible: selectedKategoriIzin == '579',
                           child: Column(
@@ -398,7 +393,6 @@ class _FormIzinState extends State<FormIzin> {
                         const SizedBox(
                           height: 20,
                         ),
-                        // document
                         file == 'null'
                             ? SizedBox(
                                 width: double.infinity,
@@ -428,7 +422,7 @@ class _FormIzinState extends State<FormIzin> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.all(16),
-                                    primary: Colors.orange,
+                                    backgroundColor: Colors.orange,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
@@ -451,7 +445,7 @@ class _FormIzinState extends State<FormIzin> {
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(16),
-                              primary: Colors.blue,
+                              backgroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),

@@ -1,22 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:garamina/services/api_services.dart';
 
-// Widget atau kelas lain yang menggunakan WebView
-class BrowserPage extends StatelessWidget {
-  final String url =
-      'https://www.website.com'; // Ganti dengan URL yang diinginkan
+class BrowserPage extends StatefulWidget {
+  @override
+  State<BrowserPage> createState() => _BrowserPageState();
+}
+
+class _BrowserPageState extends State<BrowserPage> {
+  final String url = ApiServices.loginUrl;
+  late final WebViewController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(url));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Survei Page'),
+        title: const Text('Survei Page'),
       ),
-      body: WebView(
-        initialUrl: url,
-        javascriptMode: JavascriptMode
-            .unrestricted, // Aktifkan mode JavaScript jika diperlukan
-      ),
+      body: WebViewWidget(controller: _controller),
     );
   }
 }

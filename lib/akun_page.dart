@@ -47,7 +47,6 @@ class _AkunPageState extends State<AkunPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang
           Container(
             color: Colors.blue,
             height: 100,
@@ -62,7 +61,6 @@ class _AkunPageState extends State<AkunPage> {
               ),
             ),
           ),
-          // Bagian 2: Circle Avatar
           GestureDetector(
             child: SizedBox(
               height: 170,
@@ -141,7 +139,6 @@ class _AkunPageState extends State<AkunPage> {
                             const SizedBox(
                               height: 50,
                             ),
-                            // document
                             file == 'null'
                                 ? SizedBox(
                                     width: double.infinity,
@@ -158,16 +155,12 @@ class _AkunPageState extends State<AkunPage> {
                                               file = picked.files.first.name
                                                   .toString();
                                             });
-                                          } else {
-                                            // print('Pemilihan file dibatalkan.');
-                                          }
-                                        } catch (e) {
-                                          // print('Terjadi kesalahan: $e');
-                                        }
+                                          } else {}
+                                        } catch (e) {}
                                       },
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.all(16),
-                                        primary: Colors.orange,
+                                        backgroundColor: Colors.orange,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(10),
@@ -186,12 +179,10 @@ class _AkunPageState extends State<AkunPage> {
                               width: double.infinity,
                               height: 50,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  // _sendDataCuti(authState.idPeg, authState.nik);
-                                },
+                                onPressed: () {},
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.all(16),
-                                  primary: Colors.blue,
+                                  backgroundColor: Colors.blue,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -208,8 +199,6 @@ class _AkunPageState extends State<AkunPage> {
               );
             },
           ),
-
-          // Bagian 3: ListView
           Expanded(
             child: Container(
               width: double.infinity,
@@ -222,7 +211,6 @@ class _AkunPageState extends State<AkunPage> {
               ),
               child: Column(
                 children: [
-                  // Judul "Data Karyawan"
                   const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
@@ -233,7 +221,6 @@ class _AkunPageState extends State<AkunPage> {
                       ),
                     ),
                   ),
-                  // Content
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -284,7 +271,6 @@ class _AkunPageState extends State<AkunPage> {
                       const SizedBox(width: 20),
                     ],
                   ),
-
                   const SizedBox(height: 20),
                   Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -312,7 +298,7 @@ class _AkunPageState extends State<AkunPage> {
                                         TextButton(
                                           child: const Text('Oke'),
                                           onPressed: () {
-                                            // clearSharedPreferences();
+                                            clearSharedPreferences();
                                             Navigator.of(context).push(
                                               MaterialPageRoute(
                                                 builder: (context) =>
@@ -328,7 +314,7 @@ class _AkunPageState extends State<AkunPage> {
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.all(16),
-                                primary: Colors.red,
+                                backgroundColor: Colors.red,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),

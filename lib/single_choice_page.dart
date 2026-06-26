@@ -94,7 +94,6 @@ class _SurveySingleChoicePageState extends State<SurveySingleChoicePage> {
   }
 
   void submitSurvey() {
-    // Lakukan sesuatu dengan jawaban yang disimpan di selectedOptions
     print('Jawaban Survey: $selectedOptions');
   }
 }

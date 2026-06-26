@@ -22,6 +22,7 @@ import 'components/loadingComponent.dart';
 import 'location/location_service.dart';
 import 'location/user_location.dart';
 import 'dataAbsenOffline_page.dart';
+import 'package:garamina/services/api_services.dart';
 
 class AbsenOfflinePage extends StatefulWidget {
   @override
@@ -41,11 +42,8 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
   bool isLoading = false;
   bool valid = false;
   int zona = 0;
-
-  //safe device
   bool canMockLocation = false;
   bool isRealDevice = true;
-
   String? idPeg;
   String? namaUser;
   String? checkStatus;
@@ -55,7 +53,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
   @override
   void dispose() {
     _locationSubscription?.cancel();
-    // locationService.stopLocationService();
     locationService.dispose();
     super.dispose();
   }
@@ -63,7 +60,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
   @override
   void initState() {
     super.initState();
-    // initPlatformState();
     getDataFromSharedPreferences();
     _initTimeZone();
   }
@@ -71,7 +67,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
   Future<void> getDataFromSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // Mengambil nilai dengan kunci tertentu
     setState(() {
       idPeg = prefs.getString('idPeg');
       namaUser = prefs.getString('namaUser');
@@ -85,9 +80,9 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://ptgaram.com/api/status_absen_emergency/update_checkStatus'),
+            ApiServices.updateCheckStatus),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           'idPeg': idPeg.toString(),
@@ -140,8 +135,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                     builder: (_, snapshot) {
                       if (snapshot.hasData) {
                         final userLocation = snapshot.data!;
-
-                        // alamat = alamat dari userLocation
                         koordinatUser =
                             '${userLocation.latitude},${userLocation.longitude}';
                         final kantorLocation = koordinat ?? '';
@@ -154,19 +147,13 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                         final lon1 = userLocation.longitude;
                         final lat2 = kantorCoordinates.latitude;
                         final lon2 = kantorCoordinates.longitude;
-
-                        // Fungsi untuk menghitung jarak antara dua titik
                         double calculateDistance(double lat1, double lon1,
                             double lat2, double lon2) {
                           const int earthRadius =
-                              6371; // Radius of the Earth in kilometers
-
-                          // Menghitung perbedaan garis lintang dan garis bujur
+                              6371; 
                           final latDistance = (lat2 - lat1).abs();
                           final lonDistance = (lon2 - lon1).abs();
-
-                          // Menggunakan rumus Pythagoras untuk menghitung jarak
-                          final distance =
+final distance =
                               sqrt(pow(latDistance, 2) + pow(lonDistance, 2)) *
                                   (earthRadius * pi / 180);
 
@@ -176,8 +163,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                         final distance =
                             calculateDistance(lat1, lon1, lat2, lon2);
                         distanceToKantor = distance;
-
-                        // mengonversi koordinat menjadi alamat
                         Future<void> getAddress() async {
                           try {
                             final List<Placemark> placemarks =
@@ -185,21 +170,16 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                               userLocation.latitude,
                               userLocation.longitude,
                             );
-
-                            // if (placemarks.isNotEmpty) {
                             final Placemark placemark = placemarks[0];
                             final String alamat = placemark.street ?? '';
                             final String kota = placemark.locality ?? '';
                             final String provinsi =
                                 placemark.administrativeArea ?? '';
 
-                            // alamat dari koordinat
                             alamatLengkap = '$alamat, $kota, $provinsi';
 
-                            // Update tampilan jika alamat berhasil diambil
                             setState(() {});
                           } catch (e) {
-                            // Tangani kesalahan jika tidak dapat mengambil alamat
                             print('Kesalahan saat mengambil alamat: $e');
                           }
                         }
@@ -278,7 +258,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                   const SizedBox(height: 20),
                   imageFile != null
                       ?
-                      // menampilkan hasil gambar
                       Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -292,7 +271,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                           ],
                         )
                       :
-                      // tombol kamera
                       SizedBox(
                           width: double.infinity,
                           height: 60,
@@ -302,7 +280,7 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(16),
-                              primary: Colors.orange,
+                              backgroundColor: Colors.orange,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -317,11 +295,9 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                           ),
                         ),
                   const SizedBox(height: 20),
-                  // rata kanan
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // input deskripsi
                       const Text(
                         'Deskripsi:',
                         style: TextStyle(
@@ -337,7 +313,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                       ),
                       const SizedBox(height: 20),
 
-                      //input kondisi
                       const Text(
                         'Kondisi Saat Ini:',
                         style: TextStyle(
@@ -380,21 +355,19 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                                   namaUser,
                                   dateTime);
                             }
-                          : null, // Jika tidak sesuai, maka nilai onPressed diset null
+                          : null, 
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        // warna berdasarkan nilai check_status
-                        primary: checkStatus == '0-0'
+                        backgroundColor: checkStatus == '0-0'
                             ? Colors.blue
                             : checkStatus != '0-0' && checkStatus != 'A-A'
                                 ? Colors.red
                                 : Colors
-                                    .grey, // Jika selain itu, gunakan warna abu-abu
+                                    .grey,
                       ),
-                      // label sesuai dengan nilai absenState.check_status
                       child: Text(
                         isLoading == true
                             ? 'loading...'
@@ -417,7 +390,7 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
 
   void _getImageFromCamera() async {
     final imagePicker = ImagePicker();
-    final pickedFile = await imagePicker.getImage(source: ImageSource.camera);
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
       setState(() {
@@ -455,14 +428,10 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
       print(absenListJson.length);
       print(absenListJson);
 
-      // cek absenListJson adalah daftar JSON
       if (absenListJson is List) {
-        // Decode data JSON dari string dalam elemen daftar
         absenListJson.forEach((element) {
-          // Decode elemen dan konversi ke Map<String, dynamic>
           final Map<String, dynamic>? absenMap = json.decode(element);
 
-          // Pastikan bahwa data yang di-decode adalah Map
           if (absenMap != null) {
             absenDataList.add(absenMap);
           } else {
@@ -471,35 +440,20 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
         });
       }
     }
-
-    // Load gambar dari path file
     final image = img.decodeImage(File(foto.path).readAsBytesSync());
-
-    // Menentukan lebar dan tinggi
     final int desiredWidth = 400;
     final int desiredHeight = 300;
-
-    // Memperkecil gambar
     final img.Image resizedImage =
         img.copyResize(image!, width: desiredWidth, height: desiredHeight);
-
-    // Mengatur kualitas gambar
     final File compressedFile = File(foto.path)
       ..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 60));
-
-    // Mencari mimeTypeData untuk file yang sudah diperkecil
     final mimeTypeData =
         lookupMimeType(compressedFile.path, headerBytes: [0xFF, 0xD8]);
-
-    // Buat MultipartFile dari file yang sudah diperkecil
     final file = await http.MultipartFile.fromPath('foto', compressedFile.path,
         contentType: MediaType.parse(mimeTypeData!));
-
     final directory = await getApplicationDocumentsDirectory();
     final imagePath = '${directory.path}/foto${dateTime.toIso8601String()}.jpg';
-
     try {
-      // Cek apakah file foto ada sebelum mencoba menyalinnya
       if (await compressedFile.exists()) {
         await compressedFile.copy(imagePath);
         print('Gambar berhasil disalin ke: $imagePath');
@@ -509,8 +463,6 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     } catch (e) {
       print('Error saat menyalin gambar: $e');
     }
-
-    // Untuk menambahkan data absen baru ke dalam daftar
     final Map<String, dynamic> newAbsenData = {
       'status': checkShiftM == true
           ? 'out_morning'
@@ -527,14 +479,8 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
       'alamat': alamatLengkap ?? '',
       'foto': imagePath,
     };
-
-    // Mengkonversi string dateTime currentime
     TimeOfDay currentTime = TimeOfDay.fromDateTime(dateTime);
-
-    // Membuat targetTime pada jam 18:00
     TimeOfDay targetTime = TimeOfDay(hour: 18, minute: 0);
-
-    // Membandingkan currentTime dengan targetTime
     if (currentTime.hour > targetTime.hour ||
         (currentTime.hour == targetTime.hour &&
             currentTime.minute > targetTime.minute)) {
@@ -545,14 +491,10 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
     } else {
       await prefs.setString('checkShiftM', 'false');
     }
-
     absenDataList.add(newAbsenData);
-
-    // Simpan kembali data absen yang sudah diperbarui
     final List<String> absenListJson =
         absenDataList.map((absenData) => json.encode(absenData)).toList();
     prefs.setString('absenData', json.encode(absenListJson));
-
     if (status == '0-0') {
       updateStatusEmergency(empId, 'A-');
       await prefs.setString('checkStatus', 'A-');

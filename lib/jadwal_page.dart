@@ -10,6 +10,7 @@ import 'components/actionComponent.dart';
 import 'components/welcome.dart';
 import 'components/carousel.dart';
 import 'components/customExpandedContainer.dart';
+import 'package:garamina/services/api_services.dart';
 
 class JadwalPage extends StatefulWidget {
   @override
@@ -22,24 +23,25 @@ class _JadwalPageState extends State<JadwalPage> {
   List<Map<String, dynamic>> jadwalData = [];
   bool dataResponseDinas = false;
   bool loading = true;
+  int count = 0;
 
   @override
   void initState() {
     super.initState();
-    fetchDataFromApi();
   }
 
-  Future<void> fetchDataFromApi() async {
+  Future<void> fetchDataFromApi(idPeg) async {
+    count++;
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/jadwal_kerja');
+        ApiServices.reportJadwalKerja);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
-        'empId': '797',
+        'empId': idPeg.toString(),
         'tahun_bln': '2023-04',
       },
     );
@@ -60,6 +62,7 @@ class _JadwalPageState extends State<JadwalPage> {
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
+    count <= 1 ? fetchDataFromApi(authState.idPeg) : null;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Jadwal'),
@@ -76,11 +79,8 @@ class _JadwalPageState extends State<JadwalPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
-          // Bagian 2: Carousel Slider
           CarouselSection(),
-          // Bagian 3: ListView dengan Border Radius di Atas
           CustomExpandedContainer(
             title: 'Jadwal Shift',
             data: jadwalData,

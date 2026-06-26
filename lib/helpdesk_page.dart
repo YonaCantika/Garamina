@@ -18,6 +18,7 @@ import 'components/actionComponent.dart';
 import 'components/easy_access.dart';
 import 'statusPengajuanCuti_Page.dart';
 import 'statusPengajuanIzin_page.dart';
+import 'package:garamina/services/api_services.dart';
 
 class HelpdeskPage extends StatefulWidget {
   @override
@@ -48,12 +49,12 @@ class _HelpdeskPageState extends State<HelpdeskPage> {
 
   Future<void> fetchDataCuti() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/cuti');
+        ApiServices.reportCuti);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'mulaiCuti':

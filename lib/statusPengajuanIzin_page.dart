@@ -15,6 +15,7 @@ import 'notif_page.dart';
 import 'akun_page.dart';
 import 'components/menu.dart';
 import 'components/welcome.dart';
+import 'package:garamina/services/api_services.dart';
 
 class StatusPengajuanIzinPage extends StatefulWidget {
   @override
@@ -38,12 +39,12 @@ class _StatusPengajuanIzinPageState extends State<StatusPengajuanIzinPage> {
   Future<void> fetchDataFromApi(idPeg) async {
     count++;
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/myIzin');
+        ApiServices.reportMyIzin);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {'empId': idPeg.toString()},
     );
@@ -81,13 +82,11 @@ class _StatusPengajuanIzinPageState extends State<StatusPengajuanIzinPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
-          // Bagian 2: Carousel Slider
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
-              width: double.infinity, // Membuat tombol login memenuhi lebar
+              width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
@@ -95,13 +94,13 @@ class _StatusPengajuanIzinPageState extends State<StatusPengajuanIzinPage> {
                     context: context,
                     isScrollControlled: true,
                     builder: (BuildContext context) {
-                      return FormIzin(); // Panggil FormCuti di sini
+                      return FormIzin();
                     },
                   );
-                }, // Disable tombol saat _isLoading adalah true
+                },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(16),
-                  primary: Colors.orange,
+                  backgroundColor: Colors.orange,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -110,9 +109,7 @@ class _StatusPengajuanIzinPageState extends State<StatusPengajuanIzinPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 20),
-          // Bagian 3: ListView dengan Border Radius di Atas
           CustomExpandedContainer(
             title: 'Data Pengajuan Izin',
             data: pengajuanIzinData,
@@ -159,43 +156,6 @@ class _StatusPengajuanIzinPageState extends State<StatusPengajuanIzinPage> {
           ),
         ],
       ),
-      // Bagian 4: Menu dengan Icon dan Text di Bawah
-      // bottomNavigationBar: BottomMenu(
-      //   selectedIndex: _selectedIndex,
-      //   onItemTapped: (int index) {
-      //     setState(() {
-      //       _selectedIndex = index;
-      //     });
-      //     if (index == 1) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => HistoriPage(),
-      //         ),
-      //       );
-      //     }
-      //     if (index == 2) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => DataAbsenPage(),
-      //         ),
-      //       );
-      //     }
-      //     if (index == 3) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => NotifPage(),
-      //         ),
-      //       );
-      //     }
-      //     if (index == 4) {
-      //       Navigator.of(context).push(
-      //         MaterialPageRoute(
-      //           builder: (context) => AkunPage(),
-      //         ),
-      //       );
-      //     }
-      //   },
-      // ),
     );
   }
 }

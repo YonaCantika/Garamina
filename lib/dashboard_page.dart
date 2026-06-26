@@ -2,13 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:garamina/dinas_page.dart';
-import 'package:garamina/doc_erp_page.dart';
-import 'package:garamina/helpdesk_page.dart';
 import 'package:garamina/jadwal_page.dart';
-import 'package:garamina/knowledge_page.dart';
 import 'package:garamina/statusPengajuanCuti_Page.dart';
 import 'package:garamina/statusPengajuanIzin_page.dart';
 import 'package:garamina/survei_page.dart';
+import 'package:intl/intl.dart';
 import 'auth_state.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +14,8 @@ import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'components/actionComponent.dart';
 import 'components/easy_access.dart';
-import 'hr_page.dart';
+import 'package:intl/intl.dart';
+import 'package:garamina/services/api_services.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -29,6 +28,7 @@ class _DashboardPageState extends State<DashboardPage> {
   int tabIndex = 0;
   bool show = false;
   String? saldo;
+  final currencyFormatter = NumberFormat.currency(locale: 'ID');
 
   List<Map<String, dynamic>> ultahData = [];
   bool dataResponseUltah = false;
@@ -59,18 +59,23 @@ class _DashboardPageState extends State<DashboardPage> {
     fetchDataDinas();
   }
 
+  String formatRupiah(double saldo) {
+    final formatCurrency = NumberFormat.currency(locale: 'id', symbol: 'Rp');
+    return formatCurrency.format(saldo);
+  }
+
   Future<void> fetchDataUltah() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/ulang_tahun');
+        ApiServices.reportUlangTahun);
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'tanggal':
             '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
-        // '2023-11-27',
+        // '2021-03-07',
       },
     );
 
@@ -101,7 +106,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [Colors.blue, Colors.yellow],
-                      stops: [0.9, 0.0], // 30% dari sudut
+                      stops: [0.9, 0.0],
                     ),
                     borderRadius: BorderRadius.circular(10.0),
                     boxShadow: [
@@ -122,7 +127,6 @@ class _DashboardPageState extends State<DashboardPage> {
                           item['FOTO'] != 'default.png'
                               ? Image.network(
                                   item['FOTO'].toString(),
-                                  // height: 50,
                                   width: 50,
                                 )
                               : const SizedBox(width: 50),
@@ -159,7 +163,6 @@ class _DashboardPageState extends State<DashboardPage> {
           options: CarouselOptions(
             height: 100.0,
             enlargeCenterPage: true,
-            // autoPlay: true,
             autoPlayInterval: Duration(seconds: 3),
             autoPlayAnimationDuration: Duration(milliseconds: 800),
             autoPlayCurve: Curves.fastOutSlowIn,
@@ -193,12 +196,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> fetchDataCuti() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/cuti');
+        ApiServices.reportCuti);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'mulaiCuti':
@@ -223,19 +226,14 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> fetchDataIzin() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/izin');
-    // 'http://192.168.1.252/fintech2/integrasi/android/report/izin');
-
-    // final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+        ApiServices.reportIzin);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
-        // 'mulaiIzin': '2023-10-17',
-        // 'selesaiIzin': '2023-10-17',
         'mulaiIzin':
             '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
         'selesaiIzin':
@@ -258,17 +256,14 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> fetchDataDinas() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/dinas');
-    // 'http://192.168.1.252/fintech2/integrasi/android/report/dinas');
+        ApiServices.reportDinas);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
-        // 'mulaiDinas': '2023-11-27',
-        // 'selesaiDinas': '2023-11-27',
         'mulaiDinas':
             '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
         'selesaiDinas':
@@ -294,24 +289,27 @@ class _DashboardPageState extends State<DashboardPage> {
       count++;
     });
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/saldo_koperasi');
+        ApiServices.reportSaldoKoperasi);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {'nik': nik.toString()},
     );
 
     if (response.statusCode == 200) {
-      loadingDinas = false;
       final data = jsonDecode(response.body);
-      print('Saldo: $data');
-      data.length <= 0 ? dataResponseDinas = false : dataResponseDinas = true;
-      setState(() {
-        saldo = data[0]['SALDO'];
-      });
+      if (data[0]['SALDO'] != null || data[0]['SALDO'] != 'null') {
+        setState(() {
+          saldo = data[0]['SALDO'];
+        });
+      } else {
+        setState(() {
+          saldo = '0';
+        });
+      }
     } else {
       throw Exception('Failed to load data from the API');
     }
@@ -339,7 +337,6 @@ class _DashboardPageState extends State<DashboardPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Bagian 1: card data
             Container(
               height: 200,
               decoration: BoxDecoration(
@@ -347,7 +344,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   begin: Alignment.bottomRight,
                   end: Alignment.topLeft,
                   colors: [Colors.blue, Colors.yellow],
-                  stops: [0.9, 0.0], // 30% dari sudut
+                  stops: [0.9, 0.0],
                 ),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(60),
@@ -416,29 +413,25 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(
               height: 8,
             ),
-            // Bagian 3:
             Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
               ),
               child: Column(
                 children: [
-                  // menu
                   Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: Colors.white, // Warna latar belakang
+                        color: Colors.white,
                         borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(10),
                           bottomRight: Radius.circular(10),
-                        ), // Border radius
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(
-                                0.1), // Warna dan opasitas bayangan
-                            spreadRadius:
-                                2.0, // Seberapa besar bayangan menyebar
-                            blurRadius: 5.0, // Seberapa kabur bayangan
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 2.0,
+                            blurRadius: 5.0,
                           ),
                         ],
                       ),
@@ -448,7 +441,6 @@ class _DashboardPageState extends State<DashboardPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              // Cuti
                               InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -464,7 +456,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                     color: Colors.red,
                                     text: 'CUTI'),
                               ),
-                              // Izin
                               InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -480,7 +471,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                     color: Colors.orange,
                                     text: 'IZIN'),
                               ),
-                              // Dinas
                               InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -495,12 +485,20 @@ class _DashboardPageState extends State<DashboardPage> {
                                     color: Colors.green,
                                     text: 'DINAS'),
                               ),
-                              // Koperasi
-                              EasyAccess(
-                                  path: 'assets/img/menu/koperasi.png',
-                                  color: Colors.purple,
-                                  text: 'KOPERASI'),
-                              // Jadwal
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SurveiPage(),
+                                    ),
+                                  );
+                                },
+                                child: EasyAccess(
+                                    path: 'assets/img/menu/survey.png',
+                                    color: Colors.blue,
+                                    text: 'SURVEI'),
+                              ),
                               InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -517,99 +515,97 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                             ],
                           ),
-                          const SizedBox(
-                              height:
-                                  16.0), // Spasi antara baris horizontal dan vertikal
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SurveiPage(),
-                                    ),
-                                  );
-                                },
-                                child: EasyAccess(
-                                    path: 'assets/img/menu/survey.png',
-                                    color: Colors.blue,
-                                    text: 'SURVEI'),
-                              ),
-                              EasyAccess(
-                                  path: 'assets/img/menu/emeeting.png',
-                                  color: Colors.purple,
-                                  text: 'E-MEETING'),
-                              EasyAccess(
-                                  path: 'assets/img/menu/penilaian.png',
-                                  color: Colors.teal,
-                                  text: 'PENILAIAN 360'),
-                              EasyAccess(
-                                  path: 'assets/img/menu/spt.png',
-                                  color: Colors.indigo,
-                                  text: 'SPT'),
-                              InkWell(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (BuildContext context) {
-                                      return FractionallySizedBox(
-                                        heightFactor: 0.3,
-                                        child: SingleChildScrollView(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(16),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceAround,
-                                                  children: [
-                                                    EasyAccess(
-                                                        path:
-                                                            'assets/img/menu/mrp.png',
-                                                        color: Colors.blue,
-                                                        text: 'MRP'),
-                                                    EasyAccess(
-                                                        path:
-                                                            'assets/img/menu/reminder.png',
-                                                        color: Colors.green,
-                                                        text: 'Reminder'),
-                                                    EasyAccess(
-                                                        path:
-                                                            'assets/img/menu/bankgaransi.png',
-                                                        color: Colors.orange,
-                                                        text: 'BANK GARANSI'),
-                                                    EasyAccess(
-                                                        path:
-                                                            'assets/img/menu/docerp.png',
-                                                        color: Colors.yellow,
-                                                        text: 'FINANCE'),
-                                                    EasyAccess(
-                                                        path:
-                                                            'assets/img/menu/visitor.png',
-                                                        color: Colors.yellow,
-                                                        text: 'ACCOUNTING'),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: EasyAccess(
-                                    path: 'assets/img/menu/other.png',
-                                    color: Colors.lightBlue.shade300,
-                                    text: 'LAINNYA'),
-                              ),
-                            ],
-                          ),
+                          const SizedBox(height: 16.0),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          //   children: [
+                          //     InkWell(
+                          //       onTap: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder: (context) => SurveiPage(),
+                          //           ),
+                          //         );
+                          //       },
+                          //       child: EasyAccess(
+                          //           path: 'assets/img/menu/survey.png',
+                          //           color: Colors.blue,
+                          //           text: 'SURVEI'),
+                          //     ),
+                          //     EasyAccess(
+                          //         path: 'assets/img/menu/emeeting.png',
+                          //         color: Colors.purple,
+                          //         text: 'E-MEETING'),
+                          //     EasyAccess(
+                          //         path: 'assets/img/menu/penilaian.png',
+                          //         color: Colors.teal,
+                          //         text: 'PENILAIAN 360'),
+                          //     EasyAccess(
+                          //         path: 'assets/img/menu/spt.png',
+                          //         color: Colors.indigo,
+                          //         text: 'SPT'),
+                          //     InkWell(
+                          //       onTap: () {
+                          //         showModalBottomSheet(
+                          //           context: context,
+                          //           isScrollControlled: true,
+                          //           builder: (BuildContext context) {
+                          //             return FractionallySizedBox(
+                          //               heightFactor: 0.3,
+                          //               child: SingleChildScrollView(
+                          //                 child: Container(
+                          //                   padding: const EdgeInsets.all(16),
+                          //                   child: Column(
+                          //                     mainAxisSize: MainAxisSize.min,
+                          //                     children: [
+                          //                       Row(
+                          //                         mainAxisAlignment:
+                          //                             MainAxisAlignment
+                          //                                 .spaceAround,
+                          //                         children: [
+                          //                           EasyAccess(
+                          //                               path:
+                          //                                   'assets/img/menu/mrp.png',
+                          //                               color: Colors.blue,
+                          //                               text: 'MRP'),
+                          //                           EasyAccess(
+                          //                               path:
+                          //                                   'assets/img/menu/reminder.png',
+                          //                               color: Colors.green,
+                          //                               text: 'Reminder'),
+                          //                           EasyAccess(
+                          //                               path:
+                          //                                   'assets/img/menu/bankgaransi.png',
+                          //                               color: Colors.orange,
+                          //                               text: 'BANK GARANSI'),
+                          //                           EasyAccess(
+                          //                               path:
+                          //                                   'assets/img/menu/docerp.png',
+                          //                               color: Colors.yellow,
+                          //                               text: 'FINANCE'),
+                          //                           EasyAccess(
+                          //                               path:
+                          //                                   'assets/img/menu/visitor.png',
+                          //                               color: Colors.yellow,
+                          //                               text: 'ACCOUNTING'),
+                          //                         ],
+                          //                       ),
+                          //                     ],
+                          //                   ),
+                          //                 ),
+                          //               ),
+                          //             );
+                          //           },
+                          //         );
+                          //       },
+                          //       child: EasyAccess(
+                          //           path: 'assets/img/menu/other.png',
+                          //           color: Colors.lightBlue.shade300,
+                          //           text: 'LAINNYA'),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       )),
                   const SizedBox(height: 10),
@@ -617,17 +613,12 @@ class _DashboardPageState extends State<DashboardPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
-                      color: Colors.white, // Warna latar belakang
-                      // borderRadius: const BorderRadius.only(
-                      //   bottomLeft: Radius.circular(10),
-                      //   bottomRight: Radius.circular(10),
-                      // ), // Border radius
+                      color: Colors.white,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black
-                              .withOpacity(0.1), // Warna dan opasitas bayangan
-                          spreadRadius: 2.0, // Seberapa besar bayangan menyebar
-                          blurRadius: 5.0, // Seberapa kabur bayangan
+                          color: Colors.black.withOpacity(0.1),
+                          spreadRadius: 2.0,
+                          blurRadius: 5.0,
                         ),
                       ],
                     ),
@@ -639,7 +630,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           });
                         },
                         child: Text(
-                          'Saldo Koperasi : Rp.${show ? '$saldo' : 'xxx-xxx-xxx'} ',
+                          'Saldo Koperasi : ${show ? formatRupiah(double.parse(saldo ?? '0')) : 'Rp. xxx-xxx-xxx'} ',
                           style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -672,9 +663,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                   fontStyle: FontStyle.italic,
                                   color: Colors.orange),
                             )),
-                  // const SizedBox(
-                  //   height: 20,
-                  // ),
                   const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
@@ -784,36 +772,28 @@ class _DashboardPageState extends State<DashboardPage> {
                             const SizedBox(
                               height: 20,
                             ),
-                            // bagian 1
                             tabIndex == 0
                                 ? Expanded(
                                     child: loadingCuti
                                         ? const Center(
-                                            child: Text(
-                                                'Loading...'), // Tampilkan teks "Loading..." ketika data masih kosong
+                                            child: Text('Loading...'),
                                           )
                                         : cutiData.isEmpty
                                             ? const Center(
-                                                child: Text(
-                                                    'Belum ada yang cuti'), // Tampilkan teks "Loading..." ketika data masih kosong
+                                                child:
+                                                    Text('Belum ada yang cuti'),
                                               )
                                             : ListView.builder(
                                                 shrinkWrap: true,
                                                 itemCount: cutiData.length,
                                                 itemBuilder: (context, index) {
-                                                  // final foto = dinasData[index]['foto'];
                                                   const foto =
-                                                      'https://garamina.com/hr/files/emp/pic/pic_20190624_213733_798.jpeg';
+                                                      ApiServices.defaultProfilePic;
                                                   return Column(
                                                     children: [
                                                       ListTile(
                                                         leading: CircleAvatar(
                                                           backgroundImage:
-                                                              //                     Image.network(
-                                                              //   item['FOTO'].toString(),
-                                                              //   // height: 50,
-                                                              //   width: 50,
-                                                              // ),
                                                               FileImage(
                                                                   File(foto)),
                                                         ),
@@ -843,22 +823,20 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ? Expanded(
                                         child: loadingIzin
                                             ? const Center(
-                                                child: Text(
-                                                    'Loading...'), // Tampilkan teks "Loading..." ketika data masih kosong
+                                                child: Text('Loading...'),
                                               )
                                             : izinData.isEmpty
                                                 ? const Center(
                                                     child: Text(
-                                                        'Belum ada yang izin'), // Tampilkan teks "Loading..." ketika data masih kosong
+                                                        'Belum ada yang izin'),
                                                   )
                                                 : ListView.builder(
                                                     shrinkWrap: true,
                                                     itemCount: izinData.length,
                                                     itemBuilder:
                                                         (context, index) {
-                                                      // final foto = dinasData[index]['foto'];
                                                       const foto =
-                                                          'https://garamina.com/hr/files/emp/pic/pic_20190624_213733_798.jpeg';
+                                                          ApiServices.defaultProfilePic;
                                                       return Column(
                                                         children: [
                                                           ListTile(
@@ -896,13 +874,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                         Expanded(
                                             child: loadingDinas
                                                 ? const Center(
-                                                    child: Text(
-                                                        'Loading...'), // Tampilkan teks "Loading..." ketika data masih kosong
+                                                    child: Text('Loading...'),
                                                   )
                                                 : dinasData.isEmpty
                                                     ? const Center(
                                                         child: Text(
-                                                            'Belum ada yang dinas'), // Tampilkan teks "Loading..." ketika data masih kosong
+                                                            'Belum ada yang dinas'),
                                                       )
                                                     : ListView.builder(
                                                         shrinkWrap: true,
@@ -910,9 +887,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                                             dinasData.length,
                                                         itemBuilder:
                                                             (context, index) {
-                                                          // final foto = dinasData[index]['foto'];
                                                           const foto =
-                                                              'https://garamina.com/hr/files/emp/pic/pic_20190624_213733_798.jpeg';
+                                                              ApiServices.defaultProfilePic;
                                                           return Column(
                                                             children: [
                                                               ListTile(
@@ -955,7 +931,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                         //         itemCount: dinasData.length,
                                         //         itemBuilder: (context, index) {
                                         //           const foto =
-                                        //               'https://garamina.com/hr/files/emp/pic/pic_20190624_213733_798.jpeg';
+                                        //               ApiServices.defaultProfilePic;
                                         //           return Column(
                                         //             children: [
                                         //               ListTile(

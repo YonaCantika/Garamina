@@ -18,7 +18,6 @@ class LoadingComponent extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Tambahkan logo di atas form
             Image.asset(
               'assets/img/loader.gif',
               width: 150,

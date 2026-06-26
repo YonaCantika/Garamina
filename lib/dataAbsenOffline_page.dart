@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'absen_offline_page.dart';
 import 'components/actionComponent.dart';
 import 'login_page.dart';
+import 'package:garamina/services/api_services.dart';
 
 class DataAbsenOfflinePage extends StatefulWidget {
   @override
@@ -75,11 +76,9 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
     final List<dynamic> absenDataList = json.decode(absenDataString!);
     print(absenDataList.toString());
 
-    // image testing
     for (var index = 0; index < absenDataList.length; index++) {
       Map<String, dynamic> jsonData = json.decode(absenDataList[index]);
       String imagePath = jsonData["foto"];
-      // print(imagePath);
 
       if (imagePath != null) {
         File imageFile = File(imagePath);
@@ -88,7 +87,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
           String base64Image = base64Encode(imageBytes);
           jsonData["foto"] = base64Image;
         }
-        // Setelah mengonversi, perlu mengubah objek JSON yang sudah diperbarui menjadi string kembali.
         absenDataList[index] = json.encode(jsonData);
       }
     }
@@ -97,15 +95,13 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
 
     final response = await http.post(
       Uri.parse(
-          'https://garamina.com/fintech2/integrasi/android/insert_absen_emergency/login'),
+          ApiServices.insertAbsenEmergencyLogin),
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
         'Content-Type': 'application/json',
       },
       body: absenDataList.toString(),
     );
-
-    // print(json.decode(absenDataString!));
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
@@ -113,7 +109,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
 
       if (responseData[0]['status'] == true) {
         await prefs.remove('absenData');
-        // Arahkan ke halaman login
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => LoginPage(),
@@ -125,11 +120,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
     } else {
       showErrorDialog('Gagal', 'Server masih maintenance');
     }
-    // try {
-    //
-    // } catch (e) {
-    //   showErrorDialog('Periksa koneksi anda lalu coba kembali.');
-    // }
   }
 
   Future<void> getDataFromSharedPreferences() async {
@@ -163,7 +153,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
       }
     }
 
-    // Mengambil nilai di local
     setState(() {
       idPeg = prefs.getString('idPeg');
       namaUser = prefs.getString('namaUser');
@@ -194,14 +183,13 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
           Container(
             color: Colors.blue,
             height: 100,
             padding: EdgeInsets.all(16),
             child: Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center, // Tengahkan teks
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     namaUser ?? '',
@@ -211,7 +199,7 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
                     ),
                   ),
                   Text(
-                    checkStatus ?? '',
+                    costCenter ?? 'Cost Center',
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -221,8 +209,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
               ),
             ),
           ),
-
-          // Bagian 2:
           Column(
             children: [
               ElevatedButton(
@@ -234,7 +220,7 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(16),
-                  primary: Colors.orange,
+                  backgroundColor: Colors.orange,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -246,14 +232,13 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
               ),
             ],
           ),
-
           Container(
             color: Colors.blue,
             height: 50,
             padding: const EdgeInsets.all(16),
             child: const Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center, // Tengahkan teks
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'NB: Waktu Absen di Convert Menjadi WIB',
@@ -266,8 +251,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
               ),
             ),
           ),
-
-          // Bagian 3: ListView dengan Border Radius di Atas
           Expanded(
             child: Container(
               decoration: const BoxDecoration(
@@ -279,7 +262,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
               ),
               child: Column(
                 children: [
-                  // Judul "Data Absen"
                   const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
@@ -290,7 +272,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
                       ),
                     ),
                   ),
-                  // Daftar data ListView
                   Expanded(
                     child: absenListJson.isEmpty
                         ? const Center(
@@ -340,8 +321,6 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
           ),
         ],
       ),
-      // Bagian 4: Menu dengan Icon dan Text di Bawah
-      // Tambahkan bagian ini sesuai kebutuhan
     );
   }
 

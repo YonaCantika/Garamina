@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'dinas_page.dart';
 import 'components/actionComponent.dart';
 import 'components/easy_access.dart';
+import 'package:garamina/services/api_services.dart';
 
 class HRPage extends StatefulWidget {
   @override
@@ -45,12 +46,12 @@ class _HRPageState extends State<HRPage> {
 
   Future<void> fetchDataCuti() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/cuti');
+        ApiServices.reportCuti);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'mulaiCuti':
@@ -75,15 +76,15 @@ class _HRPageState extends State<HRPage> {
 
   Future<void> fetchDataIzin() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/izin');
-    // 'http://192.168.1.252/fintech2/integrasi/android/report/izin');
+        ApiServices.reportIzin);
+    // ApiServices.reportIzin);
 
     // final formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         // 'mulaiIzin': '2023-10-17',
@@ -110,13 +111,13 @@ class _HRPageState extends State<HRPage> {
 
   Future<void> fetchDataDinas() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/dinas');
-    // 'http://192.168.1.252/fintech2/integrasi/android/report/dinas');
+        ApiServices.reportDinas);
+    // ApiServices.reportDinas);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         // 'mulaiDinas': '2023-11-27',
@@ -160,7 +161,6 @@ class _HRPageState extends State<HRPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Bagian 1: card data
             Image.asset(
               'assets/img/dashboard/employee.png',
               height: 200,
@@ -168,21 +168,17 @@ class _HRPageState extends State<HRPage> {
             const SizedBox(
               height: 8,
             ),
-            // Bagian 3:
             Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
               ),
               child: Column(
                 children: [
-                  // menu
                   Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: Colors.white, // Warna latar belakang
+                        color: Colors.white,
                         borderRadius: const BorderRadius.only(
-                          // bottomLeft: Radius.circular(10),
-                          // bottomRight: Radius.circular(10),
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
                         ),
@@ -201,7 +197,6 @@ class _HRPageState extends State<HRPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              // Cuti
                               InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -217,7 +212,6 @@ class _HRPageState extends State<HRPage> {
                                     color: Colors.red,
                                     text: 'CUTI'),
                               ),
-                              // Izin
                               InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -233,7 +227,6 @@ class _HRPageState extends State<HRPage> {
                                     color: Colors.orange,
                                     text: 'IZIN'),
                               ),
-                              // Dinas
                               InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -248,12 +241,10 @@ class _HRPageState extends State<HRPage> {
                                     color: Colors.green,
                                     text: 'DINAS'),
                               ),
-                              // Koperasi
                               EasyAccess(
                                   path: 'assets/img/menu/koperasi.png',
                                   color: Colors.purple,
                                   text: 'KOPERASI'),
-                              // Jadwal
                               InkWell(
                                 onTap: () {
                                   Navigator.push(
@@ -367,7 +358,6 @@ class _HRPageState extends State<HRPage> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              // bagian 1
                               tabIndex == 0
                                   ? cutiData.isEmpty
                                       ? const Center(
@@ -377,9 +367,8 @@ class _HRPageState extends State<HRPage> {
                                           shrinkWrap: true,
                                           itemCount: cutiData.length,
                                           itemBuilder: (context, index) {
-                                            // final foto = dinasData[index]['foto'];
                                             const foto =
-                                                'https://garamina.com/hr/files/emp/pic/pic_20190624_213733_798.jpeg';
+                                                ApiServices.defaultProfilePic;
                                             return Column(
                                               children: [
                                                 ListTile(
@@ -418,9 +407,8 @@ class _HRPageState extends State<HRPage> {
                                               shrinkWrap: true,
                                               itemCount: izinData.length,
                                               itemBuilder: (context, index) {
-                                                // final foto = dinasData[index]['foto'];
                                                 final foto =
-                                                    'https://garamina.com/hr/files/emp/pic/pic_20190624_213733_798.jpeg';
+                                                    ApiServices.defaultProfilePic;
                                                 return Column(
                                                   children: [
                                                     ListTile(
@@ -451,10 +439,7 @@ class _HRPageState extends State<HRPage> {
                                               },
                                             )
                                       : tabIndex == 2
-                                          ?
-                                          // bagian 3
-
-                                          dinasData.isEmpty
+                                          ? dinasData.isEmpty
                                               ? const Center(
                                                   child: Text(
                                                       'Belum ada data dinas'),
@@ -465,7 +450,7 @@ class _HRPageState extends State<HRPage> {
                                                   itemBuilder:
                                                       (context, index) {
                                                     const foto =
-                                                        'https://garamina.com/hr/files/emp/pic/pic_20190624_213733_798.jpeg';
+                                                        ApiServices.defaultProfilePic;
                                                     return Column(
                                                       children: [
                                                         ListTile(

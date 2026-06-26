@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'dinas_page.dart';
 import 'components/actionComponent.dart';
 import 'components/easy_access.dart';
+import 'package:garamina/services/api_services.dart';
 
 class DocErpPage extends StatefulWidget {
   @override
@@ -38,12 +39,12 @@ class _DocErpPageState extends State<DocErpPage> {
 
   Future<void> fetchDataCuti() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/cuti');
+        ApiServices.reportCuti);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'mulaiCuti':
@@ -177,7 +178,6 @@ class _DocErpPageState extends State<DocErpPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Bagian 1: card data
             Image.asset(
               'assets/img/dashboard/erpdoc.png',
               height: 200,
@@ -185,21 +185,17 @@ class _DocErpPageState extends State<DocErpPage> {
             const SizedBox(
               height: 8,
             ),
-            // Bagian 3:
             Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
               ),
               child: Column(
                 children: [
-                  // menu
                   Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: Colors.white, // Warna latar belakang
+                        color: Colors.white,
                         borderRadius: const BorderRadius.only(
-                          // bottomLeft: Radius.circular(10),
-                          // bottomRight: Radius.circular(10),
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
                         ),
@@ -219,44 +215,21 @@ class _DocErpPageState extends State<DocErpPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               InkWell(
-                                onTap: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) =>
-                                  //         StatusPengajuanCutiPage(),
-                                  //   ),
-                                  // );
-                                },
+                                onTap: () {},
                                 child: EasyAccess(
                                     path: 'assets/img/menu/complain.png',
                                     color: Colors.green,
                                     text: 'COMPLAIN'),
                               ),
                               InkWell(
-                                onTap: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) =>
-                                  //         StatusPengajuanIzinPage(),
-                                  //   ),
-                                  // );
-                                },
+                                onTap: () {},
                                 child: EasyAccess(
                                     path: 'assets/img/menu/tanggapan.png',
                                     color: Colors.orange,
                                     text: 'TANGGAPAN'),
                               ),
                               InkWell(
-                                onTap: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => DinasPage(),
-                                  //   ),
-                                  // );
-                                },
+                                onTap: () {},
                                 child: EasyAccess(
                                     path: 'assets/img/menu/report.png',
                                     color: Colors.red,

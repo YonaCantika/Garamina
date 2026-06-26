@@ -14,6 +14,7 @@ import 'dataAbsen_page.dart';
 import 'components/menu.dart';
 import 'components/welcome.dart';
 import 'components/carousel.dart';
+import 'package:garamina/services/api_services.dart';
 
 class UlangTahunPage extends StatefulWidget {
   @override
@@ -34,17 +35,17 @@ class _UlangTahunPageState extends State<UlangTahunPage> {
   }
 
   Future<void> fetchDataFromApi() async {
-    final apiUrl = Uri.parse('https://garamina.com/fintech2/integrasi/android/report/ulang_tahun');
-    // final now = DateTime.now();
-    // final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    final apiUrl = Uri.parse(
+        ApiServices.reportUlangTahun);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
-        'tanggal': '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
+        'tanggal':
+            '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
       },
     );
 
@@ -52,8 +53,7 @@ class _UlangTahunPageState extends State<UlangTahunPage> {
       loading = false;
       final data = jsonDecode(response.body);
       print(data);
-      data.length <= 0 ?
-      dataResponse = false: dataResponse = true;
+      data.length <= 0 ? dataResponse = false : dataResponse = true;
       setState(() {
         ultahData = List<Map<String, dynamic>>.from(data);
       });
@@ -80,11 +80,8 @@ class _UlangTahunPageState extends State<UlangTahunPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
-          // Bagian 2: Carousel Slider
           CarouselSection(),
-          // Bagian 3: ListView dengan Border Radius di Atas
           CustomExpandedContainer(
             title: 'Karyawan Ulang Tahun',
             data: ultahData,
@@ -105,7 +102,7 @@ class _UlangTahunPageState extends State<UlangTahunPage> {
                         Text('Usia: $usia'),
                       ],
                     ),
-                    trailing:InkWell(
+                    trailing: InkWell(
                       onTap: () {
                         showModalBottomSheet(
                           context: context,
@@ -121,12 +118,14 @@ class _UlangTahunPageState extends State<UlangTahunPage> {
                                     children: [
                                       const Text(
                                         'Berikan Ucapan',
-                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(height: 20),
                                       TextFormField(
-                                        decoration: const InputDecoration(labelText: 'Pesan'),
-                                        // controller: keteranganCutiController,
+                                        decoration: const InputDecoration(
+                                            labelText: 'Pesan'),
                                       ),
                                       const SizedBox(height: 30),
                                       SizedBox(
@@ -138,9 +137,10 @@ class _UlangTahunPageState extends State<UlangTahunPage> {
                                           },
                                           style: ElevatedButton.styleFrom(
                                             padding: const EdgeInsets.all(16),
-                                            primary: Colors.blue,
+                                            backgroundColor: Colors.blue,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
                                           ),
                                           child: const Text('Kirim Pesan'),
@@ -156,8 +156,9 @@ class _UlangTahunPageState extends State<UlangTahunPage> {
                       },
                       child: const SizedBox(
                         height: 50,
-                        width: 50, // Lebar ikon kedua
-                        child: Icon(Icons.message_rounded, size: 30, color: Colors.black),
+                        width: 50,
+                        child: Icon(Icons.message_rounded,
+                            size: 30, color: Colors.black),
                       ),
                     ),
                   ),

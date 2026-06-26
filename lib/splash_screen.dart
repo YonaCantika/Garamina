@@ -23,11 +23,9 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          // builder: (context) => SurveySingleChoicePage(),
           builder: (context) => LoginPage(),
         ),
       );
-      // _getPreference();
     });
   }
 
@@ -136,7 +134,6 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 20),
             const SizedBox(height: 20),
-            // gambar bumn
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,

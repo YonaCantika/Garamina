@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'components/actionComponent.dart';
 import 'components/welcome.dart';
 import 'components/customExpandedContainer.dart';
+import 'package:garamina/services/api_services.dart';
 
 class CutiPage extends StatefulWidget {
   @override
@@ -25,12 +26,12 @@ class _CutiPageState extends State<CutiPage> {
 
   Future<void> fetchDataFromApi() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/cuti');
+        ApiServices.reportCuti);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'mulaiCuti':
@@ -70,9 +71,7 @@ class _CutiPageState extends State<CutiPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang
           WelcomeSection(),
-          // Bagian 2: Carousel Slider
           Container(
             height: 150,
             child: CarouselSlider(
@@ -95,7 +94,6 @@ class _CutiPageState extends State<CutiPage> {
               ],
             ),
           ),
-          // Bagian 3: ListView
           CustomExpandedContainer(
             title: 'Karyawan Cuti',
             data: cutiData,

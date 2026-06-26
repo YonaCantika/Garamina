@@ -14,6 +14,7 @@ import 'components/menu.dart';
 import 'components/welcome.dart';
 import 'components/carousel.dart';
 import 'components/customExpandedContainer.dart';
+import 'package:garamina/services/api_services.dart';
 
 class IzinPage extends StatefulWidget {
   @override
@@ -35,14 +36,12 @@ class _IzinPageState extends State<IzinPage> {
 
   Future<void> fetchDataFromApi() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/izin');
-
-    // final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+        ApiServices.reportIzin);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'mulaiIzin':
@@ -83,11 +82,8 @@ class _IzinPageState extends State<IzinPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
-          // Bagian 2: Carousel Slider
           CarouselSection(),
-          // Bagian 3: ListView dengan Border Radius di Atas
           CustomExpandedContainer(
             title: 'Karyawan Izin',
             data: izinData,
@@ -110,7 +106,6 @@ class _IzinPageState extends State<IzinPage> {
                         Text('Periode: $periode'),
                       ],
                     ),
-                    // trailing: Icon(Icons.arrow_forward),
                   ),
                   const Divider(),
                 ],

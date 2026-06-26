@@ -24,6 +24,7 @@ import 'location/user_location.dart';
 import 'auth_state.dart';
 import 'absen_state.dart';
 import 'components/menu.dart';
+import 'package:garamina/services/api_services.dart';
 
 class AbsenPage extends StatefulWidget {
   @override
@@ -45,12 +46,11 @@ class _AbsenPageState extends State<AbsenPage> {
   bool fake = false;
   bool devOpt = false;
   late Timer timer;
-  bool developerMode = false;
+  static const platform = MethodChannel('developer_mode');
+  bool devMod = false;
 
   @override
   void dispose() {
-    // _locationSubscription?.cancel();
-    // locationService.stopLocationService();
     locationService.dispose();
     super.dispose();
   }
@@ -59,28 +59,31 @@ class _AbsenPageState extends State<AbsenPage> {
   void initState() {
     super.initState();
     fakeGpsDetection();
+    isDeveloperModeEnabled();
   }
 
-  // fake gps detection
+  Future<void> isDeveloperModeEnabled() async {
+    try {
+      final bool result = await platform.invokeMethod('isDeveloperModeEnabled');
+      if (result) {
+        _showErrorDialog('Fake GPS Detection',
+            'Garamina mobile tidak mengizinkan anda menghidupkan opsi developer!!!');
+      }
+      setState(() {
+        devMod = result;
+      });
+    } on PlatformException catch (e) {
+      print("Error: '${e.message}'.");
+    }
+  }
+
   Future<void> fakeGpsDetection() async {
     if (await location.hasPermission() !=
         location_package.PermissionStatus.granted) {
       print("Izin lokasi tidak diberikan. Mungkin menggunakan fake GPS.");
       return;
     }
-    // bool developerModePump = await FlutterJailbreakDetection.developerMode;
-    bool developerModePump = false;
-    try {
-      final result =
-          await SystemChannels.platform.invokeMethod<bool>('isInDebugMode');
-      if (result != null) developerModePump = result;
-    } on PlatformException catch (e) {
-      print(e.message);
-    }
-    print(developerModePump);
-    setState(() {
-      developerMode = developerModePump;
-    });
+
     double lastLat = 0.0;
     double lastLon = 0.0;
     location.onLocationChanged.listen((locationData) {
@@ -105,19 +108,15 @@ class _AbsenPageState extends State<AbsenPage> {
     }
   }
 
-  // hitung jarak antara dua titik
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const int earthRadius = 6371; // Radius dalam km
-    // Menghitung perbedaan garis lintang dan garis bujur
     final latDistance = (lat2 - lat1).abs();
     final lonDistance = (lon2 - lon1).abs();
-    // Menggunakan rumus Pythagoras untuk menghitung jarak
     final distance = sqrt(pow(latDistance, 2) + pow(lonDistance, 2)) *
         (earthRadius * pi / 180);
     return distance;
   }
 
-  // mengonversi koordinat menjadi alamat
   Future<void> getAddress(latitude, longitude) async {
     try {
       final List<Placemark> placemarks = await placemarkFromCoordinates(
@@ -129,11 +128,8 @@ class _AbsenPageState extends State<AbsenPage> {
       final String alamat = placemark.street ?? '';
       final String kota = placemark.locality ?? '';
       final String provinsi = placemark.administrativeArea ?? '';
-
-      // alamat dari koordinat
       alamatLengkap = '$alamat, $kota, $provinsi';
 
-      // Update tampilan
       setState(() {});
     } catch (e) {
       print('Kesalahan saat mengambil alamat: $e');
@@ -144,9 +140,9 @@ class _AbsenPageState extends State<AbsenPage> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://ptgaram.com/api/status_absen_emergency/insert_status_absen'),
+            ApiServices.insertStatusAbsen),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           'idPeg': idPeg.toString(),
@@ -184,23 +180,17 @@ class _AbsenPageState extends State<AbsenPage> {
         ],
       ),
       body: isLoading == true
-          ?
-          //    tampilan saat loading
-          LoadingComponent()
-          :
-          //    tampilan normal
-          SingleChildScrollView(
+          ? LoadingComponent()
+          : SingleChildScrollView(
               child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: <Widget>[
-                  // realtime userLocation
                   StreamBuilder<UserLocation>(
                     stream: locationService.locationStream,
                     builder: (_, snapshot) {
                       if (snapshot.hasData) {
                         final userLocation = snapshot.data!;
-                        // alamat = alamat dari userLocation
                         koordinatUser =
                             '${userLocation.latitude},${userLocation.longitude}';
                         final kantorLocation = absenState.koordinat ?? '';
@@ -213,8 +203,6 @@ class _AbsenPageState extends State<AbsenPage> {
                         final lon1 = userLocation.longitude;
                         final lat2 = kantorCoordinates.latitude;
                         final lon2 = kantorCoordinates.longitude;
-
-                        // pemanggilan fungsi
                         distanceToKantor =
                             calculateDistance(lat1, lon1, lat2, lon2);
                         getAddress(
@@ -223,7 +211,7 @@ class _AbsenPageState extends State<AbsenPage> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            if (developerMode)
+                            if (devMod)
                               Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
@@ -295,9 +283,7 @@ class _AbsenPageState extends State<AbsenPage> {
                   ),
                   const SizedBox(height: 20),
                   imageFile != null
-                      ?
-                      // menampilkan hasil gambar
-                      Column(
+                      ? Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             if (imageFile != null)
@@ -309,9 +295,7 @@ class _AbsenPageState extends State<AbsenPage> {
                               ),
                           ],
                         )
-                      :
-                      // tombol kamera
-                      SizedBox(
+                      : SizedBox(
                           width: double.infinity,
                           height: 60,
                           child: ElevatedButton.icon(
@@ -320,7 +304,7 @@ class _AbsenPageState extends State<AbsenPage> {
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(16),
-                              primary: Colors.orange,
+                              backgroundColor: Colors.orange,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -334,13 +318,10 @@ class _AbsenPageState extends State<AbsenPage> {
                             ),
                           ),
                         ),
-
                   const SizedBox(height: 20),
-                  // rata kanan
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // input deskripsi
                       const Text(
                         'Deskripsi:',
                         style: TextStyle(
@@ -355,8 +336,6 @@ class _AbsenPageState extends State<AbsenPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-
-                      //input kondisi
                       const Text(
                         'Kondisi Saat Ini:',
                         style: TextStyle(
@@ -377,8 +356,6 @@ class _AbsenPageState extends State<AbsenPage> {
                     ],
                   ),
                   const SizedBox(height: 20),
-
-                  // tombol absen
                   SizedBox(
                     width: double.infinity,
                     height: 60,
@@ -392,7 +369,8 @@ class _AbsenPageState extends State<AbsenPage> {
                               setState(() {
                                 isLoading = true;
                               });
-                              isLoading == true
+                              isDeveloperModeEnabled();
+                              devMod != true
                                   ? _saveAbsenData(
                                       absenState.checkStatus,
                                       authState.idPeg,
@@ -407,21 +385,19 @@ class _AbsenPageState extends State<AbsenPage> {
                                       absenState.checkShiftM)
                                   : null;
                             }
-                          : null, // Jika tidak sesuai, maka nilai onPressed diset null
+                          : null,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        primary: absenState.checkStatus == '0-0'
+                        backgroundColor: absenState.checkStatus == '0-0'
                             ? Colors.blue
                             : absenState.checkStatus != '0-0' &&
                                     absenState.checkStatus != 'A-A'
                                 ? Colors.red
-                                : Colors
-                                    .grey, // Jika selain itu, gunakan warna abu-abu
+                                : Colors.grey,
                       ),
-                      // label sesuai dengan nilai absenState.check_status
                       child: Text(
                         isLoading == true
                             ? 'loading...'
@@ -445,7 +421,7 @@ class _AbsenPageState extends State<AbsenPage> {
 
   void _getImageFromCamera() async {
     final imagePicker = ImagePicker();
-    final pickedFile = await imagePicker.getImage(source: ImageSource.camera);
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
       setState(() {
@@ -470,8 +446,8 @@ class _AbsenPageState extends State<AbsenPage> {
   ) async {
     fakeGpsDetection();
 
-    if (fake == true) {
-      _showErrorDialog('Perangkat Anda Terdeteksi Fake GPS',
+    if (fake == true || devMod == true) {
+      _showErrorDialog('Fake GPS Detection',
           'Maaf, Anda tidak dapat melakukan absen karena perangkat Anda terdeteksi menggunakan Fake GPS.');
       return;
     }
@@ -482,7 +458,7 @@ class _AbsenPageState extends State<AbsenPage> {
       return;
     }
 
-    if (distanceToKantor! <= 0.09 ||
+    if (distanceToKantor! <= 0.05 ||
         checkStatusPegawai == 'true' ||
         checkStatusSPPD == 'true' ||
         checkStatusDetasering == 'true') {
@@ -505,10 +481,10 @@ class _AbsenPageState extends State<AbsenPage> {
     final request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          'https://garamina.com/fintech2/integrasi/android/insert_absen/login'),
+          ApiServices.insertAbsenLogin),
     );
 
-    request.headers['APIKEY'] = '8deca313c70c6195eba4208b8dc6d56b';
+    request.headers['APIKEY'] = ApiServices.apiKey;
     request.fields['status'] = checkShiftM == true
         ? 'out_morning'
         : status == '0-0'
@@ -570,16 +546,13 @@ class _AbsenPageState extends State<AbsenPage> {
             parsedData['slogan']);
         if (status == '0-0') {
           updateStatusEmergency(empId, 'A-', checkShiftM);
-          // await prefs.setString('checkStatus', 'A-');
         } else if (status == 'A-') {
           updateStatusEmergency(empId, 'A-A', checkShiftM);
-          // await prefs.setString('checkStatus', '0-0');
         }
         setState(() {
           imageFile = null;
           descriptionController.clear();
           selectedCondition = 'Semangat';
-          // isLoading = false;
         });
       } else {
         throw Exception('Gagal: ${parsedData['msg']}');
@@ -638,16 +611,10 @@ class _AbsenPageState extends State<AbsenPage> {
                 children: [
                   if (foto != null)
                     Image.network(
-                      'https://garamina.com/erp/assets/upload/$foto',
+                      '${ApiServices.erpAssetsUrl}$foto',
                       width: 200,
                       height: 200,
                     )
-                  // Image.file(
-                  //   foto!,
-                  //   height: 200,
-                  //   width: 200,
-                  //   fit: BoxFit.cover,
-                  // ),
                 ],
               ),
               Column(
@@ -681,9 +648,6 @@ class _AbsenPageState extends State<AbsenPage> {
         );
       },
     );
-    // setState(() {
-    //   isLoading = false;
-    // });
   }
 
   Widget _buildConditionBox(String condition, String value) {

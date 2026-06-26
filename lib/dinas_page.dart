@@ -5,6 +5,7 @@ import 'components/actionComponent.dart';
 import 'components/welcome.dart';
 import 'components/carousel.dart';
 import 'components/customExpandedContainer.dart';
+import 'package:garamina/services/api_services.dart';
 
 class DinasPage extends StatefulWidget {
   @override
@@ -26,12 +27,12 @@ class _DinasPageState extends State<DinasPage> {
 
   Future<void> fetchDataFromApi() async {
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/dinas');
+        ApiServices.reportDinas);
 
     final response = await http.post(
       apiUrl,
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'mulaiDinas':
@@ -56,7 +57,6 @@ class _DinasPageState extends State<DinasPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final authState = Provider.of<AuthState>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dinas'),
@@ -73,11 +73,8 @@ class _DinasPageState extends State<DinasPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
-          // Bagian 2: Carousel Slider
           CarouselSection(),
-          // Bagian 3: ListView dengan Border Radius di Atas
           CustomExpandedContainer(
             title: 'Karyawan Dinas',
             data: dinasData,

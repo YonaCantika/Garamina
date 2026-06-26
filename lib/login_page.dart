@@ -5,14 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:device_info/device_info.dart';
+import 'package:android_id/android_id.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:location/location.dart' as location_package;
 
 import 'auth_state.dart';
 import 'components/actionComponent.dart';
 import 'components/loadingComponent.dart';
 import 'dataAbsenOffline_page.dart';
 import 'components/menu.dart';
+import 'package:garamina/services/api_services.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -34,13 +36,63 @@ class _LoginPageState extends State<LoginPage> {
 
   String _timezone = 'Unknown';
   List<String> _availableTimezones = <String>[];
+  static const platform = MethodChannel('developer_mode');
+  bool devMod = false;
 
   @override
   void initState() {
     super.initState();
     getMacAddress();
     usernamePassword();
+    _ambilDanSimpanLokasi();
     // showFloatingNotification();
+  }
+
+  Future<void> isDeveloperModeEnabled() async {
+    try {
+      final bool result = await platform.invokeMethod('isDeveloperModeEnabled');
+      if (result) {
+        showErrorDialog(
+            'Garamina mobile tidak mengizinkan anda menghidupkan opsi developer!!!');
+      } else {
+        _login();
+      }
+      setState(() {
+        devMod = result;
+      });
+    } on PlatformException catch (e) {
+      print("Error: '${e.message}'.");
+    }
+  }
+
+  Future<void> _ambilDanSimpanLokasi() async {
+    try {
+      if (await location_package.Location().hasPermission() !=
+          location_package.PermissionStatus.granted) {
+        print("Izin lokasi tidak diberikan. Mungkin menggunakan fake GPS.");
+        return;
+      }
+
+      location_package.LocationData locationData =
+          await location_package.Location().getLocation();
+
+      await _simpanLokasiKeSharedPreferences(
+        locationData.latitude ?? 0.0,
+        locationData.longitude ?? 0.0,
+      );
+
+      print("Lokasi: ${locationData.latitude}, ${locationData.longitude}");
+    } catch (e) {
+      print("Error saat mengambil lokasi: $e");
+    }
+  }
+
+  Future<void> _simpanLokasiKeSharedPreferences(
+      double latitude, double longitude) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print('berhasil disimpan: $latitude');
+    prefs.setDouble('lastLocationLatitude', latitude);
+    prefs.setDouble('lastLocationLongitude', longitude);
   }
 
   void showFloatingNotification() {
@@ -56,11 +108,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   getMacAddress() async {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    const _androidIdPlugin = AndroidId();
     if (Platform.isAndroid) {
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      print(androidInfo.androidId);
-      macAddress = androidInfo.androidId.toString();
+      final String? androidId = await _androidIdPlugin.getId();
+      print(androidId);
+      macAddress = androidId.toString();
     } else if (Platform.isIOS) {
       print("Not available on iOS");
     } else {
@@ -97,7 +149,6 @@ class _LoginPageState extends State<LoginPage> {
       sinkronisasi();
     } else {
       print('id peg tidak kosong');
-      // emergency
       prefs.setString('costCenter', costCenter.toString());
       prefs.setString('idPeg', idPeg.toString());
       prefs.setString('namaUser', namaUser.toString());
@@ -117,7 +168,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // Fungsi login
   Future<void> _login() async {
     setState(() {
       _isLoading = true;
@@ -127,15 +177,14 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://garamina.com/fintech2/integrasi/android/login/login'),
+            ApiServices.login),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           'username': username,
           'password': password,
           'macAddress': macAddress.toString(),
-          // 'macAddress' : 'a6e32d201fd94ee7'
         },
       );
 
@@ -147,14 +196,11 @@ class _LoginPageState extends State<LoginPage> {
         if (responseData['msg'] == 'Sukses') {
           if (responseData['status_macAddress'] == 'true') {
             await getDataNotif(responseData['idPeg']);
-            // Login berhasil, simpan data ke Shared Preferences
             _setPreference(
-                // emergency
                 responseData['costCenter'],
                 responseData['idPeg'],
                 responseData['namaUser'],
                 responseData['nik'],
-                // tambahan
                 responseData['costid'],
                 responseData['idLokasi'],
                 responseData['lokasi'],
@@ -182,7 +228,6 @@ class _LoginPageState extends State<LoginPage> {
               notifCount: notifCount,
             );
 
-            // Arahkan ke halaman menu
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => CustomBottomNavBar(),
@@ -197,7 +242,6 @@ class _LoginPageState extends State<LoginPage> {
         }
       } else {
         getDataEmergency(username, password);
-        // showErrorDialog('Server bermasalah, silahkan hubungi admin!');
       }
     } catch (e) {
       showErrorDialog('Periksa koneksi anda lalu coba kembali.');
@@ -306,7 +350,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ],
                         ),
-                        // Colors.purple
                         child: const Text('OK'),
                       ),
                     ),
@@ -316,7 +359,7 @@ class _LoginPageState extends State<LoginPage> {
             );
           },
         ),
-        const SizedBox(height: 5), // Spasi vertikal antara ikon dan teks
+        const SizedBox(height: 5),
         Text(
           text,
           style: TextStyle(
@@ -334,11 +377,9 @@ class _LoginPageState extends State<LoginPage> {
 
       final List<dynamic> absenDataList = json.decode(absenDataString!);
       print(absenDataList);
-      //image
       for (var index = 0; index < absenDataList.length; index++) {
         Map<String, dynamic> jsonData = json.decode(absenDataList[index]);
         String imagePath = jsonData["foto"];
-        // print(imagePath);
 
         if (imagePath != null) {
           File imageFile = File(imagePath);
@@ -347,16 +388,14 @@ class _LoginPageState extends State<LoginPage> {
             String base64Image = base64Encode(imageBytes);
             jsonData["foto"] = base64Image;
           }
-          // Setelah mengonversi, perlu mengubah objek JSON yang sudah diperbarui menjadi string kembali.
           absenDataList[index] = json.encode(jsonData);
         }
       }
-      //api
       final response = await http.post(
         Uri.parse(
-            'https://garamina.com/fintech2/integrasi/android/insert_absen_emergency/login'),
+            ApiServices.insertAbsenEmergencyLogin),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
           'Content-Type': 'application/json',
         },
         body: absenDataList.toString(),
@@ -384,9 +423,9 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://ptgaram.com/api/status_absen_emergency/update_checkStatus'),
+            ApiServices.updateCheckStatus),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           'idPeg': idPeg.toString(),
@@ -421,9 +460,9 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://ptgaram.com/api/status_absen_emergency/get_status_absen'),
+            ApiServices.getStatusAbsen),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           'userName': username.toString(),
@@ -505,9 +544,9 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://garamina.com/fintech2/integrasi/android/lonceng/list_lonceng'),
+            ApiServices.listLonceng),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           'empId': empId.toString(),
@@ -531,19 +570,6 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      // appBar: AppBar(
-      //   title: const Text('Login'),
-      //   actions: [
-      //     Row(
-      //       mainAxisAlignment: MainAxisAlignment.end,
-      //       children: [
-      //         buildUserGuide(context),
-      //         buildInformationCenter(context),
-      //       ],
-      //     ),
-      //   ],
-      //   automaticallyImplyLeading: false,
-      // ),
       body: Stack(
         children: [
           _isLoading == true
@@ -551,8 +577,7 @@ class _LoginPageState extends State<LoginPage> {
               : Container(
                   decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image:
-                          AssetImage('assets/img/bg.png'), // Background image
+                      image: AssetImage('assets/img/bg.png'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -564,10 +589,9 @@ class _LoginPageState extends State<LoginPage> {
                           height: 150,
                         ),
                         Card(
-                          elevation: 5, // Efek shadow
+                          elevation: 5,
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(15), // Border radius
+                            borderRadius: BorderRadius.circular(15),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -582,7 +606,6 @@ class _LoginPageState extends State<LoginPage> {
                                       color: Colors.grey),
                                 ),
                                 const SizedBox(height: 40),
-                                // Form login
                                 Padding(
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 10),
@@ -633,18 +656,16 @@ class _LoginPageState extends State<LoginPage> {
                                       ListTileControlAffinity.leading,
                                 ),
                                 const SizedBox(height: 20),
-                                //login button
                                 SizedBox(
-                                  width: double
-                                      .infinity, // Membuat tombol login memenuhi lebar
+                                  width: double.infinity,
                                   height: 50,
                                   child: ElevatedButton(
-                                    onPressed: _isLoading
-                                        ? null
-                                        : _login, // Disable tombol saat _isLoading adalah true
+                                    onPressed: () {
+                                      _login();
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       padding: const EdgeInsets.all(16),
-                                      primary: Colors.blue,
+                                      backgroundColor: Colors.blue,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
@@ -700,7 +721,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: Align(
                             alignment: Alignment.bottomCenter,
                             child: Text(
-                              'Copyright with ❤ by. Bagus Untoro',
+                              'Made with ❤ by. Bagus Untoro',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white),

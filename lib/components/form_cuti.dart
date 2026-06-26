@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../auth_state.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:garamina/services/api_services.dart';
 
 class FormCuti extends StatefulWidget {
   @override
@@ -27,12 +28,13 @@ class _FormCutiState extends State<FormCuti> {
   int _ready = 0;
   String? idAtasan;
   TextEditingController penggantiController = TextEditingController();
+  int count = 0;
 
   @override
   void initState() {
     super.initState();
     _getDataCuti();
-    _getAtasan();
+
     _getPengganti();
   }
 
@@ -40,9 +42,9 @@ class _FormCutiState extends State<FormCuti> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://garamina.com/fintech2/integrasi/android/cuti_izin/all_pegawai'),
+            ApiServices.allPegawai),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           'empid': '797',
@@ -85,9 +87,9 @@ class _FormCutiState extends State<FormCuti> {
   Future<void> _getDataCuti() async {
     final response = await http.post(
       Uri.parse(
-          'https://garamina.com/fintech2/integrasi/android/cuti_izin/cuti'),
+          ApiServices.cuti),
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'empid': '797',
@@ -113,16 +115,17 @@ class _FormCutiState extends State<FormCuti> {
     }
   }
 
-  Future<void> _getAtasan() async {
+  Future<void> _getAtasan(idPeg) async {
+    count++;
     try {
       final response = await http.post(
         Uri.parse(
-            'https://garamina.com/fintech2/integrasi/android/cuti_izin/atasan_langsung'),
+            ApiServices.atasanLangsung),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
-          'empid': '797',
+          'empid': idPeg.toString(),
         },
       );
 
@@ -202,9 +205,9 @@ class _FormCutiState extends State<FormCuti> {
   ) async {
     final response = await http.post(
       Uri.parse(
-          'https://garamina.com/fintech2/integrasi/android/cuti_izin/insert_cuti'),
+          ApiServices.insertCuti),
       headers: {
-        'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+        'APIKEY': ApiServices.apiKey,
       },
       body: {
         'idTipe': idTipe.toString(),
@@ -257,6 +260,7 @@ class _FormCutiState extends State<FormCuti> {
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
+    count <= 1 ? _getAtasan(authState.idPeg) : null;
     return FractionallySizedBox(
       heightFactor: 0.8,
       child: SingleChildScrollView(
@@ -273,7 +277,6 @@ class _FormCutiState extends State<FormCuti> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        // jenis cuti
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -311,7 +314,6 @@ class _FormCutiState extends State<FormCuti> {
                             ),
                           ],
                         ),
-                        // pengganti
                         TypeAheadField<Map<String, dynamic>>(
                           textFieldConfiguration: TextFieldConfiguration(
                             controller: penggantiController,
@@ -338,7 +340,6 @@ class _FormCutiState extends State<FormCuti> {
                             selectedPengganti = suggestion['nik'].toString();
                           },
                         ),
-                        // tanggal
                         Row(
                           children: [
                             Expanded(
@@ -374,7 +375,6 @@ class _FormCutiState extends State<FormCuti> {
                             ),
                           ],
                         ),
-                        // jatah dan sisa cuti
                         Row(
                           children: [
                             Expanded(
@@ -405,7 +405,6 @@ class _FormCutiState extends State<FormCuti> {
                             ),
                           ],
                         ),
-                        // lokasi dan nomor hp
                         Row(
                           children: [
                             Expanded(
@@ -434,14 +433,12 @@ class _FormCutiState extends State<FormCuti> {
                             ),
                           ],
                         ),
-                        // atasan
                         TextFormField(
                           controller: atasanController,
                           readOnly: true,
                           decoration:
                               const InputDecoration(labelText: 'Atasan'),
                         ),
-                        // keterangan
                         TextFormField(
                           decoration:
                               const InputDecoration(labelText: 'Keterangan'),
@@ -457,7 +454,7 @@ class _FormCutiState extends State<FormCuti> {
                             },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(16),
-                              primary: Colors.blue,
+                              backgroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),

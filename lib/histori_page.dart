@@ -14,6 +14,7 @@ import 'dataAbsen_page.dart';
 import 'components/menu.dart';
 import 'components/welcome.dart';
 import 'components/carousel.dart';
+import 'package:garamina/services/api_services.dart';
 
 class HistoriPage extends StatefulWidget {
   @override
@@ -35,13 +36,13 @@ class _HistoriPageState extends State<HistoriPage> {
   Future<void> fetchDataFromApi(idPeg) async {
     count++;
     final apiUrl = Uri.parse(
-        'https://garamina.com/fintech2/integrasi/android/report/history_absen');
+        ApiServices.reportHistoryAbsen);
 
     try {
       final response = await http.post(
         apiUrl,
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           "periodeTanggal":
@@ -88,11 +89,8 @@ class _HistoriPageState extends State<HistoriPage> {
       backgroundColor: Colors.blue,
       body: Column(
         children: [
-          // Bagian 1: Selamat Datang dengan Background Biru
           WelcomeSection(),
-          // Bagian 2: Carousel Slider
           CarouselSection(),
-          // Bagian 3: ListView dengan Border Radius di Atas
           CustomExpandedContainer(
             title: 'Histori Absen',
             data: historiData,
@@ -103,20 +101,19 @@ class _HistoriPageState extends State<HistoriPage> {
               final keterangan = historiData[index]['KETERANGAN'];
 
               final fotoIn =
-                  'https://garamina.com/erp/assets/upload/${historiData[index]['FOTO_IN']}';
+                  '${ApiServices.erpAssetsUrl}${historiData[index]['FOTO_IN']}';
               final jarakIn = historiData[index]['JARAK_IN'];
               final jamIn = historiData[index]['JAM_IN'];
               final statusAbsenIn = historiData[index]['STATUS_ABSEN_IN'];
 
               final fotoOut =
-                  'https://garamina.com/erp/assets/upload/${historiData[index]['FOTO_OUT']}';
+                  '${ApiServices.erpAssetsUrl}${historiData[index]['FOTO_OUT']}';
               final jarakOut = historiData[index]['JARAK_OUT'];
               final jamOut = historiData[index]['JAM_OUT'];
               final statusAbsenOut = historiData[index]['STATUS_ABSEN_OUT'];
               final nilaiInsentif = historiData[index]['NILAI_INSENTIF'];
               return GestureDetector(
                 onTap: () {
-                  // Tampilkan alert ketika diklik
                   showDialog(
                     context: context,
                     builder: (context) {
@@ -143,19 +140,15 @@ class _HistoriPageState extends State<HistoriPage> {
                                       )
                                     ],
                                   )
-                                :
-                                //in
-                                Column(
+                                : Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
                                       const SizedBox(height: 20),
-                                      if (historiData[index]['FOTO_IN'] !=
-                                          null) // Periksa apakah ada URL gambar
+                                      if (historiData[index]['FOTO_IN'] != null)
                                         Image.network(
                                           fotoIn,
-                                          height:
-                                              100, // Sesuaikan ukuran gambar sesuai kebutuhan Anda
+                                          height: 100,
                                           width: 150,
                                           fit: BoxFit.cover,
                                         ),
@@ -180,7 +173,6 @@ class _HistoriPageState extends State<HistoriPage> {
                                       Text(
                                           'Jam: ${jamIn.toString().substring(11, 19)}'),
                                       Text('Status: $statusAbsenIn'),
-                                      // Text('Jarak Pulang: $jarakOut'),
                                     ],
                                   )
                                 : historiData[index]['KETERANGAN'] == 'Masuk' ||
@@ -193,12 +185,10 @@ class _HistoriPageState extends State<HistoriPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 const SizedBox(height: 20),
-                                if (historiData[index]['FOTO_OUT'] !=
-                                    null) // Periksa apakah ada URL gambar
+                                if (historiData[index]['FOTO_OUT'] != null)
                                   Image.network(
                                     fotoOut,
-                                    height:
-                                        100, // Sesuaikan ukuran gambar sesuai kebutuhan Anda
+                                    height: 100,
                                     width: 150,
                                     fit: BoxFit.cover,
                                   ),
@@ -239,7 +229,7 @@ class _HistoriPageState extends State<HistoriPage> {
                         actions: <Widget>[
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop(); // Tutup dialog
+                              Navigator.of(context).pop();
                             },
                             child: const Text('Tutup'),
                           ),

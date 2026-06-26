@@ -28,10 +28,9 @@ class MyApp extends StatelessWidget {
               unselectedItemColor: Colors.black,
             ),
             appBarTheme: const AppBarTheme(
-              elevation: 0, // remove shadow
+              elevation: 0,
             )),
         home: SplashScreen(),
-        // home: LoginPage(),
         debugShowCheckedModeBanner: true,
       ),
     );

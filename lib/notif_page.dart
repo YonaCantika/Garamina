@@ -6,6 +6,7 @@ import 'package:garamina/survei_page.dart';
 import 'package:provider/provider.dart';
 import 'auth_state.dart';
 import 'components/actionComponent.dart';
+import 'package:garamina/services/api_services.dart';
 import 'package:http/http.dart' as http;
 
 class NotifPage extends StatefulWidget {
@@ -14,27 +15,27 @@ class NotifPage extends StatefulWidget {
 }
 
 class _NotifPageState extends State<NotifPage> {
-  // Daftar notifikasi
   List<Map<String, dynamic>> notifications = [];
   int? _notificationCount;
   bool loading = true;
   DateTime dateTime = DateTime.now();
   List<Map<String, dynamic>> surveiData = [];
   bool dataResponseDinas = false;
+  int count = 0;
 
   @override
   void initState() {
     super.initState();
-    fetchDataSurvei();
   }
 
   Future<void> getDataNotif(empId) async {
+    count++;
     try {
       final response = await http.post(
         Uri.parse(
-            'https://garamina.com/fintech2/integrasi/android/lonceng/list_lonceng'),
+            ApiServices.listLonceng),
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
           'empId': empId.toString(),
@@ -58,18 +59,19 @@ class _NotifPageState extends State<NotifPage> {
     }
   }
 
-  Future<void> fetchDataSurvei() async {
+  Future<void> fetchDataSurvei(empId) async {
+    count++;
     try {
       final apiUrl = Uri.parse(
-          'http://192.168.1.252/fintech2/integrasi/android/survei/list_survei');
+          ApiServices.listSurvei);
 
       final response = await http.post(
         apiUrl,
         headers: {
-          'APIKEY': '8deca313c70c6195eba4208b8dc6d56b',
+          'APIKEY': ApiServices.apiKey,
         },
         body: {
-          'empId': '797',
+          'empId': empId.toString(),
           'tanggal':
               '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}',
         },
@@ -111,7 +113,11 @@ class _NotifPageState extends State<NotifPage> {
   @override
   Widget build(BuildContext context) {
     final authState = Provider.of<AuthState>(context);
-    getDataNotif(authState.idPeg);
+    count < 1
+        ? getDataNotif(authState.idPeg)
+        : count <= 2
+            ? fetchDataSurvei(authState.idPeg)
+            : null;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifikasi'),
