@@ -1,9 +1,9 @@
 class ApiServices {
-  static const String baseUrl = 'https://192.168.1.252/fintech2/integrasi/android/';
+  static const String baseUrl = 'http://192.168.1.252/fintech2/integrasi/android/';
   static const String baseUrlEmergency = 'https://ptgaram.com/api/status_absen_emergency/';
-  static const String erpAssetsUrl = 'https://192.168.1.252/erp/assets/upload/';
-  static const String defaultProfilePic = 'https://192.168.1.252/hr/files/emp/pic/pic_20190624_213733_798.jpeg';
-  static const String loginUrl = 'https://192.168.1.252/login.php';
+  static const String erpAssetsUrl = 'http://192.168.1.252/erp/assets/upload/';
+  static const String defaultProfilePic = 'http://192.168.1.252/hr/files/emp/pic/pic_20190624_213733_798.jpeg';
+  static const String loginUrl = 'http://192.168.1.252/login.php';
 
   static const String apiKey = '8deca313c70c6195eba4skshgjsk7979897ss';
 
