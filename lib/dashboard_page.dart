@@ -65,8 +65,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> fetchDataUltah() async {
-    final apiUrl = Uri.parse(
-        ApiServices.reportUlangTahun);
+    final apiUrl = Uri.parse(ApiServices.reportUlangTahun);
     final response = await http.post(
       apiUrl,
       headers: {
@@ -195,8 +194,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> fetchDataCuti() async {
-    final apiUrl = Uri.parse(
-        ApiServices.reportCuti);
+    final apiUrl = Uri.parse(ApiServices.reportCuti);
 
     final response = await http.post(
       apiUrl,
@@ -225,8 +223,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> fetchDataIzin() async {
-    final apiUrl = Uri.parse(
-        ApiServices.reportIzin);
+    final apiUrl = Uri.parse(ApiServices.reportIzin);
 
     final response = await http.post(
       apiUrl,
@@ -255,8 +252,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> fetchDataDinas() async {
-    final apiUrl = Uri.parse(
-        ApiServices.reportDinas);
+    final apiUrl = Uri.parse(ApiServices.reportDinas);
 
     final response = await http.post(
       apiUrl,
@@ -288,8 +284,7 @@ class _DashboardPageState extends State<DashboardPage> {
     setState(() {
       count++;
     });
-    final apiUrl = Uri.parse(
-        ApiServices.reportSaldoKoperasi);
+    final apiUrl = Uri.parse(ApiServices.reportSaldoKoperasi);
 
     final response = await http.post(
       apiUrl,
@@ -373,40 +368,46 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(
                   height: 10,
                 ),
-                SizedBox(
-                  height: 100,
-                  width: double.infinity,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          authState.namaUser ?? '',
-                          style: const TextStyle(
-                              fontSize: 24,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 3,
-                        ),
-                        Text(
-                          authState.costCenter ?? 'Cost Center',
-                          style: const TextStyle(
-                            fontSize: 20,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        authState.namaUser ?? '',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 24,
                             color: Colors.white,
-                          ),
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                        height: 3,
+                      ),
+                      Text(
+                        authState.costCenter ?? 'Cost Center',
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
                         ),
-                        const SizedBox(
-                          height: 25,
-                        ),
-                        const Text(
-                          'Kerja Kita Prestasi Bersama!',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.yellow,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ]),
+                      ),
+                      const SizedBox(
+                        height: 25,
+                      ),
+                      const Text(
+                        'Kerja Kita Prestasi Bersama!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.yellow,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
               ]),
             ),
@@ -787,8 +788,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                                 shrinkWrap: true,
                                                 itemCount: cutiData.length,
                                                 itemBuilder: (context, index) {
-                                                  const foto =
-                                                      ApiServices.defaultProfilePic;
+                                                  const foto = ApiServices
+                                                      .defaultProfilePic;
                                                   return Column(
                                                     children: [
                                                       ListTile(
@@ -835,8 +836,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                                     itemCount: izinData.length,
                                                     itemBuilder:
                                                         (context, index) {
-                                                      const foto =
-                                                          ApiServices.defaultProfilePic;
+                                                      const foto = ApiServices
+                                                          .defaultProfilePic;
                                                       return Column(
                                                         children: [
                                                           ListTile(
@@ -887,8 +888,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                                             dinasData.length,
                                                         itemBuilder:
                                                             (context, index) {
-                                                          const foto =
-                                                              ApiServices.defaultProfilePic;
+                                                          const foto = ApiServices
+                                                              .defaultProfilePic;
                                                           return Column(
                                                             children: [
                                                               ListTile(

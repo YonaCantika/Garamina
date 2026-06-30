@@ -86,7 +86,7 @@ class _StatusPengajuanIzinPageState extends State<StatusPengajuanIzinPage> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: SizedBox(
-              width: double.infinity,
+              width: double.infinity,                     
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
