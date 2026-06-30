@@ -504,7 +504,7 @@ final distance =
     }
 
     _showSuccessDialog(nama, status, condition, koordinatUser!, alamatLengkap!,
-        dateTime, foto, 'Absen Darurat', 'Kerja kita prestasi bersama');
+        dateTime, foto, 'Absen Darurat', 'Kerja kita prestasi bersama', distanceToKantor?.toStringAsFixed(2) ?? '0.0');
     setState(() {
       imageFile = null;
       descriptionController.clear();
@@ -541,7 +541,7 @@ final distance =
   }
 
   void _showSuccessDialog(String nama, String status, String condition,
-      String koordinat, String alamat, DateTime dateTime, foto, judul, slogan) {
+      String koordinat, String alamat, DateTime dateTime, foto, judul, slogan, String jarak) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -562,6 +562,7 @@ final distance =
               Text('Kondisi: $condition'),
               Text('Koordinat: $koordinat'),
               Text('Alamat: $alamat'),
+              Text('Jarak: $jarak km'),
               Text('Date Time: ${dateTime.toIso8601String()}'),
               Text('Slogan: ${slogan}'),
             ],

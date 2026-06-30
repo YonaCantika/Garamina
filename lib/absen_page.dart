@@ -545,7 +545,8 @@ class _AbsenPageState extends State<AbsenPage> {
             parsedData['waktu'],
             parsedData['foto'],
             parsedData['judul'],
-            parsedData['slogan']);
+            parsedData['slogan'],
+            jarakToSend);
         if (status == '0-0') {
           updateStatusEmergency(empId, 'A-', checkShiftM);
         } else if (status == 'A-') {
@@ -600,7 +601,7 @@ class _AbsenPageState extends State<AbsenPage> {
   }
 
   void _showSuccessDialog(String nama, String status, String condition,
-      String koordinat, String alamat, tanggal, waktu, foto, judul, slogan) {
+      String koordinat, String alamat, tanggal, waktu, foto, judul, slogan, String jarak) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -629,6 +630,7 @@ class _AbsenPageState extends State<AbsenPage> {
                   Text('Jam: ${waktu.toString()}'),
                   Text('Kondisi: $condition'),
                   Text('Alamat: $alamat'),
+                  Text('Jarak: $jarak km'),
                   Text('Slogan: $slogan'),
                 ],
               ),

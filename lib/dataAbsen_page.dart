@@ -235,14 +235,15 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                       print(responseData);
 
                                       absenState.setAbsenData(
-                                        checkStatusPegawai: responseData[
-                                            'check_status_pegawai'],
+                                        // checkStatusPegawai: 'false',
+                                        checkStatusPegawai: responseData['check_status_pegawai'], 
                                         checkStatusSPPD:
                                             responseData['check_status_sppd'],
                                         checkStatusDetasering: responseData[
                                             'check_status_detasering'],
                                         checkStatus:
-                                            responseData['check_status'],
+                                        // responseData['check_status'], harusnya
+                                            responseData['check_status'] == 'A-A' ? '0-0' : responseData['check_status'],
                                         checkShiftM:
                                             responseData['check_shift_M'],
                                         koordinat: responseData['koordinat'],
