@@ -475,7 +475,7 @@ final distance =
       'koordinat': koordinatUser!,
       'datetime': dateTime.toIso8601String(),
       'emoticon': condition,
-      'jarak': '0.0',
+      'jarak': distanceToKantor?.toStringAsFixed(2) ?? '0.0',
       'alamat': alamatLengkap ?? '',
       'foto': imagePath,
     };

@@ -458,12 +458,14 @@ class _AbsenPageState extends State<AbsenPage> {
       return;
     }
 
-    if (distanceToKantor! <= 0.05 ||
-        checkStatusPegawai == 'true' ||
+    bool isDinas = checkStatusPegawai == 'true' ||
         checkStatusSPPD == 'true' ||
-        checkStatusDetasering == 'true') {
+        checkStatusDetasering == 'true';
+    String jarakToSend = isDinas ? (distanceToKantor?.toStringAsFixed(2) ?? '0.0') : '0.0';
+
+    if (distanceToKantor! <= 0.05 || isDinas) {
       _accessAPI(
-          status, empId.toString(), note, condition, foto, nama, checkShiftM);
+          status, empId.toString(), note, condition, foto, nama, checkShiftM, jarakToSend);
     } else {
       setState(() {
         isLoading = false;
@@ -474,7 +476,7 @@ class _AbsenPageState extends State<AbsenPage> {
   }
 
   void _accessAPI(
-      status, empId, note, condition, foto, nama, checkShiftM) async {
+      status, empId, note, condition, foto, nama, checkShiftM, String jarakToSend) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     DateTime dateTime = DateTime.now();
 
@@ -496,7 +498,7 @@ class _AbsenPageState extends State<AbsenPage> {
     request.fields['koordinat'] = koordinatUser!;
     request.fields['datetime'] = dateTime.toIso8601String();
     request.fields['emoticon'] = condition;
-    request.fields['jarak'] = '0.0';
+    request.fields['jarak'] = jarakToSend;
     request.fields['alamat'] = alamatLengkap ?? '';
 
     final currentTime = TimeOfDay.fromDateTime(dateTime);

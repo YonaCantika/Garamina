@@ -1,4 +1,4 @@
-# Catatan Perubahan (Changelog) - Garamina ke Garamina V2
+# Catatan Perubahan (Changelog) - Garamina by Yona Cantika Pens
 
 Dokumen ini mencatat semua perubahan besar yang dilakukan dari proyek `garamina`.
 
@@ -32,3 +32,11 @@ Selain itu, ditambahkan blok `dependency_overrides` untuk memaksa resolusi konfl
 - **Perubahan:** Memperbaiki peringatan kode yang sudah *deprecated* (usang).
 - **Contoh:** Pada penggunaan `ElevatedButton.styleFrom()`, parameter `primary` diubah menjadi `backgroundColor` (misalnya pada file `login_page.dart` dan lainnya).
 - **Alasan:** Flutter terus memperbarui standardisasi kodenya (terutama saat transisi ke Material Design 3). Memperbaiki sintaks yang usang ini penting untuk memastikan proyek dapat dicompile dengan lancar pada versi Flutter masa depan tanpa pesan error atau peringatan (warning).
+
+## 5. Pembaruan Logika Pencatatan Jarak Absensi
+- **Perubahan:** Memperbarui parameter `jarak` yang dikirim ke server dengan logika kondisional. Jika karyawan sedang berada di kantor (tidak dinas), nilai `jarak` yang dikirim adalah `0.0`. Namun jika karyawan sedang dinas (SPPD/Detasering/Emergency), jarak yang sesungguhnya (real-time) antara pengguna dan titik koordinat kantor akan dikirimkan secara akurat.
+- **File yang dimodifikasi:** 
+  - `lib/absen_page.dart` (Fungsi `_saveAbsenData` ditambahkan variabel `isDinas` dan mem-parsing parameter `jarakToSend` ke `_accessAPI`).
+  - `lib/absen_offline_page.dart` (Metode absen offline yang secara default berfungsi untuk absen darurat, nilai jarak langsung dipassing secara real).
+- **Fungsi:** Memastikan karyawan yang sedang melakukan dinas, jaraknya tetap dicatat secara aktual pada *form data* yang dikirimkan, sementara karyawan yang ngantor biasa tetap tercatat `0.0`.
+- **Alasan:** Pada sistem sebelumnya, nilai `jarak` dipaksa selalu `0.0` meskipun karyawan absen dari kejauhan karena dinas, yang menyebabkan laporan riwayat absensi menjadi kurang deskriptif.
