@@ -20,25 +20,41 @@ Widget buildUserGuide(BuildContext context) {
                   children: [
                     const Text(
                       'Petunjuk Pengguna',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 30),
                     ListView(
                       shrinkWrap: true,
-                      children: const[
-                        Text('1. Bagaimana cara melakukan absen normal', style: TextStyle(fontWeight: FontWeight.bold),),
+                      children: const [
+                        Text(
+                          '1. Bagaimana cara melakukan absen normal',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         Text('penjelasan: ...'),
                         SizedBox(height: 20),
-                        Text('2. Bagaimana cara melihat beberapa informasi', style: TextStyle(fontWeight: FontWeight.bold),),
+                        Text(
+                          '2. Bagaimana cara melihat beberapa informasi',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         Text('penjelasan: ...'),
                         SizedBox(height: 20),
-                        Text('3. Bagaimana cara mengajukan cuti, izin dan dinas', style: TextStyle(fontWeight: FontWeight.bold),),
+                        Text(
+                          '3. Bagaimana cara mengajukan cuti, izin dan dinas',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         Text('penjelasan: ...'),
                         SizedBox(height: 20),
-                        Text('4. Bagaimana cara melakukan absen darurat', style: TextStyle(fontWeight: FontWeight.bold),),
+                        Text(
+                          '4. Bagaimana cara melakukan absen darurat',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         Text('penjelasan: ...'),
                         SizedBox(height: 20),
-                        Text('5. Support tim', style: TextStyle(fontWeight: FontWeight.bold),),
+                        Text(
+                          '5. Support tim',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         Text('penjelasan: ...'),
                       ],
                     ),
@@ -53,7 +69,7 @@ Widget buildUserGuide(BuildContext context) {
     child: const SizedBox(
       height: 50,
       width: 50,
-      child: Icon(Icons.menu_book, size: 30, color: Colors.white),
+      child: Icon(Icons.menu_book, size: 30, color: Colors.black),
     ),
   );
 }
@@ -76,20 +92,21 @@ Widget buildInformationCenter(BuildContext context) {
                   children: [
                     const Text(
                       'Pusat Informasi',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 20),
-                    authState.info != null?
-                    Image.network(
-                      authState.info.toString(),
-                      width: 450,
-                      height: 450,
-                    ):
-                    Image.asset(
-                      'assets/img/pusatInformasi/regulasi.png',
-                      width: 450,
-                      height: 450,
-                    ),
+                    authState.info != null
+                        ? Image.network(
+                            authState.info.toString(),
+                            width: 450,
+                            height: 450,
+                          )
+                        : Image.asset(
+                            'assets/img/pusatInformasi/regulasi.png',
+                            width: 450,
+                            height: 450,
+                          ),
                   ],
                 ),
               ),
@@ -101,7 +118,7 @@ Widget buildInformationCenter(BuildContext context) {
     child: const SizedBox(
       height: 50,
       width: 50,
-      child: Icon(Icons.info, size: 30, color: Colors.white),
+      child: Icon(Icons.info, size: 30, color: Colors.black),
     ),
   );
 }
