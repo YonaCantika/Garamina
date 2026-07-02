@@ -446,10 +446,10 @@ final distance =
       }
     }
     final image = img.decodeImage(File(foto.path).readAsBytesSync());
-    final int desiredWidth = 400;
-    final int desiredHeight = 300;
-    final img.Image resizedImage =
-        img.copyResize(image!, width: desiredWidth, height: desiredHeight);
+    // Resize hanya berdasarkan lebar, tinggi menyesuaikan otomatis
+    // agar aspect ratio foto tetap terjaga (tidak stretch/ditarik)
+    const maxWidth = 400;
+    final img.Image resizedImage = img.copyResize(image!, width: maxWidth);
     final File compressedFile = File(foto.path)
       ..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 60));
     final mimeTypeData =

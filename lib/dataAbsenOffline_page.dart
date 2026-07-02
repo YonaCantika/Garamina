@@ -234,20 +234,14 @@ class _DataAbsenOfflinePageState extends State<DataAbsenOfflinePage> {
           ),
           Container(
             color: Colors.blue,
-            height: 50,
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'NB: Waktu Absen di Convert Menjadi WIB',
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.yellow,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
+              child: Text(
+                'NB: Waktu Absen di Convert Menjadi WIB',
+                style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.yellow,
+                    fontWeight: FontWeight.bold),
               ),
             ),
           ),

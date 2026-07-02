@@ -495,39 +495,57 @@ class _HistoriPageState extends State<HistoriPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
             child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _navyDark.withOpacity(0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
+              child: SizedBox(
+                width: 200,
+                height: 160,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _navyDark.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      fotoUrl,
+                      width: 200,
+                      height: 160,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          width: 200,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            color: _surfaceGrey,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 200,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            color: _surfaceGrey,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.broken_image_rounded,
+                            color: _textSecondary,
+                            size: 40,
+                          ),
+                        );
+                      },
                     ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    fotoUrl,
-                    height: 140,
-                    width: 180,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 140,
-                        width: 180,
-                        decoration: BoxDecoration(
-                          color: _surfaceGrey,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Icons.broken_image_rounded,
-                          color: _textSecondary,
-                          size: 40,
-                        ),
-                      );
-                    },
                   ),
                 ),
               ),
