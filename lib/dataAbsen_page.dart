@@ -44,7 +44,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
         Uri.parse(
             ApiServices.insertLoginEmergency),
         headers: {
-          'APIKEY': ApiServices.apiKey,
+          'APIKEY': ApiServices.apiKeyPtGaram,
         },
         body: {
           'idPeg': idPeg.toString(),

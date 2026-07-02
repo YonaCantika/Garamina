@@ -142,7 +142,7 @@ class _AbsenPageState extends State<AbsenPage> {
         Uri.parse(
             ApiServices.insertStatusAbsen),
         headers: {
-          'APIKEY': ApiServices.apiKey,
+          'APIKEY': ApiServices.apiKeyPtGaram,
         },
         body: {
           'idPeg': idPeg.toString(),
@@ -514,10 +514,10 @@ class _AbsenPageState extends State<AbsenPage> {
     }
 
     final image = img.decodeImage(File(foto.path).readAsBytesSync());
-    const desiredWidth = 400;
-    const desiredHeight = 300;
-    final resizedImage =
-        img.copyResize(image!, width: desiredWidth, height: desiredHeight);
+    // Resize hanya berdasarkan lebar, tinggi menyesuaikan otomatis
+    // agar aspect ratio foto tetap terjaga (tidak stretch/ditarik)
+    const maxWidth = 400;
+    final resizedImage = img.copyResize(image!, width: maxWidth);
     final compressedFile = File(foto.path)
       ..writeAsBytesSync(img.encodeJpg(resizedImage, quality: 60));
     final mimeTypeData =

@@ -425,7 +425,7 @@ class _LoginPageState extends State<LoginPage> {
         Uri.parse(
             ApiServices.updateCheckStatus),
         headers: {
-          'APIKEY': ApiServices.apiKey,
+          'APIKEY': ApiServices.apiKeyPtGaram,
         },
         body: {
           'idPeg': idPeg.toString(),
@@ -462,7 +462,7 @@ class _LoginPageState extends State<LoginPage> {
         Uri.parse(
             ApiServices.getStatusAbsen),
         headers: {
-          'APIKEY': ApiServices.apiKey,
+          'APIKEY': ApiServices.apiKeyPtGaram,
         },
         body: {
           'userName': username.toString(),
