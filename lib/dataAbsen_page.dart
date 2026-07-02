@@ -41,10 +41,9 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
     print(password);
     try {
       final response = await http.post(
-        Uri.parse(
-            ApiServices.insertLoginEmergency),
+        Uri.parse(ApiServices.insertLoginEmergency),
         headers: {
-          'APIKEY': ApiServices.apiKey,
+          'APIKEY': ApiServices.apiKeyEmergency,
         },
         body: {
           'idPeg': idPeg.toString(),
@@ -59,19 +58,18 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        print(responseData);
+        print('SUKSES SIMPAN KE EMERGENCY: $responseData');
       } else {
-        // Handle error
+        print('GAGAL SIMPAN KE EMERGENCY. Status: ${response.statusCode}, Body: ${response.body}');
       }
     } catch (e) {
-      // Handle error
+      print('ERROR SIMPAN KE EMERGENCY: $e');
     }
   }
 
   Future<void> listSurvei(idPeg) async {
     count++;
-    final apiUrl = Uri.parse(
-        ApiServices.listSurvei);
+    final apiUrl = Uri.parse(ApiServices.listSurvei);
 
     final response = await http.post(
       apiUrl,
@@ -235,15 +233,15 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
                                       print(responseData);
 
                                       absenState.setAbsenData(
-                                        // checkStatusPegawai: 'false',
-                                        checkStatusPegawai: responseData['check_status_pegawai'], 
+                                        checkStatusPegawai: responseData[
+                                            'check_status_pegawai'],
                                         checkStatusSPPD:
                                             responseData['check_status_sppd'],
                                         checkStatusDetasering: responseData[
                                             'check_status_detasering'],
                                         checkStatus:
-                                        // responseData['check_status'], harusnya
-                                            responseData['check_status'] == 'A-A' ? '0-0' : responseData['check_status'],
+                                            responseData['check_status'],
+                                        // responseData['check_status'] == 'A-A' ? '0-0' : responseData['check_status'],
                                         checkShiftM:
                                             responseData['check_shift_M'],
                                         koordinat: responseData['koordinat'],
@@ -381,8 +379,7 @@ class _DataAbsenPageState extends State<DataAbsenPage> {
 
   Future<Map<String, dynamic>> sendAbsenRequest(String idPeg) async {
     final response = await http.post(
-      Uri.parse(
-          ApiServices.vAbsen),
+      Uri.parse(ApiServices.vAbsen),
       headers: {
         'APIKEY': ApiServices.apiKey,
       },

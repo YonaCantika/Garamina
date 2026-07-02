@@ -40,3 +40,24 @@ Selain itu, ditambahkan blok `dependency_overrides` untuk memaksa resolusi konfl
   - `lib/absen_offline_page.dart` (Metode absen offline yang secara default berfungsi untuk absen darurat, nilai jarak langsung dipassing secara real).
 - **Fungsi:** Memastikan karyawan yang sedang melakukan dinas, jaraknya tetap dicatat secara aktual pada *form data* yang dikirimkan, sementara karyawan yang ngantor biasa tetap tercatat `0.0`.
 - **Alasan:** Pada sistem sebelumnya, nilai `jarak` dipaksa selalu `0.0` meskipun karyawan absen dari kejauhan karena dinas, yang menyebabkan laporan riwayat absensi menjadi kurang deskriptif.
+
+02/07/2026
+## 6. Penambahan API Key Khusus Darurat
+- **File:** `lib/services/api_services.dart`
+- **Perubahan:** Menambahkan variabel khusus `apiKeyEmergency = '8deca313c70c6195eba4208b8dc6d56b'` untuk semua *endpoint* darurat.
+- **Alasan:** Server `ptgaram.com` menolak semua *request* dari aplikasi karena aplikasi menggunakan API Key yang sama dengan server lokal.
+
+## 7. Perbaikan Fitur Login Darurat (Fallback)
+- **File:** `lib/login_page.dart`
+- **Perbaikan Timeout & Transisi Darurat:** Menambahkan `timeout(Duration(seconds: 10))` pada API login lokal. Mengubah blok `catch (e)` agar otomatis memicu `getDataEmergency` saat koneksi mati total, menghindari *infinite loading*.
+- **Validasi Login Darurat:** Mengubah *header* API ke `apiKeyEmergency`. Mengecek keberadaan `idPeg` dari respon server PT Garam untuk mencegah masuk jika kredensial ditolak. Menampilkan balasan mentah dari server ke layar (mempermudah *debugging*).
+
+## 8. Pelacakan Kegagalan Sinkronisasi Akun
+- **File:** `lib/dataAbsen_page.dart`
+- **Perubahan:** Mengubah *header* `shareDataEmergency()` menggunakan `apiKeyEmergency`. Menambahkan pesan `print()` log saat sukses, gagal, atau *error*.
+- **Alasan:** Sebelumnya jika proses titip data akun ke server PT Garam gagal, aplikasi diam saja, membuat pengguna kesulitan melacak penyebab *Error 500*.
+
+## 9. Pencegahan Crash (Layar Merah) di Absen Offline
+- **File:** `lib/absen_offline_page.dart`
+- **Perubahan:** Menambahkan *try-catch* dan variabel pengganti. Jika koordinat terbaca `"null"`, ia menggunakan `0.0`. Mengubah *header* `updateStatusEmergency()` ke `apiKeyEmergency`.
+- **Alasan:** Mencegah *crash* (FormatException: Invalid double) saat mencoba menghitung jarak kantor dari tulisan "null" akibat penolakan server darurat sebelumnya.
