@@ -186,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
           'password': password,
           'macAddress': macAddress.toString(),
         },
-      );
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -244,7 +244,8 @@ class _LoginPageState extends State<LoginPage> {
         getDataEmergency(username, password);
       }
     } catch (e) {
-      showErrorDialog('Periksa koneksi anda lalu coba kembali.');
+      print("Koneksi gagal/timeout, beralih ke mode darurat: $e");
+      getDataEmergency(username, password);
     }
   }
 
@@ -425,7 +426,7 @@ class _LoginPageState extends State<LoginPage> {
         Uri.parse(
             ApiServices.updateCheckStatus),
         headers: {
-          'APIKEY': ApiServices.apiKeyPtGaram,
+          'APIKEY': ApiServices.apiKeyEmergency,
         },
         body: {
           'idPeg': idPeg.toString(),
@@ -462,33 +463,45 @@ class _LoginPageState extends State<LoginPage> {
         Uri.parse(
             ApiServices.getStatusAbsen),
         headers: {
-          'APIKEY': ApiServices.apiKeyPtGaram,
+          'APIKEY': ApiServices.apiKeyEmergency,
         },
         body: {
           'userName': username.toString(),
           'password': password.toString(),
         },
-      );
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         print(responseData);
-        if (responseData[0]['checkStatus'] == 'A-A' ||
-            responseData[0]['checkStatus'] == 'A-') {
-          DateTime tanggalDariResponse =
-              DateTime.parse(responseData[0]['tanggalAbsen']);
+        
+        if (responseData.isNotEmpty && responseData[0]['idPeg'] != null) {
+          if (responseData[0]['checkStatus'] == 'A-A' ||
+              responseData[0]['checkStatus'] == 'A-') {
+            DateTime tanggalDariResponse =
+                DateTime.parse(responseData[0]['tanggalAbsen']);
 
-          bool bedaHari = tanggalDariResponse.difference(dateTime).inDays != 0;
-          if (bedaHari) {
-            updateStatusEmergency(responseData[0]['idPeg'], '0-0');
-            setPreferenceEmergency(
-                responseData[0]['costCenter'],
-                responseData[0]['idPeg'],
-                responseData[0]['namaUser'],
-                responseData[0]['nik'],
-                '0-0',
-                responseData[0]['checkShiftM'],
-                responseData[0]['koordinat']);
+            bool bedaHari = tanggalDariResponse.difference(dateTime).inDays != 0;
+            if (bedaHari) {
+              updateStatusEmergency(responseData[0]['idPeg'], '0-0');
+              setPreferenceEmergency(
+                  responseData[0]['costCenter'],
+                  responseData[0]['idPeg'],
+                  responseData[0]['namaUser'],
+                  responseData[0]['nik'],
+                  '0-0',
+                  responseData[0]['checkShiftM'],
+                  responseData[0]['koordinat']);
+            } else {
+              setPreferenceEmergency(
+                  responseData[0]['costCenter'],
+                  responseData[0]['idPeg'],
+                  responseData[0]['namaUser'],
+                  responseData[0]['nik'],
+                  responseData[0]['checkStatus'],
+                  responseData[0]['checkShiftM'],
+                  responseData[0]['koordinat']);
+            }
           } else {
             setPreferenceEmergency(
                 responseData[0]['costCenter'],
@@ -499,44 +512,41 @@ class _LoginPageState extends State<LoginPage> {
                 responseData[0]['checkShiftM'],
                 responseData[0]['koordinat']);
           }
+          setState(() { _isLoading = false; });
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Peringatan"),
+                content: const Text(
+                    "Server sedang maintenace, anda diperbolehkan melakukan absen darurat!!"),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Oke'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => DataAbsenOfflinePage(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         } else {
-          setPreferenceEmergency(
-              responseData[0]['costCenter'],
-              responseData[0]['idPeg'],
-              responseData[0]['namaUser'],
-              responseData[0]['nik'],
-              responseData[0]['checkStatus'],
-              responseData[0]['checkShiftM'],
-              responseData[0]['koordinat']);
+          setState(() { _isLoading = false; });
+          showErrorDialog('Gagal masuk mode darurat. Alasan dari server: $responseData');
         }
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Peringatan"),
-              content: const Text(
-                  "Server sedang maintenace, anda diperbolehkan melakukan absen darurat!!"),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Oke'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => DataAbsenOfflinePage(),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            );
-          },
-        );
       } else {
-        // Handle error
+        setState(() { _isLoading = false; });
+        showErrorDialog('Gagal masuk mode darurat, respon server salah.');
       }
     } catch (e) {
-      // Handle error
+      setState(() { _isLoading = false; });
+      showErrorDialog('Koneksi ke mode darurat gagal. Pastikan HP terkoneksi internet.');
     }
   }
 

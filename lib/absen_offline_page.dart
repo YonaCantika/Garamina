@@ -82,7 +82,7 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
         Uri.parse(
             ApiServices.updateCheckStatus),
         headers: {
-          'APIKEY': ApiServices.apiKeyPtGaram,
+          'APIKEY': ApiServices.apiKeyEmergency,
         },
         body: {
           'idPeg': idPeg.toString(),
@@ -137,11 +137,16 @@ class _AbsenOfflinePageState extends State<AbsenOfflinePage> {
                         final userLocation = snapshot.data!;
                         koordinatUser =
                             '${userLocation.latitude},${userLocation.longitude}';
-                        final kantorLocation = koordinat ?? '';
-                        final kantorCoordinates = LatLng(
-                          double.parse(kantorLocation.split(',')[0]),
-                          double.parse(kantorLocation.split(',')[1]),
-                        );
+                        final kantorLocation = (koordinat == null || koordinat == 'null' || koordinat!.isEmpty) ? '0.0,0.0' : koordinat!;
+                        double parsedLat = 0.0;
+                        double parsedLon = 0.0;
+                        try {
+                          parsedLat = double.parse(kantorLocation.split(',')[0]);
+                          parsedLon = double.parse(kantorLocation.split(',')[1]);
+                        } catch(e) {
+                          parsedLat = 0.0; parsedLon = 0.0;
+                        }
+                        final kantorCoordinates = LatLng(parsedLat, parsedLon);
 
                         final lat1 = userLocation.latitude;
                         final lon1 = userLocation.longitude;

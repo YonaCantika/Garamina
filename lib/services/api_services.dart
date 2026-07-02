@@ -6,7 +6,7 @@ class ApiServices {
   static const String loginUrl = 'http://192.168.1.252/login.php';
 
   static const String apiKey = '8deca313c70c6195eba4skshgjsk7979897ss';
-  static const String apiKeyPtGaram = '8deca313c70c6195eba4208b8dc6d56b';
+  static const String apiKeyEmergency = '8deca313c70c6195eba4208b8dc6d56b';
 
   // Cut / Izin
   static const String allPegawai = '${baseUrl}cuti_izin/all_pegawai';

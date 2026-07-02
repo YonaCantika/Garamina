@@ -142,7 +142,7 @@ class _AbsenPageState extends State<AbsenPage> {
         Uri.parse(
             ApiServices.insertStatusAbsen),
         headers: {
-          'APIKEY': ApiServices.apiKeyPtGaram,
+          'APIKEY': ApiServices.apiKeyEmergency,
         },
         body: {
           'idPeg': idPeg.toString(),
